@@ -1,0 +1,52 @@
+name: Refresh and publish dashboard
+
+on:
+  schedule:
+    # Weekdays: before the US open (~5:45am PT) and after the close (~2:15pm PT)
+    - cron: '45 12 * * 1-5'
+    - cron: '15 21 * * 1-5'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Refresh live market data from FMP
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: node refresh/refresh.mjs
+      - name: Build page
+        run: node tools/build.mjs
+      - name: Stage site
+        run: |
+          mkdir -p _site
+          cp -r index.html assets page data _site/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

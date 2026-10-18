@@ -1,0 +1,65 @@
+/* Design tokens the dashboard page expects from its host. */
+:root {
+  color-scheme: light dark;
+  --font-anthropic-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-anthropic-serif: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-anthropic-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --color-bg: #faf9f6;
+  --color-panel: #f0eee8;
+  --color-fg: #1f1e1b;
+  --color-fg-muted: #6b6860;
+  --color-border-line: #dedbd2;
+  --color-ok: #2f7d4f;
+  --color-warn: #b7791f;
+  --color-bad: #b4413c;
+
+  --cds-font-size-caption: 12px;
+  --cds-font-size-body: 14px;
+  --cds-font-size-heading: 17px;
+  --cds-font-size-title: clamp(26px, 3.2vw, 36px);
+  --cds-font-weight-medium: 500;
+  --cds-gap-xs: 4px;
+  --cds-gap-sm: 8px;
+  --cds-gap-md: 12px;
+  --cds-gap-lg: 20px;
+  --cds-gap-xl: 32px;
+  --cds-pad-xs: 4px;
+  --cds-pad-sm: 8px;
+  --cds-pad-md: 12px;
+  --cds-pad-lg: 20px;
+  --cds-radius: 6px;
+  --cds-border: 1px solid var(--color-border-line);
+  --cds-dur-slow: 240ms;
+  --cds-surface-popover: #ffffff;
+  --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, .14);
+  --cds-text-secondary: var(--color-fg-muted);
+  --cds-chart-axis: #8d897f;
+  --cds-chart-grid: #e7e4dc;
+  --cds-chart-muted: #b9b5ab;
+  --cds-chart-reference: #8d897f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1b19;
+    --color-panel: #262522;
+    --color-fg: #ecebe6;
+    --color-fg-muted: #a19e95;
+    --color-border-line: #3a3833;
+    --color-ok: #5bb37f;
+    --color-warn: #d9a441;
+    --color-bad: #e07a73;
+    --cds-surface-popover: #2b2a27;
+    --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, .5);
+    --cds-chart-axis: #8a877e;
+    --cds-chart-grid: #33312d;
+    --cds-chart-muted: #5d5a53;
+    --cds-chart-reference: #8a877e;
+  }
+}
+html { background: var(--color-bg); }
+body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); -webkit-text-size-adjust: 100%; }
+#dash-root { padding: 16px var(--dash-gutter, 16px) 48px; }
+.site-foot { max-width: 1320px; margin: 32px auto 0; color: var(--color-fg-muted); font-size: 12px; }
+.dash-skeleton:empty::after { content: "—"; }
+[hidden] { display: none !important; }
