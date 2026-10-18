@@ -70,6 +70,9 @@ def apply(store, blobs):
                 print('missing download for', i, blob, '- keeping previous file')
                 blob = old['datasets'].get(i, {}).get('blob')
             meta.update(kind='file', path='data/files/' + i + '.json', blob=blob)
+        elif '{{' in json.dumps(s.get('args', {})):
+            # a lookup driven by a page filter (e.g. any ticker on Company profile): needs Claude's connector, not refreshed here
+            meta.update(kind='param')
         else:
             meta.update(kind='live', path='data/live/' + i + '.json')
             if old['datasets'].get(i, {}).get('updated'):

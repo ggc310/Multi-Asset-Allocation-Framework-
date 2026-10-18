@@ -246,6 +246,19 @@
    "path": "data/files/call_index.json",
    "blob": "f463c0c64a1b011a2bdee26ac1531957"
   },
+  "call_meta": {
+   "title": "Earnings-call company names",
+   "description": "Name and sector for every company with a scored earnings call: S&P 500 members from FMP, holdings from the universe data, and former members from their FMP profiles.",
+   "updated": {
+    "at": "2026-10-18T19:05:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Rebuilt every Saturday by the weekly refresh (profiles.py)",
+   "staleAfterHours": 360,
+   "kind": "file",
+   "path": "data/files/call_meta.json",
+   "blob": "91c58fdeba385c49ffc85fc1443c9b53"
+  },
   "call_scores": {
    "title": "Scored earnings calls",
    "description": "Tone and topic scores for every S&P 500 earnings call since 2014 that FMP has a transcript for (no transcript text), kept so each week only new calls are scored. Scored by Claude.",
@@ -284,6 +297,19 @@
    "kind": "file",
    "path": "data/files/call_tests.json",
    "blob": "1a15977e1477c0a01ae0a31c2946669c"
+  },
+  "commentary": {
+   "title": "Commentary",
+   "description": "Week in Review, The Week Ahead, Month in Review, Quarter in Review and earnings-call takeaways, written by Claude from this dashboard\u2019s FMP and FRED data. One row per piece: id, kind, title, headline, period, date, asOf, body (Markdown).",
+   "updated": {
+    "at": "2026-10-18T19:05:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Appended by Claude after Friday\u2019s close, on Sunday afternoons, and after each month\u2019s and quarter\u2019s last close",
+   "staleAfterHours": 200,
+   "kind": "file",
+   "path": "data/files/commentary.json",
+   "blob": "5d479cba9f774abbf783aa07f019210a"
   },
   "constituent_quotes": {
    "title": "Holdings live quotes",
@@ -329,6 +355,26 @@
    "kind": "file",
    "path": "data/files/country_risk.json",
    "blob": "e11a8df93d481910ddc1256afad142c3"
+  },
+  "cp_income": {
+   "title": "Company lookup: income",
+   "description": "FMP annual income statements, last six years, for the ticker typed on the Company profile page.",
+   "kind": "param"
+  },
+  "cp_metrics": {
+   "title": "Company lookup: key metrics",
+   "description": "FMP trailing-twelve-month key metrics (EV/EBITDA, FCF yield, ROIC, leverage) for the ticker typed on the Company profile page.",
+   "kind": "param"
+  },
+  "cp_profile": {
+   "title": "Company lookup: profile",
+   "description": "FMP company profile for the ticker typed on the Company profile page, when it is outside the prepared 300.",
+   "kind": "param"
+  },
+  "cp_px": {
+   "title": "Company lookup: prices",
+   "description": "FMP daily closing prices since October 2021 for the ticker typed on the Company profile page.",
+   "kind": "param"
   },
   "dq_report": {
    "title": "Data checks",
@@ -704,6 +750,32 @@
    "path": "data/files/positioning.json",
    "blob": "9fbdb6137ed44891b19934ae4ab1e99a"
   },
+  "profiles": {
+   "title": "Company profiles, top 300",
+   "description": "For the 300 largest holdings by combined weight across the universe: FMP profile, five years of annual and eight quarters of income statements, cash flow, balance sheet, key metrics, analyst estimates, earnings results against estimates, peers and five years of weekly prices.",
+   "updated": {
+    "at": "2026-10-18T19:05:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Rebuilt every Saturday by the weekly refresh (profiles.py)",
+   "staleAfterHours": 360,
+   "kind": "file",
+   "path": "data/files/profiles.json",
+   "blob": "3aaecdd1d233316bd5626342ed21e268"
+  },
+  "rates_credit": {
+   "title": "Inflation, real yields, credit",
+   "description": "Treasury breakeven inflation (5-year, 10-year, 5y5y forward), TIPS real yields (5, 10, 30 years), nominal Treasury yields, ICE BofA option-adjusted spreads and total-return indexes for US investment grade and high yield by rating, from FRED. Breakevens and real yields since 2003; ICE series cover the past three years, the history FRED serves.",
+   "updated": {
+    "at": "2026-10-18T19:05:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Rebuilt from FRED by the weekly refresh (fred.py) and by each commentary run",
+   "staleAfterHours": 200,
+   "kind": "file",
+   "path": "data/files/rates_credit.json",
+   "blob": "2b38ff8cec6c6240a6714faa8f29e7e6"
+  },
   "regime_playbook": {
    "title": "Regime playbook",
    "description": "Average next-month return, hit rate and volatility of each fund and model sleeve in each growth, inflation and financial conditions state since 2001, using only the state known at each month-end. Built by Claude from FMP prices and the macro state history.",
@@ -803,7 +875,7 @@
   },
   "today_news": {
    "title": "Market headlines",
-   "description": "The latest general market headlines with source, time and link, tagged by market. Reads FMP general news.",
+   "description": "The latest general market headlines from FMP (250 asked for), kept only from major financial outlets: WSJ, CNBC, Reuters, MarketWatch, Barron\u2019s, Fox Business, Bloomberg, ZeroHedge and similar. The public copy of the dashboard adds Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ headlines from their RSS feeds.",
    "kind": "live",
    "path": "data/live/today_news.json"
   },

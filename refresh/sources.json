@@ -352,7 +352,7 @@
   "tool": "news",
   "args": {
    "endpoint": "general-news",
-   "limit": 60
+   "limit": 250
   }
  },
  "today_px": {

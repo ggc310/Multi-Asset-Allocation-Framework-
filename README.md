@@ -12,6 +12,14 @@ A public, no-login copy of the Claude dashboard artifact
 
 Live data is fetched at build time and deployed straight to Pages; it is never committed.
 
+## Pages added October 2026
+
+- **Commentary**: Week in Review (Fri after the close), The Week Ahead (Sun afternoon), Month and Quarter in Review; written by Claude scheduled tasks into `data/files/commentary.json` and pushed here when published.
+- **Markets → Inflation, real yields & credit**: FRED breakevens, TIPS real yields, ICE BofA spreads and returns by rating (`rates_credit`, rebuilt by `refresh/fred.py` on full runs).
+- **Decide → Relative trends**: model score vs relative price for every equity dimension and classic pairs.
+- **Companies → Earnings calls** and **Company profile** (top 300 holdings, `profiles`). Any-ticker lookup (`cp_*` datasets) needs Claude's FMP connector, so it works only in the Claude version.
+- **Today**: event filters; headlines limited to major financial outlets, with Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ RSS feeds merged in by the refresh job.
+
 ## Layout
 
 - `src/` — the artifact's page files, unchanged (`index.html` body + scripts)

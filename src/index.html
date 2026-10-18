@@ -428,8 +428,10 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
   <nav class="gm-tabs" id="nav" role="tablist" aria-label="Sections">
     <button class="gm-tab" role="tab" data-sec="today" aria-selected="true">Today</button>
     <button class="gm-tab" role="tab" data-sec="summary" aria-selected="false">Executive summary</button>
+    <button class="gm-tab" role="tab" data-sec="commentary" aria-selected="false">Commentary</button>
     <button class="gm-tab" role="tab" data-sec="decide" aria-selected="false">Decide</button>
     <button class="gm-tab" role="tab" data-sec="markets" aria-selected="false">Markets</button>
+    <button class="gm-tab" role="tab" data-sec="companies" aria-selected="false">Companies</button>
     <button class="gm-tab" role="tab" data-sec="evidence" aria-selected="false">Evidence</button>
   </nav>
   <div class="gm-labbanner" id="lab-banner" role="status" hidden></div>
@@ -442,6 +444,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <button class="gm-sub" data-sec="decide" data-page="lab" id="tab-lab">Model lab</button>
     <span class="gm-subl" data-sec="decide">Equities</span>
     <button class="gm-sub" data-sec="decide" data-page="scoreboard" id="tab-scoreboard">Equity scorecard</button>
+    <button class="gm-sub" data-sec="decide" data-page="reltrend" id="tab-reltrend">Relative trends</button>
     <button class="gm-sub" data-sec="decide" data-page="allocation" id="tab-allocation">Equity allocation</button>
     <button class="gm-sub" data-sec="decide" data-page="deploy" id="tab-deploy">Deploy cash</button>
     <button class="gm-sub" data-sec="decide" data-page="outlook" id="tab-outlook">Scenarios</button>
@@ -456,8 +459,11 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <button class="gm-sub" data-sec="markets" data-page="breadth" id="tab-breadth">Breadth</button>
     <span class="gm-subl" data-sec="markets">Fixed income</span>
     <button class="gm-sub" data-sec="markets" data-page="bonds" id="tab-bonds">Curve &amp; bonds</button>
+    <button class="gm-sub" data-sec="markets" data-page="credit" id="tab-credit">Inflation, real yields &amp; credit</button>
     <span class="gm-subl" data-sec="markets">Currencies</span>
     <button class="gm-sub" data-sec="markets" data-page="fx" id="tab-fx">Currencies</button>
+    <button class="gm-sub" data-sec="companies" data-page="calls" id="tab-calls">Earnings calls</button>
+    <button class="gm-sub" data-sec="companies" data-page="profile" id="tab-profile">Company profile</button>
     <button class="gm-sub" data-sec="evidence" data-page="scorecard" id="tab-scorecard">Model scorecard</button>
     <span class="gm-subl" data-sec="evidence">Allocation</span>
     <button class="gm-sub" data-sec="evidence" data-page="sbbt" id="tab-sbbt">Stocks vs bonds</button>
@@ -521,6 +527,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <div class="td-2">
       <div>
         <h3 class="gm-h3" id="td-ahead-h">Looking ahead: the next ten days</h3>
+        <div class="td-filters" id="td-ahead-f"><span class="gm-seg" id="td-f-kind"></span><span class="gm-seg" id="td-f-imp"></span><span class="gm-seg" id="td-f-reg"></span><span class="gm-seg" id="td-f-win"></span><span class="gm-seg" id="td-f-size" title="Earnings: company size"></span><input id="td-f-q" type="search" placeholder="Search events" aria-label="Search events"><button type="button" class="gm-linkbtn" id="td-f-reset">Reset</button><span class="gm-note" id="td-f-count"></span></div>
         <div id="td-ahead" data-source="today_ahead">—</div>
       </div>
       <div>
@@ -1811,6 +1818,211 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
       </div>
     </div>
   </section>
+
+  <style>
+    .x-up { color: var(--color-ok); } .x-dn { color: var(--color-bad); } .x-fail { color: var(--color-bad); }
+    .x-svg { display: block; overflow: visible; font-family: var(--font-anthropic-sans); }
+    .x-axis text { fill: var(--color-fg-muted); font-size: 11px; } .x-axis path, .x-axis line { stroke: var(--cds-chart-axis); }
+    .x-grid line { stroke: var(--cds-chart-grid); } .x-ref { stroke: var(--cds-chart-reference, var(--cds-chart-axis)); stroke-dasharray: 3 3; }
+    .x-band { fill: var(--color-panel); } .x-cross { stroke: var(--color-fg-muted); stroke-width: 1; }
+    .x-lab { font-size: 11px; } .x-lab2 { font-size: 11px; fill: var(--color-fg); }
+    .x-tip { position: fixed; z-index: 50; pointer-events: none; background: var(--cds-surface-popover); box-shadow: var(--cds-shadow-popover); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 9px; font: 12px/1.4 var(--font-anthropic-sans); color: var(--color-fg); max-width: 320px; }
+    .x-tip-h { color: var(--color-fg-muted); margin-bottom: 2px; }
+    .x-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--color-fg-muted); margin-top: 4px; } .x-legend i { display: inline-block; width: 10px; height: 3px; margin-right: 5px; vertical-align: middle; }
+    .x-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: var(--cds-gap-md); }
+    .x-card { appearance: none; text-align: left; font: inherit; color: inherit; background: none; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; min-width: 0; }
+    .x-card:hover, .x-card-on { border-color: var(--gm-blue); } .x-card-on { box-shadow: inset 0 0 0 1px var(--gm-blue); }
+    .x-card-h { display: flex; justify-content: space-between; gap: 8px; font-size: var(--cds-font-size-body); } .x-card-t { font-weight: var(--cds-font-weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .x-card-v { color: var(--color-fg-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .x-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: var(--cds-gap-sm) var(--cds-gap-md); }
+    .x-tile { border-left: 1px solid var(--color-border-line); padding-left: var(--cds-pad-sm); display: grid; gap: 1px; }
+    .x-tile-k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); } .x-tile-v { font-family: var(--font-anthropic-serif); font-size: 20px; font-variant-numeric: tabular-nums; } .x-tile-s { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+    .x-dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 8px 0 0; font-size: var(--cds-font-size-body); } .x-dl dt { color: var(--color-fg-muted); } .x-dl dd { margin: 0; }
+    .x-search { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; } .x-search input { font: inherit; padding: 6px 9px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); min-width: min(100%, 260px); }
+    .x-chips { display: flex; flex-wrap: wrap; gap: 6px; } .x-chip { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); padding: 3px 9px; border: 1px solid var(--color-border-line); border-radius: 999px; background: none; color: var(--color-fg-muted); cursor: pointer; } .x-chip[aria-pressed="true"] { background: var(--color-panel); color: var(--color-fg); border-color: var(--color-fg-muted); }
+    .x-click { cursor: pointer; } .x-click:hover td { background: var(--color-panel); }
+    .x-heat { background: color-mix(in srgb, var(--gm-blue) calc(var(--h, 0) * 55%), transparent); }
+    .x-cm { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: var(--cds-gap-lg); align-items: start; }
+    @media (max-width: 760px) { .x-cm { grid-template-columns: 1fr; } }
+    .x-cm-list { display: grid; gap: 4px; max-height: 70vh; overflow: auto; }
+    .x-cm-item { appearance: none; text-align: left; font: inherit; color: inherit; background: none; border: 0; border-left: 2px solid transparent; padding: 6px 10px; cursor: pointer; display: grid; gap: 1px; }
+    .x-cm-item:hover { background: var(--color-panel); } .x-cm-on { border-left-color: var(--gm-blue); background: var(--color-panel); }
+    .x-cm-kind { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; text-transform: uppercase; } .x-cm-title { font-size: var(--cds-font-size-body); } .x-cm-date { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+    .x-cm-h { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.15; margin: 2px 0 6px; }
+    .x-md { max-width: 80ch; font-size: 15px; line-height: 1.6; } .x-md h4 { margin: 1.2em 0 .3em; } .x-md p { margin: 0 0 .8em; } .x-md ul, .x-md ol { margin: 0 0 .9em; padding-left: 1.2em; } .x-md li { margin: .25em 0; }
+    .x-md h3 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 21px; margin: 1.5em 0 .45em; } .x-md h4 { font-size: 16px; font-weight: var(--cds-font-weight-medium); }
+    .x-md .gm-table th, .x-md .gm-table td { text-align: left; white-space: normal; vertical-align: top; } .x-md .gm-table td.gm-num, .x-md .gm-table th.gm-num { text-align: right; white-space: nowrap; }
+    .td-table th, .td-table td { text-align: left; } .td-table td.gm-num, .td-table th.gm-num { text-align: right; }
+    .x-md blockquote { margin: .8em 0; padding-left: 12px; border-left: 2px solid var(--gm-blue); color: var(--color-fg-muted); } .x-md .gm-tablewrap { margin: .6em 0 1em; }
+    .td-filters { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 4px 0 8px; } .td-filters input { font: inherit; font-size: var(--cds-font-size-caption); padding: 4px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); width: 140px; }
+    .td-hi { font-weight: var(--cds-font-weight-medium); }
+    .gm-table th.x-txt, .gm-table td.x-txt { text-align: left; }
+    .x-more summary { cursor: pointer; color: var(--gm-blue); font-size: var(--cds-font-size-caption); margin-top: 4px; }
+  </style>
+
+  <section class="gm-page" id="commentary" role="tabpanel" hidden>
+    <template id="tpl-commentary">
+      <div class="gm-block">
+        <div class="gm-hrow"><h2 class="gm-h2">Commentary</h2><span class="gm-seg" id="cm-kind"></span></div>
+        <p class="gm-note">Week in Review after Friday’s close, The Week Ahead on Sunday afternoons, Month in Review and Quarter in Review after each period’s last close. Written by Claude from the dashboard’s data; not investment advice.</p>
+      </div>
+      <div class="x-cm">
+        <nav class="x-cm-list" id="cm-list" aria-label="Archive" data-source="commentary"></nav>
+        <article id="cm-read" data-source="commentary"></article>
+      </div>
+    </template>
+  </section>
+
+  <section class="gm-page" id="reltrend" role="tabpanel" hidden>
+    <template id="tpl-reltrend">
+      <div class="gm-block">
+        <div class="gm-hrow"><h2 class="gm-h2">Relative trends: the model against the market</h2><span class="gm-seg" id="rt-range"></span></div>
+        <div class="gm-seg gm-presets" id="rt-dim"></div>
+        <p class="gm-note" id="rt-dim-note"></p>
+      </div>
+      <div class="gm-grid2">
+        <div class="gm-block">
+          <h3 class="gm-h3" id="rt-focus-h">—</h3>
+          <div class="gm-chart" id="rt-focus" data-source="sleeve_series score_history etf_weekly" style="min-height:420px"></div>
+        </div>
+        <div class="gm-block">
+          <h3 class="gm-h3">What the history says</h3>
+          <ul class="gm-bul" id="rt-facts" data-source="sleeve_series etf_weekly"></ul>
+        </div>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">Every sleeve in this dimension</h3>
+        <p class="gm-note">Top line: score; bottom line: relative price. Click a card to enlarge it.</p>
+        <div class="x-cards" id="rt-grid" data-source="sleeve_series score_history etf_weekly etf_universe"></div>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">Scores, relative returns and whether the score led</h3>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="rt-table" data-source="sleeve_series score_history etf_weekly"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </template>
+  </section>
+
+  <section class="gm-page" id="credit" role="tabpanel" hidden>
+    <template id="tpl-credit">
+      <div class="gm-block">
+        <div class="gm-hrow"><h2 class="gm-h2">Inflation, real yields and credit</h2><span class="gm-note" id="cr-asof" data-source="rates_credit"></span></div>
+        <ul class="gm-bul" id="cr-notes" data-source="rates_credit"></ul>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">Inflation breakevens and real yields</h3><span class="gm-seg" id="cr-range"></span></div>
+        <div class="gm-grid2">
+          <div><h4 class="gm-h4">Breakeven inflation</h4><div class="gm-chart" id="cr-be" data-source="rates_credit"></div></div>
+          <div><h4 class="gm-h4">TIPS real yields</h4><div class="gm-chart" id="cr-ry" data-source="rates_credit"></div></div>
+        </div>
+        <h4 class="gm-h4">The 10-year Treasury: real yield plus breakeven inflation</h4>
+        <div class="gm-chart" id="cr-dec" data-source="rates_credit"></div>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cr-rates" data-source="rates_credit"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note">Changes in basis points. Breakevens are the gap between nominal Treasury and TIPS yields: the inflation the market is paying for, plus a risk premium.</p>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">Credit spreads by rating</h3><span class="gm-seg" id="cr-oas-seg"></span></div>
+        <div class="gm-chart" id="cr-oas" data-source="rates_credit"></div>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cr-spreads" data-source="rates_credit"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note">ICE BofA option-adjusted spreads over Treasuries. FRED publishes the past three years of these series, so ranges and percentiles cover that window. Narrowing spreads show green.</p>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">Returns by credit quality</h3><span class="gm-seg" id="cr-ret-per"></span></div>
+        <div class="gm-chart" id="cr-ret" data-source="rates_credit"></div>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cr-returns" data-source="rates_credit"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note">Total returns of the ICE BofA US corporate (investment grade) and US high yield indexes by rating, in dollars. Volatility is annualized from weekly returns over the past year.</p>
+      </div>
+    </template>
+  </section>
+
+  <section class="gm-page" id="calls" role="tabpanel" hidden>
+    <template id="tpl-calls">
+      <div class="gm-block">
+        <div class="gm-hrow"><h2 class="gm-h2">Earnings calls: what management is telling us</h2><span class="gm-note" id="cl-season" data-source="call_scores"></span></div>
+        <ul class="gm-bul" id="cl-notes" data-source="call_scores call_meta"></ul>
+        <p class="gm-note">Every S&amp;P 500 earnings call since 2014, scored by word lists: tone is positive minus negative words over their total, for the whole call and for the Q&amp;A; uncertainty is uncertain words per 1,000; topics count mentions. Index readings use the membership on each call’s date.</p>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">The week’s most important calls, read by Claude</h3>
+        <div id="cl-said" data-source="commentary"></div>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">S&amp;P 500 calls by quarter</h3><span class="gm-seg" id="cl-metric"></span></div>
+        <div class="gm-chart" id="cl-trend" data-source="call_scores"></div>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">What companies are talking about</h3>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cl-heat" data-source="call_scores"><thead></thead><tbody></tbody></table></div>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">By sector, this season</h3>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cl-sectors" data-source="call_scores call_meta"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note">Change is each company’s tone against its own call a year earlier, averaged; click a sector to filter the companies below.</p>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">Companies</h3>
+          <label class="gm-field"><span class="gm-label">Sector</span><select id="cl-sector"></select></label></div>
+        <div class="gm-seg gm-presets" id="cl-mover"></div>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cl-movers" data-source="call_scores call_meta"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note" id="cl-movers-note"></p>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">Call tone by sleeve</h3>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cl-sleeves" data-source="call_sleeves"><thead></thead><tbody></tbody></table></div>
+      </div>
+      <div class="gm-block">
+        <h3 class="gm-h3">Has call tone predicted anything?</h3>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="cl-tests" data-source="call_tests"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </template>
+  </section>
+
+  <section class="gm-page" id="profile" role="tabpanel" hidden>
+    <template id="tpl-profile">
+      <div class="gm-block">
+        <div class="x-search"><input id="cp-in" list="cp-list" placeholder="Ticker or company name" aria-label="Find a company" autocomplete="off"><datalist id="cp-list"></datalist><button type="button" class="gm-btn" id="cp-go">Open</button></div>
+        <div class="x-chips" id="cp-quick" style="margin-top:8px"></div>
+        <p class="gm-note" id="cp-msg" data-source="profiles"></p>
+      </div>
+      <div id="cp-body">
+        <div class="gm-block">
+          <h2 class="gm-h2 x-cm-h" id="cp-name">—</h2>
+          <p class="gm-note" id="cp-sub"></p>
+          <div class="x-tiles" id="cp-tiles" data-source="profiles constituents"></div>
+        </div>
+        <div class="gm-grid2">
+          <div class="gm-block">
+            <div class="gm-hrow"><h3 class="gm-h3">Five years of prices</h3><span class="gm-seg" id="cp-rel"></span></div>
+            <div class="gm-chart" id="cp-px" data-source="profiles etf_weekly"></div>
+          </div>
+          <div class="gm-block"><h3 class="gm-h3">About</h3><div id="cp-about" data-source="profiles"></div></div>
+        </div>
+        <div class="gm-grid2">
+          <div class="gm-block"><h3 class="gm-h3">Revenue, with consensus ahead</h3><div class="gm-chart" id="cp-rev" data-source="profiles"></div></div>
+          <div class="gm-block"><h3 class="gm-h3">Earnings per share, with consensus ahead</h3><div class="gm-chart" id="cp-eps" data-source="profiles"></div></div>
+        </div>
+        <div class="gm-block"><h3 class="gm-h3">Margins</h3><div class="gm-chart" id="cp-margins" data-source="profiles"></div></div>
+        <div id="cp-full">
+          <div class="gm-grid2">
+            <div class="gm-block"><h3 class="gm-h3">Revenue by quarter</h3><div class="gm-chart" id="cp-q" data-source="profiles"></div><p class="gm-note" id="cp-q-note"></p></div>
+            <div class="gm-block"><h3 class="gm-h3">Balance sheet, latest year</h3><div class="x-tiles" id="cp-bal" data-source="profiles"></div></div>
+          </div>
+          <div class="gm-block"><h3 class="gm-h3">Cash flow and shareholder returns</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-cash" data-source="profiles"><thead></thead><tbody></tbody></table></div></div>
+          <div class="gm-block"><h3 class="gm-h3">Earnings against expectations</h3><p class="gm-note" id="cp-next"></p><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-earn" data-source="profiles"><thead></thead><tbody></tbody></table></div></div>
+          <div class="gm-grid2">
+            <div class="gm-block"><h3 class="gm-h3">Valuation and returns on capital by year</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-km" data-source="profiles"><thead></thead><tbody></tbody></table></div></div>
+            <div class="gm-block"><h3 class="gm-h3">Consensus estimates</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-est" data-source="profiles"><thead></thead><tbody></tbody></table></div></div>
+          </div>
+          <div class="gm-block" id="cp-calls-wrap">
+            <h3 class="gm-h3">Earnings-call tone</h3><p class="gm-note" id="cp-calls-note"></p>
+            <div class="gm-grid2"><div class="gm-chart" id="cp-calls" data-source="call_scores"></div><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-topics" data-source="call_scores"><thead></thead><tbody></tbody></table></div></div>
+          </div>
+          <div class="gm-grid2">
+            <div class="gm-block"><h3 class="gm-h3">Where it sits in the universe</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-funds" data-source="profiles score_history"><thead></thead><tbody></tbody></table></div></div>
+            <div class="gm-block"><h3 class="gm-h3">Peers</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="cp-peers" data-source="profiles constituents"><thead></thead><tbody></tbody></table></div></div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </section>
 </div>
 
 <script src="world.js"></script>
@@ -1819,3 +2031,9 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <script src="app.js"></script>
 <script src="app2.js"></script>
 <script src="pulse.js"></script>
+<script src="x_core.js"></script>
+<script src="x_rates.js"></script>
+<script src="x_rel.js"></script>
+<script src="x_calls.js"></script>
+<script src="x_profile.js"></script>
+<script src="x_comm.js"></script>

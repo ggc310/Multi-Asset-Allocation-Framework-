@@ -29,7 +29,7 @@ dash.loader('today_px', {
 });
 
 dash.loader('today_news', {
-  description: 'Keeps the latest general market headlines from FMP with their source, time and link, and tags each by the market it is about from words in the headline.',
+  description: 'Keeps the latest general market headlines from FMP from major financial news outlets only (WSJ, CNBC, Bloomberg, Reuters, Fox Business, ZeroHedge, MarketWatch, Barron’s, FT and similar), newest first, with source, time and link, and tags each by the market it is about from words in the headline.',
   fn: ({ answer }) => {
     const TAGS = [
       ['Rates & Fed', /\b(fed|fomc|powell|treasur|yield|bond|rate cut|rate hike|inflation|cpi|pce)\b/i],
@@ -40,10 +40,21 @@ dash.loader('today_news', {
       ['Policy & geopolitics', /\b(tariff|trade|china|sanction|war|iran|russia|ukraine|white house|trump|congress|election|shutdown)\b/i],
       ['Equities', /\b(stocks?|s&p|nasdaq|dow|shares|equit|rally|selloff|sell-off|market)\b/i],
     ];
-    return tdRows(answer).filter((r) => r.title && r.url).map((r) => {
+    // major financial outlets only: domain -> name shown
+    const OUTLETS = { 'wsj.com': 'WSJ', 'cnbc.com': 'CNBC', 'bloomberg.com': 'Bloomberg', 'zerohedge.com': 'ZeroHedge', 'foxbusiness.com': 'Fox Business', 'reuters.com': 'Reuters',
+      'marketwatch.com': 'MarketWatch', 'barrons.com': 'Barron’s', 'ft.com': 'Financial Times', 'nytimes.com': 'New York Times', 'investors.com': 'IBD', 'apnews.com': 'AP', 'axios.com': 'Axios', 'economist.com': 'The Economist' };
+    const outlet = (r) => {
+      let h = String(r.site || '').toLowerCase();
+      try { h = new URL(r.url).hostname.toLowerCase(); } catch (e) { /* keep site */ }
+      const d = Object.keys(OUTLETS).find((k) => h === k || h.endsWith('.' + k) || String(r.site || '').toLowerCase() === k);
+      return d ? OUTLETS[d] : null;
+    };
+    const seen = new Set();
+    return tdRows(answer).filter((r) => r.title && r.url && outlet(r)).map((r) => {
       const t = TAGS.find(([, re]) => re.test(r.title + ' ' + (r.text || '').slice(0, 160)));
-      return { published: String(r.publishedDate), title: r.title, site: r.site || r.publisher || '', url: r.url, tag: t ? t[0] : 'Markets' };
-    });
+      return { published: String(r.publishedDate), title: r.title, site: outlet(r), url: r.url, tag: t ? t[0] : 'Markets' };
+    }).filter((r) => { const k = r.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60); if (seen.has(k)) return false; seen.add(k); return true; })
+      .sort((a, b) => (a.published < b.published ? 1 : a.published > b.published ? -1 : 0));
   },
 });
 
@@ -226,21 +237,21 @@ dash.calc('today_summary', {
 dash.calc('today_ahead', {
   inputs: ['calendar_live', 'today_earnings'],
   title: 'Week ahead',
-  description: 'High-impact economic releases from today through the next ten days for the US, euro area, UK, Japan and China, and the largest US companies reporting earnings in the same window, in date order.',
+  description: 'Economic releases (high and medium impact, 15 major economies) from today through the next ten days, and the largest US companies reporting earnings in the same window, in date order; the page filters them by type, impact, region, date and company size.',
   fn: (calendar_live, today_earnings) => {
   const today = new Date().toISOString().slice(0, 10);
-  const KEEP = new Set(['US', 'EU', 'UK', 'JP', 'CN', 'DE']);
   const out = [];
   for (const r of calendar_live) {
     const d = String(r.date).slice(0, 10);
-    if (d < today || r.impact !== 'High' || !KEEP.has(r.country)) continue;
-    out.push({ date: d, kind: 'Data', what: `${r.country} ${r.event}`, detail: r.estimate != null && r.estimate !== '' ? `expected ${r.estimate}${r.unit || ''}, previous ${r.previous ?? '—'}${r.unit || ''}` : `previous ${r.previous ?? '—'}${r.unit || ''}` });
+    if (d < today) continue;
+    const t = String(r.date).length > 10 ? String(r.date).slice(11, 16) : '';
+    out.push({ date: d, time: t, kind: 'Data', country: r.country, impact: r.impact, what: `${r.country} ${r.event}`, detail: r.estimate != null && r.estimate !== '' ? `expected ${r.estimate}${r.unit || ''}, previous ${r.previous ?? '—'}${r.unit || ''}` : `previous ${r.previous ?? '—'}${r.unit || ''}`, marketCap: null });
   }
   for (const r of today_earnings) {
     if (r.reported || r.date < today) continue;
-    out.push({ date: r.date, kind: 'Earnings', what: `${r.name} (${r.symbol})`, detail: `$${(r.marketCap / 1e9).toFixed(0)}bn company` + (r.epsEstimated != null ? `, EPS expected ${r.epsEstimated.toFixed(2)}` : '') });
+    out.push({ date: r.date, time: '', kind: 'Earnings', country: 'US', impact: r.marketCap >= 1e11 ? 'High' : 'Medium', what: `${r.name} (${r.symbol})`, detail: `$${(r.marketCap / 1e9).toFixed(0)}bn company` + (r.epsEstimated != null ? `, EPS expected ${r.epsEstimated.toFixed(2)}` : ''), marketCap: r.marketCap });
   }
-  return out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.kind < b.kind ? -1 : 1)).slice(0, 30);
+  return out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.kind < b.kind ? -1 : a.kind > b.kind ? 1 : a.time < b.time ? -1 : 1)).slice(0, 400);
 },
 });
 
@@ -316,26 +327,61 @@ dash.calc('today_ahead', {
     const asof = $('#td-asof'); if (asof && any) asof.textContent = 'Prices to ' + mon(any.asOf) + ', live where markets are open';
   };
 
+  // filters for the calendar: type, impact, region, window, company size and a search box
+  const REG = { US: ['US'], 'Euro area': ['EU', 'DE', 'FR', 'IT'], UK: ['UK'], Japan: ['JP'], China: ['CN'], Canada: ['CA'], Other: ['AU', 'CH', 'BR', 'MX', 'IN', 'KR'] };
+  const AF0 = { kind: 'all', impact: 'High', regions: ['US', 'Euro area', 'UK', 'Japan', 'China'], win: '10', size: '0', q: '' };
+  const AF = { ...AF0, regions: [...AF0.regions] };
+  const segBox = (id, opts, cur, set, multi) => {
+    const box = $(id); if (!box) return;
+    if (!box.dataset.built) {
+      box.replaceChildren(...opts.map(([v, l]) => { const b = el('button', l); b.type = 'button'; b.dataset.v = v; return b; }));
+      box.addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) { set(b.dataset.v); drawAhead(); } });
+      box.dataset.built = '1';
+    }
+    for (const b of box.querySelectorAll('button')) b.setAttribute('aria-pressed', String(multi ? cur.includes(b.dataset.v) : b.dataset.v === cur));
+  };
+  const drawFilters = () => {
+    segBox('#td-f-kind', [['all', 'All'], ['Data', 'Economic data'], ['Earnings', 'Earnings']], AF.kind, (v) => { AF.kind = v; });
+    segBox('#td-f-imp', [['High', 'High impact'], ['Medium', 'High and medium']], AF.impact, (v) => { AF.impact = v; });
+    segBox('#td-f-reg', Object.keys(REG).map((k) => [k, k]), AF.regions, (v) => { AF.regions = AF.regions.includes(v) ? AF.regions.filter((x) => x !== v) : [...AF.regions, v]; }, true);
+    segBox('#td-f-win', [['1', 'Today'], ['3', 'Next 3 days'], ['7', 'Next 7 days'], ['10', 'Next 10 days']], AF.win, (v) => { AF.win = v; });
+    segBox('#td-f-size', [['0', 'All reporting'], ['1e11', '$100bn+'], ['5e11', '$500bn+']], AF.size, (v) => { AF.size = v; });
+    const q = $('#td-f-q');
+    if (q && !q.dataset.built) { q.addEventListener('input', () => { AF.q = q.value; drawAhead(); }); q.dataset.built = '1'; }
+    const rs = $('#td-f-reset');
+    if (rs && !rs.dataset.built) { rs.addEventListener('click', () => { Object.assign(AF, AF0, { regions: [...AF0.regions] }); if (q) q.value = ''; drawAhead(); }); rs.dataset.built = '1'; }
+  };
   const drawAhead = () => {
     const box = $('#td-ahead'); if (!box) return;
+    drawFilters();
     if (!ok('today_ahead')) return placeholder(box);
-    const rows = dash.data('today_ahead').data;
-    if (!rows.length) return placeholder(box, 'No high-impact releases or large-company earnings in the next ten days.');
+    const all = dash.data('today_ahead').data;
+    const today = new Date().toISOString().slice(0, 10);
+    const end = new Date(Date.now() + (Number(AF.win) - 1) * 864e5).toISOString().slice(0, 10);
+    const codes = new Set(AF.regions.flatMap((r) => REG[r]));
+    const q = AF.q.trim().toLowerCase();
+    const rows = all.filter((r) => (AF.kind === 'all' || r.kind === AF.kind)
+      && r.date >= today && r.date <= end
+      && (r.kind === 'Earnings' ? (!AF.regions.length || codes.has('US')) && (r.marketCap || 0) >= Number(AF.size) : codes.has(r.country) && (AF.impact === 'Medium' || r.impact === 'High'))
+      && (!q || (r.what + ' ' + r.detail).toLowerCase().includes(q)));
+    const cnt = $('#td-f-count'); if (cnt) cnt.textContent = `${rows.length} of ${all.length} events`;
+    if (!rows.length) return placeholder(box, 'Nothing matches these filters. Widen the window or add regions.');
     const t = el('table', null, 'gm-table td-table');
     t.dataset.source = 'today_ahead'; t.dataset.rowKey = 'date,what';
     const hr = el('tr');
-    for (const [f, l] of [['date', 'Date'], ['kind', 'Type'], ['what', 'Event'], ['detail', 'Detail']]) { const h = el('th', l); h.dataset.field = f; hr.append(h); }
+    for (const [f, l] of [['date', 'Date'], ['time', 'Time (UTC)'], ['kind', 'Type'], ['impact', 'Impact'], ['what', 'Event'], ['detail', 'Detail']]) { const h = el('th', l); h.dataset.field = f; hr.append(h); }
     const th = el('thead'); th.append(hr); t.append(th);
     const tb = el('tbody');
-    for (const r of rows) {
+    for (const r of rows.slice(0, 80)) {
       const tr = el('tr');
       tr.dataset.key = encodeURIComponent(r.date) + ',' + encodeURIComponent(r.what);
-      tr.append(el('td', r.date, 'gm-num'), el('td', r.kind), el('td', r.what), el('td', r.detail, 'gm-note'));
+      tr.append(el('td', r.date, 'gm-num'), el('td', r.time || '', 'gm-num'), el('td', r.kind), el('td', r.impact, r.impact === 'High' ? 'td-hi' : 'gm-note'), el('td', r.what), el('td', r.detail, 'gm-note'));
       tb.append(tr);
     }
     t.append(tb);
     const w = el('div', null, 'gm-tablewrap td-wrap'); w.append(t);
     box.replaceChildren(w);
+    if (rows.length > 80) box.append(el('p', `First 80 of ${rows.length}; narrow the filters to see the rest.`, 'gm-note'));
   };
 
   const drawReported = () => {
@@ -363,8 +409,10 @@ dash.calc('today_ahead', {
   const drawNews = () => {
     const box = $('#td-news'); if (!box) return;
     if (!ok('today_news')) return placeholder(box);
-    const rows = dash.data('today_news').data.slice(0, 15);
-    if (!rows.length) return placeholder(box, 'No headlines from FMP right now.');
+    // newest first, at most five from any one outlet so no single source crowds the list
+    const per = {};
+    const rows = dash.data('today_news').data.filter((r) => (per[r.site] = (per[r.site] || 0) + 1) <= 5).slice(0, 20);
+    if (!rows.length) return placeholder(box, 'No headlines from the major financial outlets right now.');
     box.replaceChildren(...rows.map((r) => {
       const li = el('li');
       li.append(el('span', r.tag, 'td-tag'));
