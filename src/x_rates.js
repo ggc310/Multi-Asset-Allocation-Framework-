@@ -102,5 +102,6 @@
       { t: '3Y a year', num: true, f: ([k]) => pct(ann(ser['tr_' + k], 3)) }, { t: 'Volatility, 1Y', num: true, f: ([k]) => pct(vol1y(ser['tr_' + k]), 1, false) },
       { t: 'Spread now', num: true, f: ([k]) => (ser['oas_' + k] ? Math.round(last(ser['oas_' + k])[1] * 100) + 'bp' : '—') },
     ], BK);
+    if (window.GMX_GY) window.GMX_GY(sec);   // government bond yields abroad (x_gyield.js)
   });
 })();

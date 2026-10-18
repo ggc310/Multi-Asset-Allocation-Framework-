@@ -21,7 +21,7 @@
     'Regions': [['ACWX', 'SPY', 'Global ex-US vs US'], ['EFA', 'SPY', 'Intl developed vs US'], ['EEM', 'EFA', 'Emerging vs developed'], ['EEM', 'SPY', 'Emerging vs US'], ['EMXC', 'MCHI', 'EM ex-China vs China']],
   };
   const LEVERS = { duration: ['TLT', 'SHY', 'Duration: long vs short Treasuries'], ig: ['LQD', 'IEF', 'IG credit vs Treasuries'], hy: ['HYG', 'IEI', 'High yield vs Treasuries'], mbs: ['MBB', 'IEF', 'Agency MBS vs Treasuries'],
-    emd: ['EMB', 'IEF', 'EM dollar debt vs Treasuries'], tips: ['TIP', 'IEI', 'TIPS vs nominal Treasuries'], fx: ['EMLC', 'SHY', 'EM local currency vs short Treasuries'] };
+    emd: ['EMB', 'IEF', 'EM dollar debt vs Treasuries'], tips: ['TIP', 'IEI', 'TIPS vs nominal Treasuries'], fx: ['EMLC', 'SHY', 'EM local currency vs short Treasuries'], intl: ['BNDX', 'IEF', 'International bonds (hedged) vs Treasuries'] };
   const DIMS = [['Asset allocation', 'Asset allocation'], ...Object.keys(PAIR_DIMS).map((k) => [k, k]), ...Object.keys(BENCH).map((k) => [k, k]), ['Real assets', 'Real assets'], ['Currencies', 'Currencies']];
   const FWD = [6, 12, 24, 36], BACK = [1, 3, 6, 12, 24, 36];
   const MODEL_DIMS = new Set(['Asset allocation', 'Real assets', 'Currencies']);
