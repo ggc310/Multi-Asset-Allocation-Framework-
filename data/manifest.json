@@ -502,14 +502,14 @@
    "title": "Currency models",
    "description": "Cyclical (rates, carry, growth, trend, positioning, risk) and long-term (real exchange rate value, real rates) scores for 14 currencies, the dollar index and an EM basket, with suggested hedge ratios, signal rank correlations and a monthly backtest. Built by Claude from FMP forex prices, Treasury and policy rates, CPI, surprises and CFTC positioning.",
    "updated": {
-    "at": "2026-10-18T22:41:25Z",
+    "at": "2026-10-18T23:02:42Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fx_model.json",
-   "blob": "906b522c45b3949a0881b722a33141a6"
+   "blob": "7453bdc6c143b9f455d41b62a84823c4"
   },
   "fx_stats": {
    "title": "Currencies against the dollar",
@@ -612,14 +612,14 @@
    "title": "Macro state and regime",
    "description": "Growth, inflation and financial conditions scored against their own history from FMP economic indicators, the economic calendar, CPI, policy rate decisions, Treasury rates and market prices; the regime probabilities, the latest releases and surprises, the coming week's calendar, policy rates and monthly history since 2001. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-18T23:02:42Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/macro_state.json",
-   "blob": "79f98fd9ab99afdd9f2941e6f007d9c8"
+   "blob": "efe31e85590bc636748377dcef69d4ac"
   },
   "model_bt": {
    "title": "Model backtests: real assets and the models together",
@@ -858,14 +858,14 @@
    "title": "Economic surprises",
    "description": "Weekly growth and inflation surprise indices by region since mid-2014: each release's actual against consensus from the FMP economic calendar, scaled by that indicator's own surprise history and smoothed. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-18T23:02:42Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/surprise.json",
-   "blob": "71539d7f5aee70daad083b9feafa169f"
+   "blob": "2c9770aebc7fafc5cf3b42acee2c667d"
   },
   "today_earnings": {
    "title": "Large-company earnings",

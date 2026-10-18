@@ -2002,7 +2002,12 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     .x-view-b { padding: 2px 4px 14px 18px; }
     .x-view-g { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 4px 24px; }
     .x-view-c .gm-bul { margin-top: 2px; } .x-view-c .gm-bul li { font-size: 13px; }
-    .x-dh4 { font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .03em; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); margin: 10px 0 2px; }
+    .x-rt-hz { gap: 6px 10px; flex-wrap: wrap; justify-content: flex-start; }
+.x-r2t td.x-r2c { text-align: right; font-variant-numeric: tabular-nums; }
+.x-r2t tr.x-r2-row td:first-child, .x-r2t tr.x-r2-read td:first-child { font-weight: 600; }
+.x-r2t td.x-r2-sel { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+.x-r2t th.x-r2-on { color: var(--color-fg); font-weight: 600; }
+.x-dh4 { font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .03em; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); margin: 10px 0 2px; }
     .x-sup .x-dh4 { color: var(--color-ok); } .x-weak .x-dh4 { color: var(--color-bad); } .x-cov .x-dh4 { color: var(--color-warn); }
     .x-dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: var(--cds-gap-lg); }
     .x-dgrid .gm-block { margin: 0; align-content: start; }
@@ -2101,13 +2106,20 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         </div>
         <div class="gm-block">
           <div class="gm-hrow"><h3 class="gm-h3">How predictive has it been?</h3><span id="rt-verdict" class="x-dchip"></span></div>
+          <div class="gm-hrow x-rt-hz"><span class="gm-label">Forward</span><span class="gm-seg" id="rt-fwd" aria-label="Forward horizon"></span><span class="gm-label">Trailing</span><span class="gm-seg" id="rt-back" aria-label="Trailing horizon"></span></div>
           <ul class="gm-bul" id="rt-facts" data-source="sleeve_series etf_weekly"></ul>
-          <h4 class="x-dh4">Next 12 months, by fifth of the reading</h4>
+          <h4 class="x-dh4" id="rt-bk-h">Next 12 months, by fifth of the reading</h4>
           <div class="gm-chart" id="rt-buckets" style="min-height:0"></div>
-          <p class="gm-note">Each bar is the average relative return over the following 12 months after months in that fifth of the reading&rsquo;s own history; the label is how often it won. The outlined bar holds today&rsquo;s reading. A model with an edge shows bars rising from left to right.</p>
-          <h4 class="x-dh4">Every month: reading against what followed</h4>
+          <p class="gm-note">Each bar is the average relative return over the following forward horizon after months in that fifth of the reading&rsquo;s own history; the label is how often it won. The outlined bar holds today&rsquo;s reading. A model with an edge shows bars rising from left to right.</p>
+          <h4 class="x-dh4" id="rt-sc-h">Every month: reading against what followed</h4>
           <div class="gm-chart" id="rt-scatter" style="min-height:0"></div>
           <p class="gm-note">Dark dots are the last three years. The dashed line is the fitted slope; the orange line marks today&rsquo;s reading.</p>
+          <h4 class="x-dh4">R² against forward relative returns</h4>
+          <div class="gm-tablewrap"><table class="gm-table gm-compact gm-static x-r2t" id="rt-r2" data-source="sleeve_series etf_weekly"><thead></thead><tbody></tbody></table></div>
+          <p class="gm-note">How much of the variation in the next 6 to 36 months&rsquo; relative return a straight line through each predictor explains. + means higher values were followed by better relative returns (for trailing returns, the trend persisted); &minus; means they reversed. Click a trailing row to plot it below. Longer horizons overlap heavily, which flatters R².</p>
+          <h4 class="x-dh4" id="rt-sc2-h">Trailing relative return against what followed</h4>
+          <div class="gm-chart" id="rt-scatter2" style="min-height:0"></div>
+          <p class="gm-note" id="rt-sc2-note"></p>
         </div>
       </div>
       <div class="gm-block">
