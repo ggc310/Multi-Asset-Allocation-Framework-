@@ -31,10 +31,13 @@ window.GMX = (() => {
 
   // a segmented control: <span class="gm-seg" id=..><button data-v=..>
   const seg = (box, opts, cur, onPick) => {
-    if (!box.dataset.built) {
+    if (!box) return;
+    box._pick = onPick;
+    const sig = opts.map(([v, l]) => v + '=' + l).join('|');
+    if (box.dataset.built !== sig) {
       box.replaceChildren(...opts.map(([v, l]) => { const b = el('button', l); b.type = 'button'; b.dataset.v = v; return b; }));
-      box.addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) onPick(b.dataset.v); });
-      box.dataset.built = '1';
+      if (!box._wired) { box.addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b && box._pick) box._pick(b.dataset.v); }); box._wired = true; }
+      box.dataset.built = sig;
     }
     for (const b of $$('button', box)) b.setAttribute('aria-pressed', String(b.dataset.v === String(cur)));
   };
@@ -75,18 +78,43 @@ window.GMX = (() => {
   const PAL = ['var(--gm-blue)', 'var(--gm-blue3)', '#c2410c', '#7c3aed', '#0f766e', '#a16207', '#be185d', '#475569', '#16a34a', '#dc2626'];
 
   // line chart: series [{name, color, pts: [[Date, v]], dash}], opts {h, fmt, yfmt, ref, zero, labels, band:[lo,hi]}
+  // time frame: o.range = a key; adds 1M…Max buttons above the chart, filtering every series to the window
+  const RANGES = [['1M', 1 / 12], ['3M', 0.25], ['6M', 0.5], ['YTD', 'ytd'], ['1Y', 1], ['3Y', 3], ['5Y', 5], ['10Y', 10], ['Max', null]];
+  const rangeState = {};
+  const cutoff = (last, r) => { if (r == null) return null; if (r === 'ytd') return new Date(Date.UTC(last.getUTCFullYear() - 1, 11, 31, 12)); return new Date(last.getTime() - r * 365.25 * 864e5); };
+  const rangeBar = (box, key, series, onPick, dflt) => {
+    const all = series.flatMap((s) => s.pts || []); if (!all.length) return null;
+    const lo = d3.min(all, (p) => p[0]), hi = d3.max(all, (p) => p[0]), yrs = (hi - lo) / (365.25 * 864e5);
+    const opts = RANGES.filter(([, r]) => r == null || r === 'ytd' || r < yrs + 0.02);
+    let cur = rangeState[key] || dflt || 'Max'; if (!opts.some(([l]) => l === cur)) cur = 'Max';
+    const bar = el('span', null, 'gm-seg x-range'); bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Time frame');
+    for (const [l] of opts) { const b = el('button', l); b.type = 'button'; b.setAttribute('aria-pressed', String(l === cur)); b.addEventListener('click', () => { rangeState[key] = l; onPick(); }); bar.append(b); }
+    const r = (RANGES.find(([l]) => l === cur) || [])[1];
+    return { bar, from: cutoff(hi, r), cur };
+  };
   const line = (box, series, o = {}) => {
+    if (o.range && !o._inner) {
+      const rb = rangeBar(box, o.range, series, () => line(box, series, o), o.rangeDefault);
+      if (!rb) return line(box, series, { ...o, _inner: true });
+      const row = el('div', null, 'x-rangerow'); row.append(rb.bar);
+      const inner = el('div');
+      box.replaceChildren(row, inner);
+      const cut = (s) => ({ ...s, pts: rb.from ? s.pts.filter((p) => p[0] >= rb.from) : s.pts });
+      let ss = series.map(cut);
+      if (o.rebase) ss = ss.map((s) => { const b = s.pts.find((p) => p[1] > 0); return { ...s, pts: b ? s.pts.map((p) => [p[0], (100 * p[1]) / b[1]]) : [] }; });
+      return line(inner, ss, { ...o, _inner: true });
+    }
     series = series.filter((s) => s.pts && s.pts.length);
     if (!series.length) return placeholder(box, o.empty || 'No data for this range.');
-    const W = Math.max(280, box.clientWidth || 600), H = o.h || 260, m = { t: 12, r: o.labels === false ? 14 : 96, b: 24, l: 44 };
+    const W = Math.max(280, box.clientWidth || 600), H = o.h || 260, labW = d3.max(series, (s) => String(s.name).length + 7) * 6.2, m = { t: 12, r: o.labels === false ? 14 : Math.max(96, Math.min(labW, W * 0.3)), b: 24, l: 44 };
     const all = series.flatMap((s) => s.pts);
     const x = d3.scaleUtc().domain(o.xdom || d3.extent(all, (p) => p[0])).range([m.l, W - m.r]);
     let [lo, hi] = d3.extent(all, (p) => p[1]);
     if (o.ref != null) { lo = Math.min(lo, o.ref); hi = Math.max(hi, o.ref); }
     if (o.ydom) [lo, hi] = o.ydom;
-    const pad = (hi - lo) * 0.06 || 1;
+    const pad = o.ydom ? 0 : (hi - lo) * 0.06 || 1;
     const nt = H < 140 ? 3 : 5;
-    const y = d3.scaleLinear().domain([lo >= 0 && lo - pad < 0 ? 0 : lo - pad, hi + pad]).nice(nt).range([H - m.b, m.t]);
+    const y = o.log && lo > 0 ? d3.scaleLog().domain([lo * 0.95, hi * 1.05]).range([H - m.b, m.t]) : d3.scaleLinear().domain([lo >= 0 && lo - pad < 0 ? 0 : lo - pad, hi + pad]).nice(nt).range([H - m.b, m.t]);
     const yf = o.yfmt || ((v) => d3.format('~g')(v));
     const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('class', 'x-svg').attr('role', 'img').attr('aria-label', o.aria || series.map((s) => s.name).join(', '));
     svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(o.xticks || Math.max(2, Math.floor((W - m.l - m.r) / 90))).tickFormat(o.xfmt ? d3.utcFormat(o.xfmt) : null).tickSizeOuter(0)).attr('class', 'x-axis');
@@ -199,15 +227,34 @@ window.GMX = (() => {
     return out;
   };
 
+  // a list item from text with **bold** markup (critical insight emphasis)
+  const li = (text) => { const e = el('li'); e.append(inline(String(text))); return e; };
+
+  // emphasis for the older pages' insight bullets: bold the lead phrase before the first colon
+  const emphasize = (root) => {
+    for (const item of root.querySelectorAll('ul.gm-bul > li, ul#td-sum > li, ul.td-list > li, .gm-insights .gm-v')) {
+      if (item.dataset.xem === item.textContent || item.querySelector('strong, b, a, button, svg')) continue;
+      const tx = item.textContent, k = tx.indexOf(': ');
+      if (k > 2 && k <= 64 && item.childNodes.length === 1 && item.firstChild.nodeType === 3) {
+        const s = document.createElement('strong'); s.textContent = tx.slice(0, k + 1);
+        item.replaceChildren(s, document.createTextNode(tx.slice(k + 1)));
+      }
+      item.dataset.xem = item.textContent;
+    }
+  };
+  let emT = 0;
+  new MutationObserver(() => { clearTimeout(emT); emT = setTimeout(() => { const r = document.getElementById('dash-root') || document.body; emphasize(r); }, 60); })
+    .observe(document.getElementById('dash-root') || document.body, { childList: true, subtree: true });
+
   // ---- page registry ----
-  const pages = {}, built = {};
+  const pages = {}, built = {}, blocks = {};
   const current = () => document.body.dataset.page || '';
   const draw = () => {
     const p = current(), fn = pages[p];
     if (!fn) return;
     const sec = document.getElementById(p);
     if (!sec || sec.hidden) return;
-    if (!built[p]) { const t = document.getElementById('tpl-' + p); if (t) sec.append(t.content.cloneNode(true)); built[p] = true; }
+    if (!built[p]) { const t = document.getElementById(blocks[p] || 'tpl-' + p); if (t && (!blocks[p] || !sec.querySelector('[data-xblock]'))) sec.append(t.content.cloneNode(true)); built[p] = !!t || !blocks[p]; }
     try { fn(sec); } catch (e) { console.error('GMX page ' + p, e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e); }
   };
   let raf = 0;
@@ -219,5 +266,5 @@ window.GMX = (() => {
   const go = (page) => { const b = document.querySelector(`.gm-sub[data-page="${page}"]`) || document.querySelector(`.gm-tab[data-sec="${page}"]`); if (b) b.click(); };
 
   return { $, $$, el, ok, rows, bad, isNum, pct, pp, bp, fx, money, mon, placeholder, failed, seg, table, tone, line, bars, hbars, md, showTip, hideTip, PAL,
-    page: (id, fn) => { pages[id] = fn; schedule(); }, redraw: schedule, go };
+    page: (id, fn, opt) => { pages[id] = fn; if (opt && opt.block) blocks[id] = opt.block; schedule(); }, redraw: schedule, go, li, rangeBar, cutoff };
 })();

@@ -107,11 +107,11 @@
     const facts = [];
     if (sc.length) facts.push(`${sel.pair ? 'Score gap' : 'Score'} now ${sf(sc[sc.length - 1][1])}, ${isNum(chg(sc, 3)) ? (chg(sc, 3) >= 0 ? 'up ' : 'down ') + Math.abs(chg(sc, 3)).toFixed(0) + ' points over three months' : 'no three-month history'}.`);
     if (rel.length) facts.push(`Relative performance: ${pct(relRet(rel, 3))} over three months, ${pct(relRet(rel, 12))} over a year.`);
-    if (isNum(st.ic)) facts.push(`Did the score lead? Rank correlation between the monthly score and the next 12 months’ relative return: ${fx(st.ic, 2)} over ${st.n} months since 2005 (${Math.abs(st.ic) < 0.1 ? 'little evidence either way' : st.ic > 0 ? 'higher scores were followed by outperformance' : 'higher scores were followed by underperformance'}).`);
-    if (isNum(st.hitHi)) facts.push(`When the ${sel.pair ? 'gap was +10 or more' : 'score was 60 or higher'}, the next 12 months beat the benchmark ${Math.round(st.hitHi * 100)}% of the time (${st.nHi} months, average ${pct(st.avgHi)}).`);
+    if (isNum(st.ic)) facts.push(`**Did the score lead?** Rank correlation between the monthly score and the next 12 months’ relative return: ${fx(st.ic, 2)} over ${st.n} months since 2005 (**${Math.abs(st.ic) < 0.1 ? 'little evidence either way' : st.ic > 0 ? 'higher scores were followed by outperformance' : 'higher scores were followed by underperformance'}**).`);
+    if (isNum(st.hitHi)) facts.push(`When the ${sel.pair ? 'gap was +10 or more' : 'score was 60 or higher'}, the next 12 months **beat the benchmark ${Math.round(st.hitHi * 100)}% of the time** (${st.nHi} months, average ${pct(st.avgHi)}).`);
     if (isNum(st.hitLo)) facts.push(`When it was ${sel.pair ? '−10 or lower' : '40 or lower'}, it lagged ${Math.round(st.hitLo * 100)}% of the time (${st.nLo} months, average ${pct(st.avgLo)}).`);
     facts.push('Scores before the live record are the backtest’s point-in-time scores, monthly; overlapping 12-month windows mean the month counts overstate the independent evidence.');
-    $('#rt-facts', sec).replaceChildren(...facts.map((t) => el('li', t)));
+    $('#rt-facts', sec).replaceChildren(...facts.map(G.li));
 
     // small multiples
     grid.replaceChildren(...list.map((s) => {

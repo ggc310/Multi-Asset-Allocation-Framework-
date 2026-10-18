@@ -78,8 +78,8 @@
       if (!wk.length) return G.placeholder(box, 'No history for ' + bench + '.');
       const rel = px.map(([d, v]) => { const b = at(wk, d); return b ? [d, v / b] : null; }).filter(Boolean);
       const b0 = rel[0][1];
-      G.line(box, [{ name: 'vs ' + bench, pts: rel.map(([d, v]) => [d, (100 * v) / b0]) }], { h: 260, ref: 100, yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(1) });
-    } else G.line(box, [{ name: 'Price', pts: px }], { h: 260, yfmt: (v) => d3.format('~s')(v), fmt: (v) => fx(v, v >= 1000 ? 0 : 2) });
+      G.line(box, [{ name: 'vs ' + bench, pts: rel.map(([d, v]) => [d, v]) }], { h: 260, ref: 100, rebase: true, range: 'cp-px', yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(1) });
+    } else G.line(box, [{ name: 'Price', pts: px }], { h: 260, range: 'cp-px', yfmt: (v) => d3.format('~s')(v), fmt: (v) => fx(v, v >= 1000 ? 0 : 2) });
   };
 
   const statements = (sec, inc, est, cur) => {
@@ -183,7 +183,7 @@
     const calls = G.ok('call_scores') ? G.rows('call_scores').filter((r) => r.symbol === S.sym && !r.missing && isNum(r.tone)).sort((a, b) => (a.date < b.date ? -1 : 1)) : [];
     $('#cp-calls-wrap', sec).hidden = !calls.length;
     if (calls.length) {
-      G.line(callBox, [{ name: 'Whole call', pts: calls.map((r) => [D(r.date), r.tone]) }, { name: 'Q&A', pts: calls.filter((r) => isNum(r.qaTone)).map((r) => [D(r.date), r.qaTone]), dash: '4 3' }], { h: 200, fmt: (v) => fx(v, 3), yfmt: (v) => v.toFixed(2) });
+      G.line(callBox, [{ name: 'Whole call', pts: calls.map((r) => [D(r.date), r.tone]) }, { name: 'Q&A', pts: calls.filter((r) => isNum(r.qaTone)).map((r) => [D(r.date), r.qaTone]), dash: '4 3' }], { h: 200, range: 'cp-calls', fmt: (v) => fx(v, 3), yfmt: (v) => v.toFixed(2) });
       const lastC = calls[calls.length - 1], prev = calls.slice(-9, -1);
       const rowsT = Object.keys(TOPIC).map((k) => ({ k, now: lastC['t_' + k] || 0, avg: prev.length ? d3.mean(prev, (r) => r['t_' + k] || 0) : null })).filter((r) => r.now || r.avg).sort((a, b) => b.now - a.now);
       $('#cp-calls-note', sec).textContent = `Latest call ${G.mon(lastC.date)}: tone ${fx(lastC.tone, 3)}, Q&A ${fx(lastC.qaTone, 3)}, uncertainty ${fx(lastC.unc, 2)} per 1,000 words` + (lastC.t_guide_up > 0 ? '; mentions raising guidance' : '') + (lastC.t_guide_down > 0 ? '; mentions lowering guidance' : '') + '.';

@@ -18,6 +18,7 @@ Live data is fetched at build time and deployed straight to Pages; it is never c
 - **Markets → Inflation, real yields & credit**: FRED breakevens, TIPS real yields, ICE BofA spreads and returns by rating (`rates_credit`, rebuilt by `refresh/fred.py` on full runs).
 - **Decide → Relative trends**: model score vs relative price for every equity dimension and classic pairs.
 - **Companies → Earnings calls** and **Company profile** (top 300 holdings, `profiles`). Any-ticker lookup (`cp_*` datasets) needs Claude's FMP connector, so it works only in the Claude version.
+- **Markets → Compare & correlate** and the **currency pair explorer**: any asset across classes over any time frame (`xasset_weekly` adds weekly history since 2005–07 for non-equity assets). Every time-series chart has a time-frame control.
 - **Today**: event filters; headlines limited to major financial outlets, with Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ RSS feeds merged in by the refresh job.
 
 ## Layout

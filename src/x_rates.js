@@ -52,15 +52,15 @@
     // ---- takeaways ----
     const L = [];
     const be10 = last(ser.be10), ry10 = last(ser.ry10), n10 = last(ser.n10), f55 = last(ser.be5y5y);
-    if (be10) L.push(`10-year breakeven inflation ${pf(be10[1])}: ${bp(chg(ser.be10, '1m'))} over a month, ${bp(chg(ser.be10, '1y'))} over a year; ${Math.round(100 * pctile(ser.be10))}th percentile since ${since(ser.be10)}.` + (f55 ? ` The 5y5y forward, the market's read on longer-run inflation, is ${pf(f55[1])}.` : ''));
-    if (ry10 && n10 && be10) L.push(`The 10-year Treasury at ${pf(n10[1])} splits into a ${pf(ry10[1])} real yield and ${pf(be10[1])} of inflation compensation. Over the past year the real yield moved ${bp(chg(ser.ry10, '1y'))} and breakevens ${bp(chg(ser.be10, '1y'))}, so ${Math.abs(chg(ser.ry10, '1y')) > Math.abs(chg(ser.be10, '1y')) ? 'real rates' : 'inflation expectations'} did more of the work.`);
+    if (be10) L.push(`**10-year breakeven inflation ${pf(be10[1])}**: ${bp(chg(ser.be10, '1m'))} over a month, ${bp(chg(ser.be10, '1y'))} over a year; ${Math.round(100 * pctile(ser.be10))}th percentile since ${since(ser.be10)}.` + (f55 ? ` The 5y5y forward, the market's read on longer-run inflation, is ${pf(f55[1])}.` : ''));
+    if (ry10 && n10 && be10) L.push(`The 10-year Treasury at ${pf(n10[1])} splits into a ${pf(ry10[1])} real yield and ${pf(be10[1])} of inflation compensation. Over the past year the real yield moved ${bp(chg(ser.ry10, '1y'))} and breakevens ${bp(chg(ser.be10, '1y'))}, so **${Math.abs(chg(ser.ry10, '1y')) > Math.abs(chg(ser.be10, '1y')) ? 'real rates' : 'inflation expectations'} did more of the work**.`);
     const ig = last(ser.oas_ig), hy = last(ser.oas_hy), ccc = last(ser.oas_ccc), bb = last(ser.oas_bb);
     const from3 = ig ? new Date(Date.UTC(ig[0].getUTCFullYear() - 3, ig[0].getUTCMonth(), ig[0].getUTCDate())) : null;
-    if (ig && hy) L.push(`Credit spreads: investment grade ${Math.round(ig[1] * 100)}bp (${bp(chg(ser.oas_ig, '1m'))} on the month), high yield ${Math.round(hy[1] * 100)}bp (${bp(chg(ser.oas_hy, '1m'))}); ${Math.round(100 * pctile(ser.oas_ig, from3))}th and ${Math.round(100 * pctile(ser.oas_hy, from3))}th percentiles of the past three years, the history FRED provides.`);
-    if (ccc && bb) L.push(`Quality spread: CCC minus BB at ${Math.round((ccc[1] - bb[1]) * 100)}bp, ${bp(chg(ser.oas_ccc, '3m') - chg(ser.oas_bb, '3m'))} over three months — ${chg(ser.oas_ccc, '3m') - chg(ser.oas_bb, '3m') > 0 ? 'the weakest credits are underperforming' : 'the weakest credits are keeping up'}.`);
+    if (ig && hy) L.push(`**Credit spreads: investment grade ${Math.round(ig[1] * 100)}bp (${bp(chg(ser.oas_ig, '1m'))} on the month), high yield ${Math.round(hy[1] * 100)}bp** (${bp(chg(ser.oas_hy, '1m'))}); ${Math.round(100 * pctile(ser.oas_ig, from3))}th and ${Math.round(100 * pctile(ser.oas_hy, from3))}th percentiles of the past three years, the history FRED provides.`);
+    if (ccc && bb) L.push(`Quality spread: CCC minus BB at ${Math.round((ccc[1] - bb[1]) * 100)}bp, ${bp(chg(ser.oas_ccc, '3m') - chg(ser.oas_bb, '3m'))} over three months — **${chg(ser.oas_ccc, '3m') - chg(ser.oas_bb, '3m') > 0 ? 'the weakest credits are underperforming' : 'the weakest credits are keeping up'}**.`);
     const rr = BUCKETS.map(([k, l]) => ({ l, r: ret(ser['tr_' + k], 'ytd') })).filter((x) => isNum(x.r)).sort((a, b) => b.r - a.r);
-    if (rr.length) L.push(`Year to date by rating: best ${rr[0].l} ${pct(rr[0].r)}, worst ${rr[rr.length - 1].l} ${pct(rr[rr.length - 1].r)}.`);
-    notes.replaceChildren(...L.map((t) => el('li', t)));
+    if (rr.length) L.push(`Year to date by rating: **best ${rr[0].l} ${pct(rr[0].r)}, worst ${rr[rr.length - 1].l} ${pct(rr[rr.length - 1].r)}**.`);
+    notes.replaceChildren(...L.map(G.li));
 
     // ---- long-history charts ----
     G.seg($('#cr-range', sec), [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['10Y', '10Y'], ['All', 'Since 2003']], S.range, (v) => { S.range = v; G.redraw(); });
@@ -82,7 +82,7 @@
     // ---- spreads ----
     const OPT = { ig: ['oas_aaa', 'oas_aa', 'oas_a', 'oas_bbb'], hy: ['oas_bb', 'oas_b', 'oas_ccc'], both: ['oas_ig', 'oas_hy'] };
     G.seg($('#cr-oas-seg', sec), [['ig', 'Investment grade by rating'], ['hy', 'High yield by rating'], ['both', 'IG vs HY']], S.oas, (v) => { S.oas = v; G.redraw(); });
-    G.line(boxes[3], OPT[S.oas].filter((k) => ser[k]).map((k) => ({ name: LAB[k].replace('CCC and lower', 'CCC'), pts: ser[k].map((p) => [p[0], p[1] * 100]) })), { yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(0) + 'bp', h: 240 });
+    G.line(boxes[3], OPT[S.oas].filter((k) => ser[k]).map((k) => ({ name: LAB[k].replace('CCC and lower', 'CCC'), pts: ser[k].map((p) => [p[0], p[1] * 100]) })), { yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(0) + 'bp', h: 240, range: 'cr-oas' });
     const SK = ['oas_ig', 'oas_aaa', 'oas_aa', 'oas_a', 'oas_bbb', 'oas_hy', 'oas_bb', 'oas_b', 'oas_ccc'].filter((k) => ser[k]);
     G.table($('#cr-spreads', sec), [
       { t: 'Spread over Treasuries', f: (k) => LAB[k] }, { t: 'Now', num: true, f: (k) => Math.round(last(ser[k])[1] * 100) + 'bp' },

@@ -302,7 +302,7 @@
    "title": "Commentary",
    "description": "Week in Review, The Week Ahead, Month in Review, Quarter in Review and earnings-call takeaways, written by Claude from this dashboard\u2019s FMP and FRED data. One row per piece: id, kind, title, headline, period, date, asOf, body (Markdown).",
    "updated": {
-    "at": "2026-10-18T19:12:51Z",
+    "at": "2026-10-18T19:14:00Z",
     "by": "Claude"
    },
    "schedule": "Appended by Claude after Friday\u2019s close, on Sunday afternoons, and after each month\u2019s and quarter\u2019s last close",
@@ -767,14 +767,14 @@
    "title": "Inflation, real yields, credit",
    "description": "Treasury breakeven inflation (5-year, 10-year, 5y5y forward), TIPS real yields (5, 10, 30 years), nominal Treasury yields, ICE BofA option-adjusted spreads and total-return indexes for US investment grade and high yield by rating, from FRED. Breakevens and real yields since 2003; ICE series cover the past three years, the history FRED serves.",
    "updated": {
-    "at": "2026-10-18T19:05:00Z",
+    "at": "2026-10-18T19:40:00Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FRED by the weekly refresh (fred.py) and by each commentary run",
    "staleAfterHours": 200,
    "kind": "file",
    "path": "data/files/rates_credit.json",
-   "blob": "2b38ff8cec6c6240a6714faa8f29e7e6"
+   "blob": "8eb8e1b0ce29d2ba345396be64ee6deb"
   },
   "regime_playbook": {
    "title": "Regime playbook",
@@ -922,6 +922,19 @@
    "kind": "file",
    "path": "data/files/weekly_note.json",
    "blob": "a212801aa3224eedd6e933395d220406"
+  },
+  "xasset_weekly": {
+   "title": "Cross-asset weekly history",
+   "description": "Weekly closes since 2005\u201307 for bond ETFs, real-asset and commodity funds, commodity futures, the dollar index, twelve currencies (US dollars per unit), bitcoin, ether and the VIX, from FMP; dividend-adjusted for funds. Long history for the Compare & correlate page and the currency pair explorer.",
+   "updated": {
+    "at": "2026-10-18T19:40:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Rebuilt every Saturday by the weekly refresh (xasset_hist.py)",
+   "staleAfterHours": 360,
+   "kind": "file",
+   "path": "data/files/xasset_weekly.json",
+   "blob": "4a61f657af92ec865d3cc85a87cc022d"
   }
  }
 }

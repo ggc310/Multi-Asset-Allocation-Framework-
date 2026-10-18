@@ -9,7 +9,7 @@ SERIES = {
     # inflation breakevens and real yields (Treasury / Federal Reserve)
     'be5': 'T5YIE', 'be10': 'T10YIE', 'be5y5y': 'T5YIFR',
     'ry5': 'DFII5', 'ry10': 'DFII10', 'ry30': 'DFII30',
-    'n5': 'DGS5', 'n10': 'DGS10', 'n30': 'DGS30',
+    'n3m': 'DGS3MO', 'n2': 'DGS2', 'n5': 'DGS5', 'n10': 'DGS10', 'n30': 'DGS30',
     # option-adjusted spreads, percent (ICE BofA)
     'oas_ig': 'BAMLC0A0CM', 'oas_aaa': 'BAMLC0A1CAAA', 'oas_aa': 'BAMLC0A2CAA', 'oas_a': 'BAMLC0A3CA', 'oas_bbb': 'BAMLC0A4CBBB',
     'oas_hy': 'BAMLH0A0HYM2', 'oas_bb': 'BAMLH0A1HYBB', 'oas_b': 'BAMLH0A2HYB', 'oas_ccc': 'BAMLH0A3HYC',

@@ -450,6 +450,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <button class="gm-sub" data-sec="decide" data-page="outlook" id="tab-outlook">Scenarios</button>
     <button class="gm-sub" data-sec="markets" data-page="multi" id="tab-multi">Multi-asset</button>
     <button class="gm-sub" data-sec="markets" data-page="macro" id="tab-macro">Macro &amp; regime</button>
+    <button class="gm-sub" data-sec="markets" data-page="xlab" id="tab-xlab">Compare &amp; correlate</button>
     <span class="gm-subl" data-sec="markets">Equities</span>
     <button class="gm-sub" data-sec="markets" data-page="overview" id="tab-overview">Pulse</button>
     <button class="gm-sub" data-sec="markets" data-page="short" id="tab-short">Short term</button>
@@ -886,7 +887,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
               <button type="button" data-range="20y" aria-pressed="false">20Y</button>
             </span>
           </div>
-          <div class="gm-chart" id="price-chart" data-source="price_lines"></div>
+          <div data-own-range class="gm-chart" id="price-chart" data-source="price_lines"></div>
           <h3 class="gm-h3" id="hold-h">Largest holdings</h3>
           <div class="gm-tablewrap">
             <table class="gm-table" id="holdings" data-source="holding_view" data-row-key="etf,symbol">
@@ -1107,7 +1108,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <label class="gm-field"><span class="gm-label">Range</span><span class="gm-seg" id="g-range"><button type="button" data-y="1">1Y</button><button type="button" data-y="3">3Y</button><button type="button" data-y="5">5Y</button><button type="button" data-y="10" aria-pressed="true">10Y</button><button type="button" data-y="15">15Y</button><button type="button" data-y="20">20Y</button></span></label>
         <label class="gm-check"><input type="checkbox" id="g-log"> Log scale</label>
       </div>
-      <div class="gm-chart" id="g-chart" data-source="etf_weekly" style="min-height:320px"></div>
+      <div data-own-range class="gm-chart" id="g-chart" data-source="etf_weekly" style="min-height:320px"></div>
       <dl class="gm-takeaways" id="g-notes" data-source="etf_weekly"></dl>
     </div>
     <div class="gm-block">
@@ -1134,7 +1135,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <label class="gm-field"><span class="gm-label">Against</span><select id="t-b"></select></label>
         <label class="gm-field"><span class="gm-label">Window</span><span class="gm-seg" id="t-win"><button type="button" data-win="12" aria-pressed="false">12M</button><button type="button" data-win="24" aria-pressed="false">24M</button><button type="button" data-win="36" aria-pressed="true">36M</button></span></label>
       </div>
-      <div class="gm-chart" id="rs-chart" data-source="monthly" style="min-height:320px"></div>
+      <div data-own-range class="gm-chart" id="rs-chart" data-source="monthly" style="min-height:320px"></div>
       <p class="gm-note" id="rs-note">—</p>
     </div>
     <div class="gm-block">
@@ -1156,7 +1157,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <label class="gm-field"><span class="gm-label">Range</span><span class="gm-seg" id="ts-range"><button type="button" data-y="1">1Y</button><button type="button" data-y="3">3Y</button><button type="button" data-y="5">5Y</button><button type="button" data-y="10" aria-pressed="true">10Y</button><button type="button" data-y="15">15Y</button><button type="button" data-y="20">20Y</button></span></label>
       </div>
       <div class="gm-series-pick" id="ts-picks"></div>
-      <div class="gm-chart" id="ts-chart" data-source="sleeve_series group_series constituent_series" style="min-height:360px"></div>
+      <div data-own-range class="gm-chart" id="ts-chart" data-source="sleeve_series group_series constituent_series" style="min-height:360px"></div>
       <div class="gm-tablewrap"><table class="gm-table gm-static" id="ts-stats" data-source="sleeve_series group_series constituent_series"><thead></thead><tbody></tbody></table></div>
     </div>
     <div class="gm-block">
@@ -1526,6 +1527,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
       </nav>
       <div class="gm-prose">
         <h3 id="m-purpose">Purpose</h3>
+<div class="x-intent" role="note"><p><strong>This is not a systematic investment strategy.</strong> The dashboard exists to synthesize the weight of the evidence — valuation, fundamentals, trend, sentiment, macro, earnings calls and the record of each signal — so that a person can make better-informed decisions. It is intentionally flexible: every model, weight and threshold can be changed, and no output is meant to be followed mechanically.</p><p><strong>It is built to support investor judgment, not to replace it.</strong> Read the scores, model calls and commentary as inputs to a human decision-making process, alongside context the data cannot capture.</p></div>
         <p>This is a relative-opportunity screen for the building blocks of a global equity allocation, from core indexes down to sectors, industries and single countries. It asks one question: over the next 12 to 36 months, which parts of the opportunity set look better or worse supported than the rest? It ranks; it does not forecast returns. Use it to decide where to spend research time and to challenge existing tilts, not as a trading signal.</p>
         <p>Every sleeve is held through a liquid US-listed ETF. Fundamentals come from looking through each ETF to the companies it holds. Prices, trend and several sentiment gauges are live.</p>
 
@@ -1855,9 +1857,77 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     .x-md blockquote { margin: .8em 0; padding-left: 12px; border-left: 2px solid var(--gm-blue); color: var(--color-fg-muted); } .x-md .gm-tablewrap { margin: .6em 0 1em; }
     .td-filters { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 4px 0 8px; } .td-filters input { font: inherit; font-size: var(--cds-font-size-caption); padding: 4px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); width: 140px; }
     .td-hi { font-weight: var(--cds-font-weight-medium); }
+    .x-rangerow { display: flex; justify-content: flex-end; margin: 0 0 4px; } .x-range button { padding: 3px 9px; }
+    .x-ctl { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 6px 0; }
+    .x-pick { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 6px; border: 1px solid var(--color-border-line); border-radius: 999px; background: var(--color-bg); color: var(--color-fg); cursor: pointer; }
+    .x-pick i, .x-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; } .x-pick i { margin-right: 0; } .x-pick-x { color: var(--color-fg-muted); margin-left: 2px; } .x-pick:hover { border-color: var(--color-bad); }
+    .x-cc { background: color-mix(in srgb, var(--c-pos, #2563eb) calc(max(var(--c, 0), 0) * 60%), color-mix(in srgb, #ea580c calc(max(calc(var(--c, 0) * -1), 0) * 60%), transparent)); }
+    .x-rot { white-space: nowrap; font-size: 11px; } .x-corr td, .x-corr th { padding: 4px 6px; }
+    .x-heatpn { background: color-mix(in srgb, var(--color-ok) calc(max(var(--v, 0), 0) * 45%), color-mix(in srgb, var(--color-bad) calc(max(calc(var(--v, 0) * -1), 0) * 45%), transparent)); }
+    .x-check { display: inline-flex; gap: 6px; align-items: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+    .x-callout { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; } .x-callout p { margin: 0; flex: 1 1 320px; }
+    .x-intent { border-left: 3px solid var(--gm-blue); background: var(--color-panel); padding: 10px 14px; margin: 6px 0 14px; border-radius: 0 var(--cds-radius) var(--cds-radius) 0; } .x-intent p { margin: 0 0 6px; } .x-intent p:last-child { margin: 0; }
+    .x-select { font: inherit; font-size: var(--cds-font-size-body); padding: 5px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
     .gm-table th.x-txt, .gm-table td.x-txt { text-align: left; }
     .x-more summary { cursor: pointer; color: var(--gm-blue); font-size: var(--cds-font-size-caption); margin-top: 4px; }
   </style>
+
+  <section class="gm-page" id="xlab" role="tabpanel" hidden>
+    <template id="tpl-xlab">
+      <div class="gm-block">
+        <h2 class="gm-h2">Compare &amp; correlate, across asset classes</h2>
+        <ul class="gm-bul" id="xl-notes" data-source="etf_history bond_history multi_history fx_history today_px rates_credit"></ul>
+      </div>
+      <div class="gm-block">
+        <div class="x-search"><input id="xl-search" list="xl-list" placeholder="Add anything: SPY, gold, 10-year yield, yen, high-yield spread…" aria-label="Add an asset" autocomplete="off"><datalist id="xl-list"></datalist>
+          <label class="gm-field"><span class="gm-label">Benchmark</span><select class="x-select" id="xl-bench"></select></label>
+          <button type="button" class="gm-linkbtn" id="xl-clear">Clear all</button></div>
+        <div class="x-chips" id="xl-picked" style="margin-top:8px"></div>
+        <div class="x-ctl"><span class="gm-label">Presets</span><span class="gm-seg gm-presets" id="xl-presets"></span></div>
+        <div class="x-ctl"><span class="gm-label">Browse</span><span class="gm-seg" id="xl-cls"></span></div>
+        <div class="x-chips" id="xl-quick"></div>
+        <p class="gm-note" id="xl-quick-note"></p>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><span class="gm-seg gm-presets" id="xl-mode"></span><span class="gm-seg" id="xl-range"></span></div>
+        <div class="x-ctl"><label class="x-check" id="xl-log-wrap"><input type="checkbox" id="xl-log"> Log scale</label></div>
+        <div class="gm-chart" id="xl-chart" data-source="etf_history etf_weekly bond_history multi_history fx_history today_px xasset_weekly rates_credit" style="min-height:340px"></div>
+        <div class="gm-chart" id="xl-chart2" hidden></div>
+        <p class="gm-note" id="xl-chart-note"></p>
+      </div>
+      <div class="gm-block">
+        <div class="gm-hrow"><h3 class="gm-h3">Risk and return in this window</h3><span class="gm-seg" id="xl-freq" title="Data frequency for volatility and correlation"></span></div>
+        <div class="gm-tablewrap"><table class="gm-table gm-compact" id="xl-stats" data-source="etf_history bond_history multi_history fx_history today_px rates_credit"><thead></thead><tbody></tbody></table></div>
+        <p class="gm-note" id="xl-stats-note"></p>
+      </div>
+      <div class="gm-grid2">
+        <div class="gm-block"><h3 class="gm-h3">Correlation matrix</h3><div class="gm-tablewrap"><table class="gm-table gm-compact x-corr" id="xl-corr" data-source="etf_history bond_history multi_history fx_history today_px rates_credit"><thead></thead><tbody></tbody></table></div><p class="gm-note" id="xl-corr-note"></p></div>
+        <div class="gm-block"><h3 class="gm-h3">Calendar-year returns</h3><div class="gm-tablewrap"><table class="gm-table gm-compact" id="xl-cal" data-source="etf_weekly xasset_weekly"><thead></thead><tbody></tbody></table></div></div>
+      </div>
+    </template>
+  </section>
+
+  <template id="xtpl-xlink">
+    <div class="gm-block x-callout" data-xblock="xlink"><p class="gm-note x-link-t"></p><button type="button" class="gm-btn">Open Compare &amp; correlate</button></div>
+  </template>
+  <template id="xtpl-fx">
+    <div class="gm-block" data-xblock="fxpair" id="fx-pair">
+      <h2 class="gm-h2">Currency pair explorer</h2>
+      <div class="x-ctl">
+        <label class="gm-field"><span class="gm-label">Base</span><select class="x-select" id="xp-base"></select></label>
+        <button type="button" class="gm-linkbtn" id="xp-swap" aria-label="Swap base and quote">Swap ⇄</button>
+        <label class="gm-field"><span class="gm-label">Quote</span><select class="x-select" id="xp-quote"></select></label>
+        <label class="x-check"><input type="checkbox" id="xp-ma" checked> 200-day average</label>
+      </div>
+      <div class="x-chips" id="xp-quick"></div>
+      <h3 class="gm-h3" id="xp-title" style="margin-top:12px">—</h3>
+      <ul class="gm-bul" id="xp-notes" data-source="fx_history xasset_weekly"></ul>
+      <div class="gm-chart" id="xp-chart" data-source="fx_history xasset_weekly" style="min-height:300px"></div>
+      <div class="gm-tablewrap"><table class="gm-table gm-compact" id="xp-moves" data-source="fx_history xasset_weekly"><thead></thead><tbody></tbody></table></div>
+      <div class="x-tiles" id="xp-tiles" style="margin-top:10px" data-source="fx_history xasset_weekly"></div>
+      <p class="gm-note">Rates are quote-currency units per unit of the base, from FMP daily closes since late 2023 and weekly closes before that. Crosses are computed through the dollar.</p>
+    </div>
+  </template>
 
   <section class="gm-page" id="commentary" role="tabpanel" hidden>
     <template id="tpl-commentary">
@@ -2032,8 +2102,11 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <script src="app2.js"></script>
 <script src="pulse.js"></script>
 <script src="x_core.js"></script>
+<script src="x_assets.js"></script>
 <script src="x_rates.js"></script>
 <script src="x_rel.js"></script>
 <script src="x_calls.js"></script>
 <script src="x_profile.js"></script>
 <script src="x_comm.js"></script>
+<script src="x_xlab.js"></script>
+<script src="x_fxpair.js"></script>

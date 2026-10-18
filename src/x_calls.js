@@ -50,15 +50,15 @@
     const L = [];
     const paired = curCalls.map((r) => [r, C.prevYear(r)]).filter(([, p]) => p);
     const dTone = d3.mean(paired, ([r, p]) => r.tone - p.tone);
-    L.push(`Tone this season ${fx(cur.tone, 3)} against ${ya ? fx(ya.tone, 3) + ' a year ago' : 'no year-ago season'}; the same companies are ${isNum(dTone) ? (dTone >= 0 ? 'more upbeat by ' : 'less upbeat by ') + fx(Math.abs(dTone), 3) : 'not yet comparable'} (${paired.length} companies with a call a year earlier).`);
+    L.push(`**Tone this season ${fx(cur.tone, 3)}** against ${ya ? fx(ya.tone, 3) + ' a year ago' : 'no year-ago season'}; the same companies are **${isNum(dTone) ? (dTone >= 0 ? 'more upbeat by ' : 'less upbeat by ') + fx(Math.abs(dTone), 3) : 'not yet comparable'}** (${paired.length} companies with a call a year earlier).`);
     L.push(`Script vs questions: whole-call tone runs ${fx(cur.gap, 3)} above Q&A tone${ya ? `, against ${fx(ya.gap, 3)} a year ago — ${cur.gap > ya.gap ? 'a wider gap, so answers under questioning are less upbeat than the script' : 'a narrower gap, so answers under questioning are holding up'}` : ''}.`);
-    L.push(`Guidance: ${pct(cur.up, 0, false)} of calls mention raising guidance and ${pct(cur.dn, 0, false)} lowering it (${ya ? pct(ya.up, 0, false) + ' and ' + pct(ya.dn, 0, false) + ' a year ago' : '—'}). Uncertainty language ${fx(cur.unc, 2)} words per 1,000 (${ya ? fx(ya.unc, 2) : '—'} a year ago).`);
+    L.push(`Guidance: **${pct(cur.up, 0, false)} of calls mention raising guidance and ${pct(cur.dn, 0, false)} lowering it** (${ya ? pct(ya.up, 0, false) + ' and ' + pct(ya.dn, 0, false) + ' a year ago' : '—'}). Uncertainty language ${fx(cur.unc, 2)} words per 1,000 (${ya ? fx(ya.unc, 2) : '—'} a year ago).`);
     if (ya) {
       const mv = Object.keys(TOPIC).map((k) => ({ k, d: cur.topics[k] - ya.topics[k] })).sort((a, b) => b.d - a.d);
-      L.push(`Rising most since a year ago: ${mv.slice(0, 3).map((x) => `${TOPIC[x.k]} (${pct(cur.topics[x.k], 0, false)} of calls, ${x.d >= 0 ? '+' : '−'}${Math.abs(Math.round(x.d * 100))} pts)`).join('; ')}. Fading: ${mv.slice(-3).reverse().map((x) => `${TOPIC[x.k]} (${pct(cur.topics[x.k], 0, false)}, ${x.d >= 0 ? '+' : '−'}${Math.abs(Math.round(x.d * 100))} pts)`).join('; ')}.`);
+      L.push(`**Rising most since a year ago:** ${mv.slice(0, 3).map((x) => `${TOPIC[x.k]} (${pct(cur.topics[x.k], 0, false)} of calls, ${x.d >= 0 ? '+' : '−'}${Math.abs(Math.round(x.d * 100))} pts)`).join('; ')}. Fading: ${mv.slice(-3).reverse().map((x) => `${TOPIC[x.k]} (${pct(cur.topics[x.k], 0, false)}, ${x.d >= 0 ? '+' : '−'}${Math.abs(Math.round(x.d * 100))} pts)`).join('; ')}.`);
     }
     if (cur.n < 150) L.push(`Early in the season: ${cur.n} calls so far, so these readings will move as more companies report.`);
-    notes.replaceChildren(...L.map((t) => el('li', t)));
+    notes.replaceChildren(...L.map(G.li));
 
     // ---- what management is saying (Claude-written, from commentary) ----
     const said = $('#cl-said', sec);
@@ -70,7 +70,7 @@
     G.seg($('#cl-metric', sec), Object.entries(METRIC).map(([k, [l]]) => [k, l]), S.metric, (v) => { S.metric = v; G.redraw(); });
     const [ml, mf] = METRIC[S.metric];
     const val = (x) => (S.metric === 'guide' ? x.up - x.dn : x[S.metric]);
-    G.line($('#cl-trend', sec), [{ name: ml, pts: C.series.map((x) => [qDate(x.q), val(x)]) }], { h: 240, fmt: mf, yfmt: S.metric === 'guide' ? (v) => Math.round(v * 100) + '%' : (v) => d3.format('.2~f')(v), dfmt: '%b %Y', labels: false });
+    G.line($('#cl-trend', sec), [{ name: ml, pts: C.series.map((x) => [qDate(x.q), val(x)]) }], { h: 240, fmt: mf, yfmt: S.metric === 'guide' ? (v) => Math.round(v * 100) + '%' : (v) => d3.format('.2~f')(v), dfmt: '%b %Y', labels: false, range: 'cl-trend' });
 
     // ---- topic heat map ----
     const last12 = C.series.slice(-12);
