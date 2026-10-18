@@ -68,25 +68,52 @@ const manifestPath = join(root, 'data/manifest.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 mkdirSync(join(root, 'data/live'), { recursive: true });
 
+// MODE=fast refreshes only what moves intraday (quotes, headlines, calendars)
+// and reuses everything else from the currently published site (PREV_SITE).
+// Any dataset that fails to refresh also falls back to the published copy.
+const MODE = process.env.MODE === 'fast' ? 'fast' : 'full';
+const PREV = (process.env.PREV_SITE || '').replace(/\/?$/, '/');
+const FAST = new Set(['etf_quotes', 'bond_quotes', 'multi_quotes', 'today_quotes', 'constituent_quotes',
+  'today_news', 'calendar_live', 'today_earnings']);
+let prevManifest = null;
+async function previous(id) {
+  if (!process.env.PREV_SITE) throw new Error('no PREV_SITE');
+  if (!prevManifest) prevManifest = await (await fetch(PREV + 'data/manifest.json?t=' + Date.now())).json();
+  const r = await fetch(PREV + 'data/live/' + id + '.json?t=' + Date.now());
+  if (!r.ok) throw new Error('previous copy HTTP ' + r.status);
+  writeFileSync(join(root, 'data/live', id + '.json'), Buffer.from(await r.arrayBuffer()));
+  const u = prevManifest.datasets && prevManifest.datasets[id] && prevManifest.datasets[id].updated;
+  if (u) manifest.datasets[id].updated = u;
+}
+
 const parseRows = (a) => (Array.isArray(a) ? a : (a && (a.rows || a.data || a.results)) || []);
 const now = new Date().toISOString();
-let ok = 0;
+let ok = 0, reused = 0;
 const failed = [];
+async function fresh(id, tool, args) {
+  const answer = await call(tool, args);
+  const out = loaders[id] ? await loaders[id]({ answer, call, args }) : parseRows(answer);
+  const rows = JSON.parse(JSON.stringify(out));
+  if (Array.isArray(rows) && !rows.length) throw new Error('no rows');
+  writeFileSync(join(root, 'data/live', id + '.json'), JSON.stringify(rows));
+  manifest.datasets[id].updated = { at: now, by: 'refresh job (FMP)' };
+  return Array.isArray(rows) ? rows.length + ' rows' : typeof rows;
+}
 for (const [id, { tool, args }] of Object.entries(sources)) {
+  if (MODE === 'fast' && !FAST.has(id)) {
+    try { await previous(id); reused += 1; console.log(`keep ${id}`); continue; }
+    catch (e) { console.log(`keep ${id} unavailable (${e.message}); fetching`); }
+  }
   try {
-    const answer = await call(tool, args);
-    const out = loaders[id] ? await loaders[id]({ answer, call, args }) : parseRows(answer);
-    const rows = JSON.parse(JSON.stringify(out));
-    if (Array.isArray(rows) && !rows.length) throw new Error('no rows');
-    writeFileSync(join(root, 'data/live', id + '.json'), JSON.stringify(rows));
-    manifest.datasets[id].updated = { at: now, by: 'refresh job (FMP)' };
+    console.log(`ok   ${id}  ${await fresh(id, tool, args)}`);
     ok += 1;
-    console.log(`ok   ${id}  ${Array.isArray(rows) ? rows.length + ' rows' : typeof rows}`);
   } catch (e) {
-    failed.push(id);
     console.error(`FAIL ${id}: ${e.message}`);
+    try { await previous(id); reused += 1; console.error(`     ${id}: kept the published copy`); }
+    catch { failed.push(id); }
   }
 }
+console.log(`mode ${MODE}: ${ok} refreshed, ${reused} kept, ${failed.length} missing`);
 manifest.builtAt = now;
 writeFileSync(manifestPath, JSON.stringify(manifest, null, 1));
 console.log(`\n${ok}/${Object.keys(sources).length} live sources refreshed, ${calls} FMP calls`);

@@ -104,14 +104,38 @@
   };
   window.dash = dash;
 
-  fetch(ROOT + 'data/manifest.json?t=' + Date.now())
-    .then((r) => r.json())
+  const stamp = (m) => {
+    const el = document.getElementById('site-updated');
+    if (el && m.builtAt) el.textContent = 'Data as of ' + new Date(m.builtAt).toLocaleString() + ' · checks for new data every 2 minutes';
+  };
+  const getManifest = () => fetch(ROOT + 'data/manifest.json?t=' + Date.now()).then((r) => r.json());
+
+  getManifest()
     .then((m) => {
       manifest = m;
       for (const id of Object.keys(state)) delete state[id];
-      const el = document.getElementById('site-updated');
-      if (el && m.builtAt) el.textContent = 'Data as of ' + new Date(m.builtAt).toLocaleString();
+      stamp(m);
       notify();
     })
     .catch((e) => console.error('manifest', e));
+
+  // While the page is open, pick up each new snapshot without a reload.
+  // New data is fetched first and swapped in all at once, so nothing blanks.
+  const at = (m, id) => (m.datasets[id] && m.datasets[id].updated && m.datasets[id].updated.at) || '';
+  async function poll() {
+    if (!manifest || document.hidden) return;
+    let m;
+    try { m = await getManifest(); } catch (e) { return; }
+    if (m.builtAt === manifest.builtAt) return;
+    const changed = Object.keys(state).filter((id) => state[id].status === 'ok' && m.datasets[id] && at(m, id) !== at(manifest, id));
+    const fresh = await Promise.all(changed.map((id) =>
+      fetch(ROOT + m.datasets[id].path + '?v=' + encodeURIComponent(at(m, id)))
+        .then((r) => (r.ok ? r.json() : null)).catch(() => null)));
+    manifest = m;
+    changed.forEach((id, n) => { if (fresh[n] !== null) state[id] = { status: 'ok', data: toRows(fresh[n]) }; });
+    stamp(m);
+    if (changed.length) notify();
+  }
+  setInterval(poll, 120000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
 })();

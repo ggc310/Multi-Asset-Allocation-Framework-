@@ -2,10 +2,14 @@ name: Refresh and publish dashboard
 
 on:
   schedule:
-    # Weekdays every 30 minutes, 13:05-21:35 UTC: covers the US session
-    # (9:30am-4pm ET) in both daylight and standard time, plus a pre-open
-    # and a post-close run. GitHub may start scheduled runs a few minutes late.
-    - cron: '5,35 13-21 * * 1-5'
+    # Full refresh (prices, history, curve) before the open and after the close.
+    # 13:02 UTC is 9:02am ET in daylight time / 8:02am in standard time;
+    # 21:22 UTC is after the 4pm ET close in both.
+    - cron: '2 13 * * 1-5'
+    - cron: '22 21 * * 1-5'
+    # Fast refresh (quotes, headlines, calendars) every 5 minutes in between.
+    # GitHub may start scheduled runs late or skip some when it is busy.
+    - cron: '*/5 13-21 * * 1-5'
   push:
     branches: [main]
   workflow_dispatch:
@@ -17,7 +21,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -30,6 +34,8 @@ jobs:
       - name: Refresh live market data from FMP
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          MODE: ${{ github.event.schedule == '*/5 13-21 * * 1-5' && 'fast' || 'full' }}
+          PREV_SITE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: node refresh/refresh.mjs
       - name: Build page
         run: node tools/build.mjs
