@@ -16,6 +16,22 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = os.path.join(ROOT, 'data', 'manifest.json')
 
 
+def clean(v):
+    # browsers' JSON.parse rejects NaN/Infinity, which Python and Claude accept
+    if isinstance(v, float) and (v != v or v in (float('inf'), float('-inf'))):
+        return None
+    if isinstance(v, list):
+        return [clean(x) for x in v]
+    if isinstance(v, dict):
+        return {k: clean(x) for k, x in v.items()}
+    return v
+
+
+def copy_json(src, dst):
+    with open(dst, 'w') as f:
+        json.dump(clean(json.load(open(src))), f, separators=(',', ':'), allow_nan=False)
+
+
 def doc(path):
     d = json.load(open(path))
     return d.get('data', d)
@@ -49,8 +65,7 @@ def apply(store, blobs):
             blob = s['url'].rsplit('/', 1)[-1]
             src = os.path.join(blobs, blob + '.json')
             if os.path.exists(src):
-                json.load(open(src))  # must be valid JSON
-                shutil.copy(src, os.path.join(ROOT, 'data', 'files', i + '.json'))
+                copy_json(src, os.path.join(ROOT, 'data', 'files', i + '.json'))
             elif old['datasets'].get(i, {}).get('blob') != blob:
                 print('missing download for', i, blob, '- keeping previous file')
                 blob = old['datasets'].get(i, {}).get('blob')
@@ -77,7 +92,10 @@ def apply(store, blobs):
 
 
 if __name__ == '__main__':
-    if sys.argv[1] == 'plan':
+    if sys.argv[1] == 'clean':
+        for f in glob.glob(os.path.join(ROOT, 'data', 'files', '*.json')):
+            copy_json(f, f + '.tmp'); os.replace(f + '.tmp', f)
+    elif sys.argv[1] == 'plan':
         plan(sys.argv[2])
     else:
         apply(sys.argv[2], sys.argv[3])

@@ -3,6 +3,15 @@
 // refreshed by the scheduled jobs described in README.md.
 (function () {
   'use strict';
+  // The page empties tables while their data loads (table.replaceChildren()).
+  // Inside Claude the data is ready first, so that never happens; here data
+  // arrives lazily, so keep each table's <thead>/<tbody> and empty them instead.
+  const tableReplace = HTMLTableElement.prototype.replaceChildren;
+  HTMLTableElement.prototype.replaceChildren = function (...nodes) {
+    if (nodes.length) return tableReplace.apply(this, nodes);
+    for (const s of [this.tHead, ...this.tBodies, this.tFoot]) if (s) s.replaceChildren();
+    for (const c of [...this.children]) if (!/^(THEAD|TBODY|TFOOT|COLGROUP)$/.test(c.tagName)) c.remove();
+  };
   const ROOT = document.currentScript ? new URL('..', document.currentScript.src).href : './';
   const state = {};          // id -> {status, data, message}
   const calcs = {};          // id -> {inputs, fn, title, description}
