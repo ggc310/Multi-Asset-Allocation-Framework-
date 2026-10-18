@@ -219,7 +219,8 @@
       const act = reg ? R3.map(([k, , l]) => ({ k, l, a: reg.m[k] - reg.r[k], m: reg.m[k], r: reg.r[k] })) : [];
       // the call is the preferred region against the US (the largest weight), or the US against the best of the rest
       const lean0 = act.slice().sort((a, b) => b.a - a.a)[0], top = scored.slice().sort((a, b) => b.s - a.s)[0];
-      const best = scored.find((x) => x.k === (lean0 && Math.abs(lean0.a) >= 0.005 ? lean0.k : top && top.k)) || top;
+      const leaning = !!(lean0 && Math.abs(lean0.a) >= 0.01);
+      const best = scored.find((x) => x.k === (leaning ? lean0.k : top && top.k)) || top;
       const worst = best && best.k === 'US' ? scored.filter((x) => x.k !== 'US').sort((a, b) => b.s - a.s)[0] : scored.find((x) => x.k === 'US');
       const pil = ['fundamentals', 'valuation', 'technicals', 'sentiment'];
       const gaps = best && worst && best !== worst ? pil.map((p) => ({ p, g: n(best.r[p]) - n(worst.r[p]), b: n(best.r[p]), w: n(worst.r[p]) })).filter((x) => isNum(x.g)).sort((a, b) => b.g - a.g) : [];
@@ -254,9 +255,9 @@
       const rev = best && worst && best !== worst ? [`The regional lean reverses if ${ll(worst.l)} (${Math.round(worst.s)}) overtakes ${ll(best.l)} (${Math.round(best.s)}).${gaps.length ? ` Watch ${gaps[0].p} first, the widest pillar gap (${Math.round(gaps[0].b)} vs ${Math.round(gaps[0].w)}).` : ''}`,
         'Country weights follow the Equity allocation settings; the view goes neutral if the scores converge to within the allocation band.'] : [];
       out.push({ id: 'eqr', name: 'Equities: where in the world', go: 'scoreboard',
-        tilt: lean.length && Math.abs(lean[0].a) >= 0.005 ? 'Lean to ' + lean[0].l.replace('Developed ex-US', 'developed ex-US').replace('Emerging markets', 'emerging markets') : best ? 'Prefer ' + best.l : '—',
+        tilt: leaning ? 'Lean to ' + ll(lean[0].l) : act.length ? 'Close to ACWI by region' : best ? 'Scores prefer ' + ll(best.l) : '—',
         sub: act.length ? act.map((x) => `${x.l} ${pc(x.m, 0)} of equities (${pts(x.a, 1)})`).join(' · ') : 'scores only',
-        because: best && worst ? `${ll(best.l)} scores ${Math.round(best.s)} against ${Math.round(worst.s)} for ${ll(worst.l)}${gaps.length ? `, mostly on ${gaps[0].p} (${Math.round(gaps[0].b)} vs ${Math.round(gaps[0].w)})` : ''}.` : '',
+        because: (act.length && !leaning ? `country weights land within a point of ACWI in every region, although the scores favor ${ll(top.l)}. ` : '') + (best && worst ? `${ll(best.l)} scores ${Math.round(best.s)} against ${Math.round(worst.s)} for ${ll(worst.l)}${gaps.length ? `, mostly on ${gaps[0].p} (${Math.round(gaps[0].b)} vs ${Math.round(gaps[0].w)})` : ''}.` : ''),
         drivers, ev: evq, rev, cover: coverR, key: { act } });
 
       // style and size, as pairs; deliberately the broad pairs only
@@ -473,7 +474,7 @@
     const bits = [];
     if (sb) { const t = sb.key.tilt; bits.push(`**${Math.abs(t) < 1 ? 'Neutral between stocks and bonds' : (Math.abs(t) < 5 ? 'Slight' : Math.abs(t) < 10 ? 'Modest' : 'Large') + ' overweight in ' + (t > 0 ? 'equities' : 'bonds')} (${pc(sb.key.w, 0)}, ${sg(t, 0)} pts)**${sb.id && /curve/.test(sb.because) ? ', resting mainly on a flat yield curve' : ''}`); }
     if (du || fi) bits.push(`in bonds, **${du ? du.tilt.toLowerCase() + ' duration' : 'benchmark duration'}${fi && fi.key.held.length ? ' with ' + fi.tilt : ''}**`);
-    if (er) bits.push(`in equities, a **${/Lean/.test(er.tilt) ? 'small l' + er.tilt.slice(1) : er.tilt}**`);
+    if (er) bits.push(/Lean/.test(er.tilt) ? `in equities, a **small l${er.tilt.slice(1)}**` : `in equities, **regional weights ${/Close/.test(er.tilt) ? 'close to ACWI' : er.tilt.toLowerCase()}**`);
     return bits.length ? bits.join('; ') + '.' : '';
   };
 
