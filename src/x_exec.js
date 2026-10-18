@@ -209,7 +209,7 @@
         const ac = G.rows('acwi_countries'), withFund = new Set(Object.keys(MP.eq).map((e) => (U.get(e) || {}).country).filter(Boolean));
         const rest = ac.filter((c) => !withFund.has(c.country)), rs = rest.reduce((a, c) => a + c.weight, 0) || 1;
         const exDev = rest.filter((c) => DEV_NO_FUND.has(c.country)).reduce((a, c) => a + c.weight, 0) / rs;
-        const regOf = (e) => (e === 'SPY' ? 'US' : (U.get(e) || {}).region === 'Emerging' ? 'EM' : 'DEV');
+        const regOf = (e) => { const r = (U.get(e) || {}).region; return e === 'SPY' || r === 'US' ? 'US' : r === 'Emerging' ? 'EM' : 'DEV'; };
         const agg = (wts, scale) => { const o = { US: 0, DEV: 0, EM: 0 }; for (const [e, w] of Object.entries(wts)) { if (e === 'AGG') continue; const v = w / scale; if (e === 'ACWX') { o.DEV += v * exDev; o.EM += v * (1 - exDev); } else if (U.has(e) || e === 'SPY') o[regOf(e)] += v; } return o; };
         reg = { m: agg(MP.eq, 1), r: agg(MP.refLook, MP.N) };
       }
@@ -270,10 +270,10 @@
       if (isNum(ijr) && isNum(iwm) && Math.abs(ijr - iwm) >= 10) sDrivers.push(`**Quality decides the small-cap call**: the S&P 600 (which requires profits) scores ${Math.round(ijr)}, the Russell 2000 ${Math.round(iwm)}.`);
       const sCover = dqHit(pr.slice(0, 4).flatMap((x) => [x.a, x.b]).concat(['IWM'])).filter((x) => /Thin valuation|Proxy/.test(x.check) || x.level === 'Warning').map((x) => `**${name(x.etf)} (${x.etf})**: ${x.detail}`);
       out.push({ id: 'eqs', name: 'Equities: style and size', go: 'scoreboard',
-        tilt: pr.length ? flip(pr[0]) : '—', sub: 'scores only: the model portfolio holds equities through country funds, so these views are not in its weights',
+        tilt: pr.length ? flip(pr[0]) : '—', sub: (() => { const st = window.GMX_PORT && window.GMX_PORT.state && window.GMX_PORT.state(); const held = st && st.picks ? st.picks : []; return held.length ? `in the portfolio through ${held.length} sleeves (${held.slice(0, 4).map((x) => x.etf).join(', ')}${held.length > 4 ? '…' : ''}), ${G.pct(held.reduce((a, x) => a + x.w, 0), 0, false)} of equities` : 'scores only: no sleeve clears the bar for the model portfolio'; })(),
         because: pr.length ? pr.slice(0, 2).map((x) => `${name(x.a)} ${Math.round(x.sa)} vs ${name(x.b)} ${Math.round(x.sb)}`).join('; ') + '.' : '',
         drivers: sDrivers, ev: { ...evq, weak: evq.weak.filter((t) => !/regional|country tilts/.test(t)) }, rev: pr.slice(0, 3).map((x) => `${flip(x)} reverses if the ${Math.abs(Math.round(x.g))}-point gap closes.`), cover: sCover,
-        more: 'Sector and industry calls sit one level down, on the equity scorecard.', key: {} });
+        more: 'Sector and industry calls sit one level down, on the equity scorecard; the best-scoring ones are held in the model portfolio within the sleeve budget.', key: {} });
     }
 
     // 6. Diversifiers / real assets
@@ -540,6 +540,7 @@
     if (cov.length) { const c = el('div', null, 'gm-block x-dcov'); c.append(el('h3', 'Coverage warnings that affect a decision', 'gm-h3'), UL(cov)); box.append(c); }
   };
 
+  window.GMXD = { views, reviews };
   G.page('summary', draw);
   document.addEventListener('gm-mp', () => { if ((document.body.dataset.page || '') === 'summary') G.redraw(); });
 })();

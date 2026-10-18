@@ -95,6 +95,32 @@
 .gm-toc { position: sticky; top: 12px; display: grid; gap: 6px; font-size: var(--cds-font-size-caption); }
 .gm-toc a { color: var(--color-fg-muted); text-decoration: none; }
 .gm-toc a:hover { color: var(--color-fg); }
+#takeaway { display: none !important; }
+.x-gh-top { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.x-gh-abbr { font-size: .42em; letter-spacing: .08em; vertical-align: middle; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 4px; padding: 2px 6px; font-weight: 600; position: relative; top: -.18em; }
+.x-gh-pill { font-size: 11.5px; padding: 2px 9px; border-radius: 10px; border: 1px solid var(--color-border-line); color: var(--color-fg-muted); white-space: nowrap; }
+.x-gh-pill:empty { display: none; }
+.x-gh-on { color: var(--color-ok); border-color: color-mix(in oklab, var(--color-ok) 45%, transparent); background: color-mix(in oklab, var(--color-ok) 9%, transparent); }
+.x-gh-pre { color: var(--gm-blue); border-color: color-mix(in oklab, var(--gm-blue) 40%, transparent); }
+.x-gh { margin: 8px 0 6px; display: grid; gap: 8px; }
+.x-gh-calls { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+.x-gh-chip { appearance: none; font: inherit; text-align: left; cursor: pointer; display: grid; grid-template-columns: auto auto; grid-template-areas: "k d" "v v"; gap: 0 6px; padding: 5px 10px 6px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius, 6px); background: var(--color-bg); color: var(--color-fg); min-width: 0; }
+.x-gh-chip:hover { border-color: var(--gm-blue); }
+.x-gh-k { grid-area: k; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); }
+.x-gh-v { grid-area: v; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 26ch; }
+.x-gh-dot { grid-area: d; justify-self: end; align-self: center; width: 7px; height: 7px; border-radius: 50%; background: var(--color-border-line); }
+.x-gh-ev-ok { background: var(--color-ok); } .x-gh-ev-mid { background: var(--gm-blue); } .x-gh-ev-warn { background: var(--color-warn); } .x-gh-ev-bad { background: var(--color-bad); }
+.x-gh-why { appearance: none; font: inherit; font-size: 12px; background: none; border: 0; color: var(--gm-blue); cursor: pointer; padding: 0 4px; align-self: center; }
+.x-gh-reasons { margin: 0; padding-left: 1.1rem; font-size: 13px; line-height: 1.45; color: var(--color-fg); max-width: 110ch; } .x-gh-reasons li { margin: 2px 0; }
+.x-gh-pulse { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 12.5px; font-variant-numeric: tabular-nums; border-top: 1px solid var(--color-border-line); padding-top: 6px; }
+.x-gh-p { display: inline-flex; gap: 5px; white-space: nowrap; } .x-gh-pk { color: var(--color-fg-muted); } .x-gh-pl { color: var(--color-fg); }
+.gm-head { grid-template-columns: minmax(0, 1fr); }
+.x-gh-top, .x-gh { min-width: 0; }
+.x-gh-top .gm-title { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 700px) { .x-gh-v { max-width: 20ch; } .x-gh-pulse { gap: 2px 12px; } .x-gh-top .gm-title { font-size: 26px; line-height: 1.15; } }
+.x-tocg { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--color-fg); font-weight: 600; margin-top: 8px; }
+.x-tocg:first-child { margin-top: 0; }
+.x-mgroup { font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; color: var(--gm-blue); border-top: 1px solid var(--color-border-line); padding-top: 14px; margin: 26px 0 0; }
 .gm-method .gm-prose { max-width: 78ch; }
 .gm-prose h3 { scroll-margin-top: 16px; padding-top: var(--cds-pad-sm); }
 .gm-prose b { font-weight: var(--cds-font-weight-medium); }
@@ -419,8 +445,9 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <div class="gm" id="gm">
   <div class="gm-pop" id="pop" role="tooltip" hidden></div>
   <header class="gm-head" id="top">
-    <h1 class="gm-title">Global multi-asset monitor</h1>
-    <p class="gm-takeaway dash-skeleton" id="takeaway" data-source="scores short_returns macro_live">—</p>
+    <div class="x-gh-top"><h1 class="gm-title">Global Multi-Asset Allocation Framework <span class="x-gh-abbr">GMAAF</span></h1><span id="gh-status" class="x-gh-pill"></span></div>
+    <div id="gh" class="x-gh"></div>
+    <p class="gm-takeaway dash-skeleton" id="takeaway" data-source="scores short_returns macro_live" hidden>—</p>
     <p class="gm-fresh" id="fresh" data-source="etf_quotes etf_universe bt_stats"></p>
     <p class="gm-meta" id="dq-line" data-source="dq_report"></p>
   </header>
@@ -516,9 +543,27 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
       #today .td-tag{display:inline-block;font-size:.6875rem;color:var(--color-fg-muted);border:1px solid var(--color-border-line);border-radius:3px;padding:0 .3rem;margin-right:.4rem}
       #today .td-list a{color:inherit}
       #today .td-key{font-size:.75rem;color:var(--color-fg-muted);margin:.25rem 0 .5rem}
+      #today.gm-page{grid-template-columns:minmax(0,1fr)} #today>*,#today .td-2>*{min-width:0} #today .td-filters{display:flex;flex-wrap:wrap;gap:6px}
+      #today .td-quad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:.5rem 0 1.25rem}
+      @media (max-width:900px){#today .td-quad{grid-template-columns:minmax(0,1fr)}}
+      #today .td-q{overflow-x:auto;border:1px solid var(--color-border-line);border-radius:var(--cds-radius,6px);padding:.75rem .9rem;min-width:0;background:var(--color-bg)}
+      #today .td-q-h{font-size:.95rem;font-weight:600;margin:0 0 .15rem;color:var(--gm-navy,var(--color-fg))}
+      #today .td-q-h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:var(--color-fg-muted);margin:.4rem 0 .2rem;font-weight:600}
+      #today .td-q-n{font-size:.75rem;color:var(--color-fg-muted);margin:0 0 .4rem}
+      #today .td-q-p{font-size:.875rem;line-height:1.5;margin:.35rem 0 0}
+      #today .td-q-t{width:100%;font-size:.8125rem} #today .td-q-t td,#today .td-q-t th{white-space:nowrap}
+      #today .td-q-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:.25rem 1rem}
+      #today .td-q-l{margin:.2rem 0 0;padding-left:1.1rem;font-size:.875rem;line-height:1.45} #today .td-q-l li{margin:.3rem 0} #today .td-q-l a{color:inherit}
+      #today .td-q-src{font-size:.75rem;color:var(--color-fg-muted)}
+      #today .td-q-tag{display:inline-block;font-size:.6875rem;border:1px solid var(--color-border-line);border-radius:3px;padding:0 .3rem;color:var(--color-fg-muted);white-space:nowrap}
+      #today .td-q-data{list-style:square}
+      #today .td-q-nut{border-left:3px solid var(--gm-navy,#1f3a5f);background:var(--color-panel)}
+      #today .td-q-label{font-family:var(--font-anthropic-serif);font-size:1.3rem;line-height:1.25;margin:.15rem 0 .25rem}
+      #today .td-q-foot{margin-top:.6rem}
       #today .td-key span{display:inline-block;width:.8rem;height:.8rem;vertical-align:-1px;margin:0 .2rem 0 .6rem;border-radius:2px}
     </style>
     <div class="gm-hrow"><h2 class="gm-h2" id="td-title">Today across markets</h2><span class="gm-note" id="td-asof" data-source="today_moves"></span></div>
+    <div id="td-quad" class="td-quad"></div>
     <div class="td-lead">
       <h3 class="gm-h4" id="td-sum-h">What changed</h3>
       <ul id="td-sum" data-source="today_summary"><li>—</li></ul>
@@ -549,7 +594,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <div class="gm-hrow"><h2 class="gm-h2">Executive summary<button type="button" class="gm-i" data-info="xsTab" aria-label="About the executive summary">i</button></h2><span class="gm-note" id="xs-asof"></span></div>
     <p class="gm-xsback" id="xs-backdrop" data-source="macro_state"></p>
     <div id="xd" class="x-dec"></div>
-    <details class="x-more x-xsold"><summary>The three models in their own words</summary>
+    <details class="x-more x-xsold"><summary>The models in their own words</summary>
     <div class="gm-xs3">
       <section class="gm-xscol" data-source="model_sb">
         <h3 class="gm-xsh">Stocks vs bonds</h3>
@@ -576,13 +621,14 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     </details>
     <div class="gm-block" id="mp">
       <div class="gm-hrow"><h2 class="gm-h2">Model portfolio<button type="button" class="gm-i" data-info="mpTab" aria-label="About the model portfolio">i</button></h2><a class="gm-linkbtn" id="xs-pack" hidden target="_blank" rel="noopener"></a></div>
-      <p class="gm-note">The three models combined into one set of fund weights, against a reference of global equities (ACWI) and the US Aggregate (AGG). The reference column shows ACWI split into the same country funds by its country weights. Equity country tilts follow the settings on the Equity allocation page. Click an asset class to fold it, or a fund to see its holdings, sectors and role.</p>
+      <p class="gm-note">The allocation models combined into one set of fund weights, against a reference of global equities (ACWI) and the US Aggregate (AGG). The reference column shows ACWI split into the same country funds by its country weights. Equities start from ACWI&rsquo;s country weights tilted by the country scores (the Equity allocation settings); then up to the sleeve budget moves into the best-scoring sector, industry, style, factor and regional sleeves, each funded from its own region, so the look-through still rolls up by region. Click an asset class to fold it, or a fund to see its holdings, sectors and role.</p>
       <div class="gm-inputs gm-pol">
         <label class="gm-field"><span class="gm-label">Neutral equity weight, %</span><span class="gm-numin"><input id="pol-n" type="number" step="5" min="20" max="90" value="60"></span></label>
         <label class="gm-field"><span class="gm-label">Model range, ± points</span><span class="gm-numin"><input id="pol-b" type="number" step="1" min="0" max="30" value="15"></span></label>
         <label class="gm-field"><span class="gm-label">Diversifier sleeve, %</span><span class="gm-numin"><input id="pol-d" type="number" step="1" min="0" max="30" value="0"></span></label>
       </div>
       <p class="gm-lead" id="mp-note"></p>
+      <p class="gm-note" id="mp-sleeves"></p>
       <div class="gm-grid2">
         <div><h3 class="gm-h3">Fund weights</h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="mp-table" data-source="model_sb model_fi"><thead></thead><tbody></tbody></table></div></div>
         <div><h3 class="gm-h3">Where the active risk comes from<button type="button" class="gm-i" data-info="mpRisk" aria-label="About the risk budget">i</button></h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="mp-risk" data-source="risk_model"><thead></thead><tbody></tbody></table></div>
@@ -993,7 +1039,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     </div>
     <div class="gm-block" id="trail">
       <h2 class="gm-h2">Where sleeves are heading<button type="button" class="gm-i" data-info="trailChart" aria-label="About this chart">i</button></h2>
-      <p class="gm-note">Valuation against technicals, with each sleeve's path over the last three month-ends from the rebuilt history and the arrow at today's live score. With the whole universe selected, the six highest and six lowest composites are shown; choose a group above the tabs to see all of its sleeves.</p>
+      <p class="gm-note">Valuation against technicals, with each sleeve's path over the last three month-ends from the rebuilt history and the arrow at today's live score. With the whole universe selected, the six highest and six lowest composites are shown; choose a group under Universe in the equity settings to see all of its sleeves.</p>
       <div class="gm-chart" id="tc-chart" data-source="sleeve_series scores" style="min-height:380px"></div>
     </div>
     <div class="gm-block" id="ownstrip">
@@ -1003,7 +1049,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     </div>
     <div class="gm-block">
       <h2 class="gm-h2">Score heatmap</h2>
-      <p class="gm-note">Every sleeve on every pillar. Sort with the control above the tabs; by Category groups sleeves under their category.</p>
+      <p class="gm-note">Every sleeve on every pillar. Sort with the control in the equity settings; by Category groups sleeves under their category.</p>
       <div class="gm-tablewrap"><table class="gm-table gm-static gm-hm" id="vh-heat" data-source="scores"><thead></thead><tbody></tbody></table></div>
     </div>
     <div class="gm-block">
@@ -1165,7 +1211,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     </div>
     <div class="gm-block">
       <h2 class="gm-h2">Where multiples sit against their own history</h2>
-      <p class="gm-note">For each sleeve, today's reconstructed trailing P/E against its range since 2015: the bar spans the lowest to highest month, the tick is the median and the dot is today.</p>
+      <p class="gm-note">For each sleeve, today's reconstructed trailing P/E against its range since 2011: the bar spans the lowest to highest month, the tick is the median and the dot is today.</p>
       <div class="gm-inputs"><label class="gm-field"><span class="gm-label">Multiple</span><select id="rh-m"><option value="peTTM">Trailing P/E</option><option value="pb">Price to book</option><option value="evEbitda">EV to EBITDA</option><option value="fcfYield">Free cash flow yield</option><option value="divYield">Dividend yield</option></select></label></div>
       <div class="gm-chart" id="rh-chart" data-source="sleeve_series"></div>
     </div>
@@ -1184,7 +1230,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     </div>
     <div class="gm-block" id="worldmap">
       <h2 class="gm-h2">Country composites</h2>
-      <p class="gm-note">Each country sleeve's composite under the current settings; hover for its cycle-adjusted P/E and currency valuation, and click to open it on the Scoreboard. Other countries have no sleeve.</p>
+      <p class="gm-note">Each country sleeve's composite under the current settings; hover for its cycle-adjusted P/E and currency valuation, and click to open it on the Equity scorecard. Other countries have no sleeve.</p>
       <div class="gm-chart" id="wm-chart" data-source="scores"></div>
     </div>
     <div class="gm-block" id="portfolio">
@@ -1236,7 +1282,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
   <section class="gm-page" id="sbbt" role="tabpanel" hidden>
     <div class="gm-hrow"><h2 class="gm-h2">Stocks vs bonds: backtest and live record<button type="button" class="gm-i" data-info="sbTab" aria-label="About this backtest">i</button></h2></div>
-    <p class="gm-note">Monthly from 2010, gross of costs, using only data available at each date. <button type="button" class="gm-linkbtn" data-go="sb">Back to the current call</button></p>
+    <p class="gm-note">Monthly from June 2016, gross of costs, using only data available at each date. <button type="button" class="gm-linkbtn" data-go="sb">Back to the current call</button></p>
     <div class="gm-grid2">
       <div class="gm-block"><h3 class="gm-h3">Backtest: model against a static 60/40</h3><div class="gm-chart" id="sb-cum" data-source="model_sb" style="min-height:260px"></div></div>
       <div class="gm-block"><h3 class="gm-h3">Statistics</h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="sb-stats"><thead></thead><tbody></tbody></table></div></div>
@@ -1392,7 +1438,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
     <div class="gm-block">
       <h2 class="gm-h2">Reconstructed score history<button type="button" class="gm-i" data-info="recon" aria-label="About reconstructed history">i</button></h2>
-      <p class="gm-note">The model rebuilt month by month since 2015 from what was knowable at each date: prices, quarterly financials and holdings breadth. It has no growth or analyst inputs, so it is close to, but not the same as, today's live scores.</p>
+      <p class="gm-note">The model rebuilt month by month since 2011 from what was knowable at each date: prices, quarterly financials and holdings breadth. It has no growth or analyst inputs, so it is close to, but not the same as, today's live scores.</p>
       <div class="gm-inputs">
         <label class="gm-field"><span class="gm-label">Sleeve 1</span><select id="hh-1"></select></label>
         <label class="gm-field"><span class="gm-label">Sleeve 2</span><select id="hh-2"></select></label>
@@ -1414,11 +1460,11 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
   </section>
 
   <section class="gm-page" id="backtest" role="tabpanel" aria-labelledby="tab-backtest" hidden>
-    <div class="gm-barrow gm-btwin"><span class="gm-label">History<button type="button" class="gm-i" data-info="btWin" aria-label="About the two histories">i</button></span><span class="gm-seg" id="bt-win"><button type="button" data-bw="full" aria-pressed="true">Full, from 2015</button><button type="button" data-bw="filed">Filed holdings only</button></span><span class="gm-note" id="bt-win-note"></span></div>
+    <div class="gm-barrow gm-btwin"><span class="gm-label">History<button type="button" class="gm-i" data-info="btWin" aria-label="About the two histories">i</button></span><span class="gm-seg" id="bt-win"><button type="button" data-bw="full" aria-pressed="true">Full, from 2011</button><button type="button" data-bw="filed">Filed holdings only</button></span><span class="gm-note" id="bt-win-note"></span></div>
     <template id="tpl-backtest">
     <div class="gm-block">
-      <h2 class="gm-h2">Backtest of the model, 2015 to today<button type="button" class="gm-i" data-info="btTab" aria-label="About the backtest">i</button></h2>
-      <p class="gm-note">The model rebuilt at every month-end since 2015 from data that was available at the time, including each fund's holdings as filed with the SEC, then held for the following month. Valuation is the cycle-adjusted P/E against each sleeve's own history, as in the live model; it starts in late 2019, and before that composites use the other three pillars. Read the caveats at the bottom before drawing conclusions.</p>
+      <h2 class="gm-h2">Backtest of the equity model, 2011 to today<button type="button" class="gm-i" data-info="btTab" aria-label="About the backtest">i</button></h2>
+      <p class="gm-note">The model rebuilt at every month-end since 2011 from data that was available at the time, including each fund's holdings as filed with the SEC, then held for the following month. Valuation is the cycle-adjusted P/E against each sleeve's own history, as in the live model; it starts in late 2019, and before that composites use the other three pillars. Read the caveats at the bottom before drawing conclusions.</p>
       <dl class="gm-takeaways" id="bt-notes" data-source="bt_stats bt_ic bt_valuation"></dl>
     </div>
     <div class="gm-block" id="honesty">
@@ -1485,9 +1531,9 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
       <h3>Caveats</h3>
       <ul>
         <li><b>Holdings as filed, with a gap at the start.</b> Each month uses the latest holdings report the fund had filed with the SEC (form N-PORT) by that date, including companies that have since left the fund. FMP's filings start between late 2019 and late 2021 depending on the fund; before a fund's first filing, its earliest filing stands in, so the early years still carry some look-ahead. The robustness table shows the results over the fully filed window too.</li>
-        <li><b>No growth or estimate inputs.</b> FMP has no history of consensus estimates or targets, so the backtested fundamentals pillar is quality only, and sentiment uses holdings breadth and RSI. Monthly analyst rating history does exist from 2019; rating drift was tested and did not help at this horizon.</li>
+        <li><b>No growth or estimate inputs.</b> FMP has no history of consensus estimates or targets, so the backtested fundamentals pillar is quality only, and sentiment uses fund flows only. Monthly analyst rating history does exist from 2019; rating drift was tested and did not help at this horizon.</li>
         <li><b>The backtest-informed preset is fitted to this sample.</b> Its weights were chosen after seeing these results, so its backtest flatters it. It is a sensible starting point, not proof.</li>
-        <li><b>A single regime.</b> 2015 to 2026 was dominated by US large-cap growth. Cheap sleeves (international, EM, value) mostly kept getting cheaper, which is why valuation detracted. A ten-year sample is short for a 12 to 36 month signal.</li>
+        <li><b>A single regime.</b> 2011 to 2026 was dominated by US large-cap growth. Cheap sleeves (international, EM, value) mostly kept getting cheaper, which is why valuation detracted. A fifteen-year sample is short for a 12 to 36 month signal.</li>
         <li><b>Frictionless.</b> All backtests on this dashboard are gross: no trading costs, taxes or cash drag. Monthly rebalancing of the top fifth turns over roughly a third of the portfolio a month.</li>
         <li><b>Point in time where possible.</b> Quarterly financials are used 60 days after the quarter ends; prices, moving averages and breadth use only data up to each month-end.</li>
       </ul>
@@ -1497,104 +1543,130 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
   <section class="gm-page" id="method" role="tabpanel" aria-labelledby="tab-method" hidden>
     <div class="gm-method">
       <nav class="gm-toc" aria-label="Methodology sections">
+        <span class="x-tocg">Start here</span>
         <a href="#m-purpose">Purpose</a>
         <a href="#m-fresh">What updates when</a>
         <a href="#m-read">How to use it</a>
+        <span class="x-tocg">Allocation models</span>
+        <a href="#m-dec">Decision summary</a>
         <a href="#m-sb">Stocks vs bonds model</a>
         <a href="#m-firv">Fixed income model</a>
-        <a href="#m-mp">Model portfolio and risk</a>
         <a href="#m-ra">Real assets</a>
         <a href="#m-fx">Currencies</a>
+        <a href="#m-mp">Model portfolio and risk</a>
         <a href="#m-live">Live records and alerts</a>
+        <a href="#m-macro">Macro, regimes, positioning</a>
+        <span class="x-tocg">Markets, companies, commentary</span>
         <a href="#m-short">Short term and what&rsquo;s changing</a>
+        <a href="#m-fixed">Bond markets</a>
+        <a href="#m-credit">Inflation, real yields and credit</a>
+        <a href="#m-xlab">Compare &amp; correlate</a>
+        <a href="#m-cos">Companies</a>
         <a href="#m-prose">How the commentary is written</a>
-        <a href="#m-fixed">Fixed income</a>
+        <span class="x-tocg">Equity scorecard</span>
         <a href="#m-pillars">The four pillars</a>
         <a href="#m-sentiment">How sentiment is read</a>
         <a href="#m-lookthrough">Fund-level numbers</a>
         <a href="#m-scoring">Scoring</a>
-        <a href="#m-changes">What changed</a>
         <a href="#m-weights">Weights and signals</a>
         <a href="#m-deploy">Deployment rules</a>
         <a href="#m-tools">Visuals, trends, allocation</a>
         <a href="#m-history">Score history</a>
         <a href="#m-breadth">Breadth and concentration</a>
         <a href="#m-returns">Returns and time series</a>
-        <a href="#m-backtest">Backtest</a>
+        <a href="#m-backtest">Equity backtest</a>
         <a href="#m-metrics">Metric reference</a>
         <a href="#m-universe">Universe and coverage</a>
+        <span class="x-tocg">Data</span>
         <a href="#m-data">Data and freshness</a>
         <a href="#m-dq">Data checks</a>
-        <a href="#m-macro">Macro, regimes, currencies</a>
         <a href="#m-limits">Limitations</a>
+        <a href="#m-changes">What changed</a>
       </nav>
       <div class="gm-prose">
         <h3 id="m-purpose">Purpose</h3>
 <div class="x-intent" role="note"><p><strong>This is not a systematic investment strategy.</strong> The dashboard exists to synthesize the weight of the evidence — valuation, fundamentals, trend, sentiment, macro, earnings calls and the record of each signal — so that a person can make better-informed decisions. It is intentionally flexible: every model, weight and threshold can be changed, and no output is meant to be followed mechanically.</p><p><strong>It is built to support investor judgment, not to replace it.</strong> Read the scores, model calls and commentary as inputs to a human decision-making process, alongside context the data cannot capture.</p></div>
-        <p>This is a relative-opportunity screen for the building blocks of a global equity allocation, from core indexes down to sectors, industries and single countries. It asks one question: over the next 12 to 36 months, which parts of the opportunity set look better or worse supported than the rest? It ranks; it does not forecast returns. Use it to decide where to spend research time and to challenge existing tilts, not as a trading signal.</p>
-        <p>Every sleeve is held through a liquid US-listed ETF. Fundamentals come from looking through each ETF to the companies it holds. Prices, trend and several sentiment gauges are live.</p>
+        <p>The dashboard covers a global multi-asset portfolio: how much to hold in equities against bonds, how to tilt the bond portfolio against the US Aggregate, which diversifiers and currencies are in a supportive state, and, inside equities, which regions, styles, sectors and countries look better or worse supported. The decisions are framed over 12 to 36 months; the Today page and the daily commentary cover what moves in between.</p>
+        <p>The equity part is a relative-opportunity screen for the building blocks of a global equity allocation, from core indexes down to sectors, industries and single countries. It asks one question: over the next 12 to 36 months, which parts of the equity opportunity set look better or worse supported than the rest? It ranks; it does not forecast returns. Use it to decide where to spend research time and to challenge existing tilts, not as a trading signal.</p>
+        <p>Every position, in every asset class, is held through a liquid US-listed ETF. Equity fundamentals come from looking through each ETF to the companies it holds; bond, real-asset and currency views come from prices, yields, distributions and the macro record. Prices are live.</p>
 
         <h3 id="m-fresh">What updates when</h3>
-        <p>The page combines three layers of data that refresh on different clocks. Opening the page every day gives a current read on prices and everything built from them; the fundamental view behind the rankings moves once a week.</p>
+        <p>The page combines layers of data that refresh on different clocks. Opening it during the day gives a current read on prices and everything built from them; the models and the fundamental view behind the rankings move once a week; the commentary is written on its own schedule.</p>
         <div class="gm-tablewrap"><table class="gm-table gm-static gm-nosortt gm-fresht">
           <thead><tr><th>Layer</th><th>What it covers</th><th>Refreshed</th><th>Current as of</th></tr></thead>
           <tbody>
             <tr><td><b>Live</b></td><td>ETF quotes and daily price history; quotes for every holding in the look-through; Treasury yields; dollar, credit, oil, gold and VIX proxies. Everything computed from them: technicals, short-term returns, What&rsquo;s changing, breadth, the price-driven repricing of valuation multiples, target upside, and every score, rank and composite.</td><td>Each time the page opens</td><td id="mf-live">—</td></tr>
-            <tr><td><b>Weekly</b></td><td>Fund holdings and weights; company fundamentals; consensus estimates and revisions; analyst ratings and targets; fund flows and fees; currency valuation; the monthly macro backdrop and sensitivities; the dated score snapshot behind the live record; the weekly note and its saved doc.</td><td>Saturday 6:45 am Pacific, by a scheduled task</td><td id="mf-snap">—</td></tr>
+            <tr><td><b>Weekly</b></td><td>The allocation models (stocks vs bonds, fixed income, real assets, currencies) and the saved review behind the live records and the decision summary; the macro record, surprises and futures positioning; FRED breakevens, real yields and credit spreads; fund holdings and weights; company fundamentals, consensus estimates and revisions; analyst ratings and targets; fund flows and fees; earnings-call scores; company profiles; the dated score snapshot; the weekly note, its saved doc and the committee pack.</td><td>Saturday 6:45 am Pacific, by a scheduled task</td><td id="mf-snap">—</td></tr>
             <tr><td><b>Monthly</b></td><td>The backtest, the rebuilt monthly history of every sleeve since 2010, regime results, calibration and the horizon-fitted weights.</td><td>First Saturday of each month</td><td id="mf-bt">—</td></tr>
+            <tr><td><b>Commentary</b></td><td>The Day Ahead and Day in Review on trading days; Week in Review, The Week Ahead, Month in Review and Quarter in Review; earnings-call takeaways in busy reporting weeks. Each ends with the models&rsquo; live track record.</td><td>Trading days 5:30 am and 3 pm PT;<br>Fri after the close; Sun afternoon</td><td>—</td></tr>
           </tbody>
         </table></div>
         <ul>
-          <li><b>What a daily look tells you.</b> How price moves since Saturday have changed the ranks: technicals and repriced valuations move every day, so a sleeve that sells off gets cheaper on the page the same day. Fundamentals, estimates and holdings behind it are as of the weekly snapshot.</li>
-          <li><b>What changes only on Saturday.</b> Earnings, margins, growth, estimate revisions, analyst ratings, flows and the note. If a company reports midweek, the page reflects it after the next rebuild.</li>
-          <li><b>Sources.</b> All market and company data comes from FMP. Purchasing-power parity factors are the World Bank&rsquo;s. Holdings history for the backtest comes from SEC filings through FMP.</li>
+          <li><b>What a daily look tells you.</b> Where markets are now, and how price moves since Saturday have changed the equity ranks: technicals and repriced valuations move every day, so a sleeve that sells off gets cheaper on the page the same day. Fundamentals, estimates and holdings behind it are as of the weekly snapshot.</li>
+          <li><b>What changes only on Saturday.</b> The model calls, the macro record, earnings, margins, growth, estimate revisions, analyst ratings, flows and the note. If a company reports midweek, the page reflects it after the next rebuild.</li>
+          <li><b>Sources.</b> Market, company, economic-calendar and positioning data come from FMP. Breakevens, TIPS real yields and ICE BofA credit spreads and returns by rating come from FRED. Purchasing-power parity factors are the World Bank&rsquo;s. Holdings history for the equity backtest comes from SEC filings through FMP. Headlines on the Today page come from major financial outlets.</li>
         </ul>
 
         <h3 id="m-read">How to use it</h3>
         <ul>
-          <li><b>Executive summary</b> is the starting point: the stocks vs bonds call, the fixed income tilts against the US Aggregate and the equity preferences side by side, the combined model portfolio and where its risk comes from, what markets have done over the period you pick, what is changing, the risks to the view, and how much each model has earned in its backtest.</li>
-          <li><b>Decide</b> holds the forward-looking models. Allocation: stocks vs bonds, and fixed income relative value. Equities: the scorecard that ranks 62 equity sleeves, country and style allocation with the portfolio check, cash deployment and scenarios.</li>
-          <li><b>Markets</b> looks back: multi-asset performance across 35 assets from one day to twenty years; equity pulse, short-term returns, long-run returns, time series, visuals and breadth; the Treasury curve and bond markets.</li>
-          <li><b>Evidence</b> holds the model scorecard, the equity live record and backtest, and this page. The allocation models carry their own backtests, triggers and live records on their pages.</li>
-          <li>The universe filter and equity model settings appear only on the equity pages, where they apply. Click any table heading to sort; ranked charts have their own sort control.</li>
+          <li><b>Today</b> is the daily read: market moves, headlines from major financial outlets, and the economic and earnings calendar with filters.</li>
+          <li><b>Executive summary</b> is the decision page. The decision summary at the top gives each view and its size, what changed since the previous saved review, the observations behind it, how strong the evidence is, what dominates the resulting portfolio and what would reverse each call. Below it: the combined model portfolio and its risk, what markets have done over the period you pick, what is changing, the risks to the view and how much to trust each model.</li>
+          <li><b>Commentary</b> holds the written pieces, from The Day Ahead to the Quarter in Review.</li>
+          <li><b>Decide</b> holds the forward-looking models. Allocation: stocks vs bonds, fixed income relative value, real assets, currencies and the model lab. Equities: the scorecard that ranks 62 equity sleeves, relative trends (each dimension&rsquo;s score against its relative price), country and style allocation with the portfolio check, cash deployment and scenarios.</li>
+          <li><b>Markets</b> looks back: multi-asset performance across 36 assets from one day to twenty years; the macro backdrop; Compare &amp; correlate for any assets across classes; equity pulse, short-term returns, long-run returns, time series, visuals and breadth; the Treasury curve and bond markets; inflation, real yields and credit; currencies and the pair explorer.</li>
+          <li><b>Companies</b> holds the earnings-call analysis and the company profiles for the largest holdings.</li>
+          <li><b>Evidence</b> holds the model scorecard, each model&rsquo;s backtest, the equity live record and score history, and this page.</li>
+          <li>The universe filter and equity model settings appear only on the equity pages, where they apply. Click any table heading to sort; ranked charts have their own sort control; every time-series chart has a time-frame control.</li>
+        </ul>
+
+
+        <h3 id="m-dec">Decision summary</h3>
+        <ul>
+          <li><b>What it shows.</b> One row per view (stocks vs bonds, duration, bond sectors, equity regions, equity style and size, diversifiers, the dollar): the tilt and its size, the evidence grade, the main observation behind it and the first condition that would reverse it. Opening a row shows every driver, the context the models do not use, what supports and weakens the call, the reversal levels and the coverage warnings.</li>
+          <li><b>Reversal levels.</b> For stocks vs bonds they are solved from the live score&rsquo;s own arithmetic: the level of one input, others held where they are, at which the equity weight would go to neutral or to the mirror-image underweight. For bond levers they are the yield gaps at which a position starts and reaches full size.</li>
+          <li><b>Evidence grade.</b> A fixed rubric, applied the same way to every view: +1 if every live signal predicted in both halves of the record (before 2019 and from 2020), &minus;1 if one has turned negative since 2020; +1 if a live signal has a t-stat of 1.5 or more since 2020; +1 if the backtest&rsquo;s 90% range is above zero, &minus;1 if the timing itself lost money; +1 if the live inputs agree, &minus;1 if they offset. Strong is 3 or more, Moderate 2, Mixed 1, Weak 0 or less.</li>
+          <li><b>What changed.</b> Each weekly review saves its calls and the observations behind them. The page compares the latest review with the previous saved one using those saved values; recorded market series such as Treasury yields are read at the earlier review&rsquo;s date. When there is no earlier review, the page says so instead of reconstructing one from backtest history.</li>
+          <li><b>What dominates the portfolio.</b> The equity/bond split against the reference, expected volatility and tracking error, the share of active risk by decision, exposure to equities, rates and the dollar from the risk model, the largest funds and look-through companies, and the current stock&ndash;bond correlation.</li>
         </ul>
 
         <h3 id="m-sb">Stocks vs bonds model</h3>
         <ul>
-          <li><b>What it decides.</b> The equity weight in a portfolio of global equities (ACWI) and US bonds (AGG), around a 60/40 neutral and within 45% to 75%.</li>
-          <li><b>Valuation (50%).</b> The equity risk premium, ACWI&rsquo;s cycle-adjusted earnings yield (ten-year average real earnings) less the real 10-year Treasury yield (10-year less trailing CPI inflation, lagged a month). The dashboard uses this one definition, global with the US shown alongside, and this one real yield everywhere, and the bond term premium, read from the 2s10s slope: a steep curve pays bond holders more, so it counts against equities.</li>
-          <li><b>Macro (25%).</b> High yield against duration-matched Treasuries over six months: improving credit supports equities.</li>
-          <li><b>Risk (25%).</b> Three-month equity volatility against its three-year median: unusually high volatility trims the equity weight.</li>
-          <li><b>Momentum (shown, 0%).</b> Equities against bonds over 12 months and against their 10-month average. Over 2010 to today it pointed the wrong way at the model&rsquo;s horizon, so it is displayed for context and carries weight only in the alternative versions.</li>
-          <li><b>Scoring.</b> Each input is a z-score against its own history up to that month, clipped at two standard deviations and squashed to &minus;1 to +1. The weight is 60% plus 15 points times the blended score. Nothing uses data that was not available at the time.</li>
-          <li><b>Backtest.</b> Monthly from 2010: the weight set at each month-end earns the next month&rsquo;s ACWI and AGG returns. Compared with a static 60/40, with a block-bootstrap 90% range, months ahead, turnover and each signal&rsquo;s rank correlation with the following one and twelve months.</li>
+          <li><b>What it decides.</b> The equity weight in a portfolio of global equities (ACWI) and US bonds (AGG), around a 60/40 neutral and within 45% to 75%: 60% plus 15 points times the blended score.</li>
+          <li><b>Four pillars, weighted 50/0/25/25.</b> Valuation 50%, momentum 0%, macro 25%, risk 25%. A signal carries weight only if it passes the promotion rule (see Macro, regimes, positioning); a pillar with no passing signal drops out and the others are reweighted.</li>
+          <li><b>Live now.</b> Valuation: the bond term premium, read from the 2s10s slope against its history (a steep curve pays bond holders more, so it counts against equities). Macro: global growth surprises. These two carry the whole score; the risk pillar has no passing signal.</li>
+          <li><b>Shown, not used.</b> The equity risk premium (the point-in-time S&amp;P 500 cycle-adjusted earnings yield, built from the index&rsquo;s members and earnings as filed, less the 10-year Treasury yield minus trailing CPI inflation); high yield against duration-matched Treasuries over six months; the US growth nowcast; three-month equity volatility against its three-year median; S&amp;P 500 futures positioning; and momentum, equities against bonds over 12 months and against their 10-month average. Each failed the promotion rule and is displayed as context.</li>
+          <li><b>Real yield.</b> The models use one definition everywhere: the 10-year Treasury yield less trailing CPI inflation, lagged a month. The market&rsquo;s TIPS real yield is shown separately on the inflation and credit page and on the decision summary.</li>
+          <li><b>Scoring.</b> Each input is a z-score against its own history up to that month, clipped at two standard deviations and squashed to &minus;1 to +1. Nothing uses data that was not available at the time.</li>
+          <li><b>Backtest.</b> Monthly from June 2016, when global growth surprises begin: the weight set at each month-end earns the next month&rsquo;s ACWI and AGG returns. Compared with a static 60/40, with a block-bootstrap 90% range, months ahead, turnover and each signal&rsquo;s rank correlation with the following one and twelve months. The excess is split into the average tilt and the timing around it.</li>
         </ul>
+
 
         <h3 id="m-firv">Fixed income relative value model</h3>
         <ul>
           <li><b>What it decides.</b> Tilts against the US Aggregate that keep risk close to the benchmark&rsquo;s: hold AGG and apply duration-aware swaps between bond ETFs.</li>
           <li><b>Duration</b> (&plusmn;1.5 years, long Treasuries against short): longer when real yields are high and the curve is steep against their history.</li>
-          <li><b>Investment-grade credit</b> (&plusmn;15%, LQD against IEF) and <b>agency MBS</b> (&plusmn;10%, MBB against IEF): overweight when their yield over Treasuries of similar duration is wide against its history.</li>
+          <li><b>Investment-grade credit</b> (&plusmn;15%, LQD against IEF) and <b>agency MBS</b> (&plusmn;10%, MBB against IEF): their spread signals did not pass the promotion rule, so both are held at the Aggregate&rsquo;s weight until one does.</li>
           <li><b>High yield</b> (up to 10%, HYG against IEI) and <b>EM dollar debt</b> (up to 8%, EMB against IEF): added only when cheap, since the Agg holds none.</li>
           <li><b>TIPS</b> (up to 10%, TIP against IEI): when inflation has been rising over six months.</li>
-          <li><b>EM local currency</b> (up to 5%, EMLC against short Treasuries): after a strong dollar run and when local yields are high against their history.</li>
-          <li><b>Signals</b> follow the same z-score method as the stocks vs bonds model. Spreads are distribution yields over Treasury ETFs of similar duration, a proxy for option-adjusted spreads, which FMP does not carry.</li>
+          <li><b>EM local currency</b> (up to 5%, EMLC against short Treasuries): after a strong six-month dollar run, which leaves EM currencies cheap. Local yields and the currency model are shown as evidence only.</li>
+          <li><b>Signals</b> follow the same z-score method and promotion rule as the stocks vs bonds model. Spreads are distribution yields over Treasury ETFs of similar duration, a proxy for option-adjusted spreads, which FMP does not carry.</li>
           <li><b>Backtest.</b> Monthly from December 2010, when at least five levers have enough history: the Agg plus each lever&rsquo;s position times the return of its long leg less its short leg. Reported against the Agg: excess return with a 90% range, tracking error, information ratio, months ahead, worst run behind, and each lever&rsquo;s contribution, hit rate and rank correlation.</li>
           <li><b>Design choice.</b> An earlier version also used momentum and risk-off (VIX) signals. Over this period they reduced returns at the 12-month horizon, so the model now buys value only. That choice was made after seeing results; treat the backtest as an upper bound.</li>
         </ul>
 
         <h3 id="m-mp">Model portfolio and risk</h3>
         <ul>
-          <li><b>Combination.</b> Equities get the policy neutral plus the band times the stocks vs bonds score; the equity share is split into country funds by tilting ACWI&rsquo;s country weights with the equity scores (the Equity allocation page settings), with countries that have no fund held through ACWX. Bonds are the Agg plus the fixed income pair trades. An optional diversifier sleeve, funded pro rata, holds the real assets that score above zero.</li>
+          <li><b>Combination.</b> Equities get the policy neutral plus the band times the stocks vs bonds score; the equity share is first split into country funds by tilting ACWI&rsquo;s country weights with the equity scores (the Equity allocation page settings), with countries that have no fund held through ACWX. Then up to the sleeve budget (20% of equities by default, at most 5% in any one sleeve) moves into the best-scoring sleeves anywhere in the equity universe: sectors, industries, US and international styles and sizes, factors and regional funds. A sleeve qualifies when its composite is more than the allocation band (at least 5 points) above 50; weights follow how far above, up to ten sleeves, skipping any that moves almost one-for-one (correlation above 0.92) with a better-scoring pick. Each is funded pro rata from the broad and country funds of its own region, so region weights, and the region look-through, are unchanged. Negative views are expressed by not holding a sleeve; nothing is sold short. Bonds are the Agg plus the fixed income pair trades. An optional diversifier sleeve, funded pro rata, holds the real assets that score above zero.</li>
           <li><b>Reference.</b> The neutral weight in ACWI, the rest in AGG. The table shows ACWI split into the same country funds, so active weights read country by country.</li>
-          <li><b>Risk.</b> A covariance matrix of 32 funds from the last five years of monthly returns. Tracking error is the volatility of the active weights; each decision&rsquo;s contribution is its covariance with the total active position divided by the tracking error, so contributions add to the total.</li>
+          <li><b>Risk.</b> A covariance matrix of every fund the portfolio can hold (78: all 62 equity sleeves plus the bond, real-asset and dollar funds) from the last five years of monthly returns. The active risk is split into the stocks vs bonds call, the country tilts, the sleeve tilts, holding country funds instead of ACWI (an implementation choice), the fixed income tilts and the diversifiers. Tracking error is the volatility of the active weights; each decision&rsquo;s contribution is its covariance with the total active position divided by the tracking error, so contributions add to the total.</li>
           <li><b>Scenarios.</b> Each fund&rsquo;s sensitivity to global equities, the 10-year yield, the dollar and oil comes from a five-year monthly regression; a shock is applied through those sensitivities to every fund and to the portfolio and reference.</li>
         </ul>
 
         <h3 id="m-ra">Real assets and commodities</h3>
         <ul>
           <li><b>Assets.</b> Gold (GLD), broad commodities (DBC), US REITs (VNQ) and global infrastructure (IGF), judged as diversifiers for a 60/40 portfolio.</li>
-          <li><b>Signals.</b> Trend: the 12-month return and the price against its 10-month average. Value: for gold, the real 10-year yield (low is good); for REITs, the dividend yield over the 10-year. Diversification: three-year correlation with 60/40, good below 0.5. Each is scaled to &minus;1 to +1 and averaged.</li>
+          <li><b>Signals.</b> Trend (the 12-month return and the price against its 10-month average) is live for gold and broad commodities; the inflation nowcast is live for commodities. Diversification, the three-year correlation with 60/40 (good below 0.5), is kept for all four as a risk property, not a forecast. Value (the real 10-year yield for gold, the REIT yield over the 10-year) and positioning failed the promotion rule and are shown as evidence. Each signal is scaled to &minus;1 to +1 and averaged.</li>
+          <li><b>Use in the portfolio.</b> The diversifier sleeve on the model portfolio is 0% unless you set it; when used, it holds the assets that score above zero in proportion to their scores.</li>
           <li><b>Evidence.</b> The 12-month rank correlation of the score with the next year&rsquo;s return over 60/40 since 2009 is small for every asset; read the scores as a guide to which diversifier is in a supportive state, not as a forecast.</li>
         </ul>
 
@@ -1602,12 +1674,13 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <ul>
           <li><b>Coverage.</b> Six developed and six emerging currencies against the dollar, quoted as dollars per unit so a rise means the currency gained. Weekly history back to 2005; daily returns are live.</li>
           <li><b>Valuation.</b> Against the currency&rsquo;s own 10-year average, and against the World Bank&rsquo;s purchasing-power-parity rate (positive means cheap). PPP gaps are large and persistent for emerging currencies; compare them with their own history, not with zero.</li>
-          <li><b>Hedge ratio.</b> For dollar-based holders of developed-market equities: 50%, plus 25 points if the currency is more than 5% above its 10-year average, minus 25 if more than 5% below, plus 25 if it fell more than 2% over 12 months, minus 25 if it rose more than 2%, within 0% to 100%. A rule of thumb, not a backtested model.</li>
+          <li><b>Hedge ratio.</b> For dollar-based holders of developed-market equities, from the currency model: 50%, moving toward 0% when it expects the currency to gain and toward 100% when it expects it to fall. Where the model has no view, a rule: 50%, plus 25 points if the currency is more than 5% above its 10-year average, minus 25 if more than 5% below, plus 25 if it fell more than 2% over 12 months, minus 25 if it rose more than 2%, within 0% to 100%. A rule of thumb, not a backtested model.</li>
         </ul>
 
         <h3 id="m-live">Live records, alerts and the committee pack</h3>
         <ul>
-          <li><b>Live records.</b> Each Saturday the stocks vs bonds weight, the fixed income tilts, the real asset scores and the equity preferences are saved. Each call is held until the next one and measured with daily fund prices; the Model scorecard page compounds them.</li>
+          <li><b>Live records.</b> Each Saturday the stocks vs bonds weight, the fixed income tilts and their pair funds, the real asset scores, the currency views, the regime, the equity preferences and the observations behind them are saved. Each call is held until the next one and measured with daily fund prices; the Model scorecard page compounds them.</li>
+          <li><b>Running count.</b> Every commentary piece ends with the live track record to its data date: stocks vs bonds against a 60/40, fixed income tilts against the Aggregate, and the favored minus the avoided equity sleeves, since the first saved call and for the latest session. A record this short says little about skill; it is shown so the count is honest from the start.</li>
           <li><b>Alerts.</b> The scheduled rebuild emails a short note when a call changes materially: the equity weight by 3 points or more, a fixed income tilt changing sign or moving 5 points (half a year for duration), a real asset score crossing zero, or a change in the top or bottom equity sleeves.</li>
           <li><b>Committee pack.</b> A PDF of the weekly note, the model calls and the main charts, rebuilt each Saturday and linked from the Executive summary.</li>
         </ul>
@@ -1622,23 +1695,48 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
         <h3 id="m-prose">How the commentary is written</h3>
         <ul>
-          <li>Every sentence on the Overview, the scorecard and in the note is generated from the numbers, by rule, each time the page opens. Nothing is edited by hand.</li>
-          <li>For each sleeve, a metric is cited as support when it sits in the most favorable quarter of the universe, and as a weakness when it sits in the least favorable quarter. Cycle-adjusted P/E is judged against the sleeve&rsquo;s own history instead, using the top and bottom 30% of its range. The strongest two or three are quoted with their values.</li>
+          <li><b>Commentary tab.</b> Written by Claude scheduled tasks from FMP and FRED data, in a house voice: The Day Ahead before each trading day&rsquo;s open, Day in Review after its close, Week in Review on Fridays, The Week Ahead on Sundays, Month and Quarter in Review after each period&rsquo;s last close, and earnings-call takeaways in busy reporting weeks. Every number is checked against the data pulled before publishing; figures that cannot be confirmed are cut. The weekly, monthly and quarterly pieces are also emailed.</li>
+          <li><b>Page text.</b> Every other sentence on the dashboard (the headline, the decision summary, the scorecard, category notes, What&rsquo;s changing and the weekly note) is generated from the numbers, by rule, each time the page opens. Nothing is edited by hand.</li>
+          <li>For each equity sleeve, a metric is cited as support when it sits in the most favorable quarter of the universe, and as a weakness when it sits in the least favorable quarter. Cycle-adjusted P/E is judged against the sleeve&rsquo;s own history instead, using the top and bottom 30% of its range. The strongest two or three are quoted with their values.</li>
           <li>Category notes name the top and bottom sleeves under the current settings, the pillar that most separates them from the rest of the category, the forward P/E range and recent returns. A line marked Against the view flags recent performance that contradicts the ranking.</li>
           <li>Sentiment evidence follows the sentiment setting: read contrarian, outflows and low Buy shares count in a sleeve&rsquo;s favor and crowded positioning against it.</li>
+          <li>Critical points are in bold.</li>
         </ul>
 
-        <h3 id="m-fixed">Fixed income</h3>
+
+        <h3 id="m-fixed">Bond markets</h3>
         <ul>
           <li><b>Coverage.</b> 27 bond ETFs: Treasuries by maturity and TIPS; the US aggregate; agency MBS, AAA CLOs and municipals; investment-grade corporates by rating and maturity, and floating-rate notes; BB and broad high yield, fallen angels and senior loans; EM dollar and local-currency debt and hedged international bonds; preferreds and convertibles.</li>
           <li><b>Curve.</b> FMP Treasury yields, live, from one month to 30 years, compared with one day, one week, one month, three months and one year earlier. The curve is described as bull or bear (yields falling or rising) and steepening or flattening, from the 2-year and 10-year moves. Month-end history since 2005 comes from the weekly rebuild.</li>
-          <li><b>Returns.</b> Dividend-adjusted total returns to the live price, the same periods as the equity sleeves; 3 to 20 years are annualized from daily history since 2005. Returns against duration-matched Treasuries subtract the return of Treasury ETFs interpolated to the same empirical duration.</li>
+          <li><b>Returns.</b> Dividend-adjusted total returns to the live price, over the same periods as every other asset; 3 to 20 years are annualized from daily history since 2005. Returns against duration-matched Treasuries subtract the return of Treasury ETFs interpolated to the same empirical duration.</li>
           <li><b>Yield.</b> Trailing 12-month distributions over today&rsquo;s price, and the latest distribution annualized. These are distribution yields, not yields to maturity: they lag market yields as coupons reset, they include TIPS inflation accruals, and municipal yields are before tax.</li>
           <li><b>Duration and equity beta.</b> Weekly returns over three years are regressed on the weekly change in the Treasury yield at the maturity that fits best and on US equity returns. The yield coefficient is an empirical duration; the equity coefficient shows how much credit behaves like stocks. Floating-rate and loan funds show near-zero duration by construction.</li>
           <li><b>Yield over Treasuries.</b> A fund&rsquo;s trailing yield less the trailing yield of Treasury ETFs interpolated to the same duration. Using distribution yields on both sides cancels most of the coupon lag. It is a spread proxy, not an option-adjusted spread.</li>
-          <li>Holdings-level bond data (ratings mix, maturities, option-adjusted spreads) is not available from FMP, so credit fundamentals are measured from prices and distributions.</li>
+          <li>Holdings-level bond data (ratings mix, maturities) is not available from FMP, so fund-level credit measures come from prices and distributions. Index option-adjusted spreads by rating come from FRED, on the inflation, real yields and credit page.</li>
         </ul>
 
+        <h3 id="m-credit">Inflation, real yields and credit</h3>
+        <ul>
+          <li><b>Inflation and real yields.</b> Treasury breakevens (5-year, 10-year and the 5-year, 5-year forward) and TIPS real yields (5, 10 and 30 years) from FRED, daily since 2003, with the 10-year yield split into its real yield and breakeven.</li>
+          <li><b>Credit.</b> ICE BofA option-adjusted spreads and total-return indexes for investment grade and high yield, and by rating from AAA to CCC, from FRED. FRED carries only the last three years of these series, so spread history and returns by rating start about three years back.</li>
+          <li>Rebuilt with each full price refresh and every Saturday.</li>
+        </ul>
+
+        <h3 id="m-xlab">Compare &amp; correlate</h3>
+        <ul>
+          <li><b>Coverage.</b> Equity sleeves, bond funds, real assets, commodity futures, the dollar index and twelve currencies, bitcoin and ether, the VIX, and Treasury yields, real yields, breakevens and credit spreads, in one list.</li>
+          <li><b>History.</b> Weekly closes from 2005&ndash;07 for the non-equity assets, joined to the daily history of the last few years and scaled where they meet. Rates and spreads are levels in percent from FRED.</li>
+          <li><b>Views.</b> Growth of 100, relative to a benchmark, drawdown, rolling volatility, rolling correlation and levels; statistics, a correlation matrix (daily, weekly or monthly returns) and calendar-year returns follow the time frame you pick. Yields and spreads are compared in basis-point changes, not returns.</li>
+        </ul>
+
+        <h3 id="m-cos">Companies</h3>
+        <ul>
+          <li><b>Earnings calls.</b> Every S&amp;P 500 earnings call since 2014, scored for tone, guidance and topics; seasons are calendar quarters with at least 25 calls, and changes compare each company with its own call a year earlier. Tone readings roll up to sectors and sleeves and are tested against later returns like any other signal.</li>
+          <li><b>Company profile.</b> The largest holdings across the dashboard&rsquo;s funds (about 300), with price history against the market and the sector, revenue and earnings with estimates, margins, cash flow, the balance sheet, the earnings record, key metrics, call tone, which funds hold it, and peers. In the Claude version any ticker can be looked up live.</li>
+        </ul>
+
+        <p class="x-mgroup">Equity scorecard</p>
+        <p class="gm-note">The sections from here to the metric reference describe the equity scorecard, which ranks the 62 equity sleeves and feeds the equity country tilts in the model portfolio.</p>
         <h3 id="m-pillars">The four pillars</h3>
         <p>Each pillar answers a different question, and they are chosen so that some pull against each other. A sleeve that scores well on all four is rare; most of the insight comes from where they disagree.</p>
         <ul>
@@ -1652,7 +1750,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <p>Sentiment measures positioning: how much optimism is already in the price. It has three inputs: how many analysts rate the holdings a buy, how far their price targets sit above today's prices, and how much money has flowed into the fund over six months (growth in the ETF's shares outstanding). Price breadth and RSI used to sit here too. Read contrarian, they pointed the wrong way in the backtest, because they are really momentum measures, so they now appear only on the Breadth tab. The test results are in the table below.</p>
         <div class="gm-tablewrap"><table class="gm-table gm-static gm-hm" id="m-cand" data-source="bt_candidates"><thead></thead><tbody></tbody></table></div>
         <p><b>Contrarian (default).</b> Over 12 to 36 months, extremes in positioning tend to reverse. When nearly every analyst rates a market a buy and most of its stocks are at highs, good news is priced in, expectations are hard to beat and there are few marginal buyers left. When sentiment is washed out, the opposite holds. In this mode, crowded optimism lowers the score and pessimism raises it.</p>
-        <p><b>Confirming.</b> Every sentiment metric flips, so optimism and broad participation raise the score. This suits shorter horizons or a regime where you expect trends to keep running. In this mode sentiment largely repeats what technicals already measures, so the composite leans harder toward momentum. Because scores are percentile ranks, a sleeve's confirming sentiment score is exactly 100 minus its contrarian score. Each mode has its own composite and group rank, and the switch above the tabs changes every view on the page.</p>
+        <p><b>Confirming.</b> Every sentiment metric flips, so optimism and broad participation raise the score. This suits shorter horizons or a regime where you expect trends to keep running. In this mode sentiment largely repeats what technicals already measures, so the composite leans harder toward momentum. Because scores are percentile ranks, a sleeve's confirming sentiment score is exactly 100 minus its contrarian score. Each mode has its own composite and group rank, and the switch in the equity settings changes every equity view on the page.</p>
         <p>Reading technicals and contrarian sentiment together gives four setups:</p>
         <ul>
           <li><b>Strong trend, washed-out sentiment:</b> a recovery the crowd has not joined yet. Usually the most attractive combination.</li>
@@ -1678,7 +1776,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li><b>Percentile ranks.</b> Each metric is ranked across the whole universe and expressed as a percentile from 0 to 100, oriented so that higher is always better under the current reading. Ranks rather than raw values keep one extreme number from dominating and put metrics on a common scale.</li>
           <li><b>Pillars.</b> A pillar is the simple average of its metrics' percentiles. Fundamentals averages quality and growth.</li>
           <li><b>Composite.</b> The equal-weight average of fundamentals, valuation, technicals and sentiment.</li>
-          <li><b>Valuation: cycle-adjusted P/E against the sleeve's own history.</b> By default the valuation pillar asks one question: is this sleeve's price high or low relative to its average earnings over the last five years, compared with its own record since 2015? Each sleeve's position in its own range is then ranked across the universe. This is the logic of Shiller's CAPE: it ignores sector and country mix, which dominate any comparison of one sleeve's multiple with another's, and it does not mistake peak-cycle earnings for cheapness.</li>
+          <li><b>Valuation: cycle-adjusted P/E against the sleeve's own history.</b> By default the valuation pillar asks one question: is this sleeve's price high or low relative to its average earnings over the last five years, compared with its own record since 2011? Each sleeve's position in its own range is then ranked across the universe. This is the logic of Shiller's CAPE: it ignores sector and country mix, which dominate any comparison of one sleeve's multiple with another's, and it does not mistake peak-cycle earnings for cheapness.</li>
           <li><b>Why this default.</b> Five ways of measuring valuation were tested. Every method that compares multiples across sleeves, or uses ordinary trailing multiples, pointed the wrong way in a decade led by US growth. The cycle-adjusted own-history read was the only one with a positive record (12-month rank correlation +0.08, top fifth ahead of the bottom fifth by about 6% over the next year), in the US and in developed markets abroad. It needs three years of earnings and two years of its own record, so its test runs only from late 2019 and is not statistically strong. The Valuation control switches to the other four: within category, all multiples against own history, across the universe, or a blend.</li>
           <li><b>Still relative.</b> The final score is always a rank, so if everything is expensive, something still scores 100.</li>
           <li><b>Cycle-adjusted P/E.</b> Valuation includes price over the sleeve's average trailing earnings of the last five years, from its rebuilt monthly history. Ordinary P/Es look cheapest at the top of an earnings cycle; the five-year average largely removes that trap.</li>
@@ -1688,9 +1786,10 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
         <h3 id="m-changes">What changed in this version</h3>
         <ul>
+          <li><b>October 2026.</b> A Today page; a decision summary at the top of the Executive summary; a Commentary tab with daily, weekly, monthly and quarterly pieces that each carry the live track record; Companies (earnings calls and company profiles); inflation, real yields and credit from FRED; relative trends for every equity dimension; Compare &amp; correlate across asset classes and a currency pair explorer; a time-frame control on every time-series chart; the promotion rule applied to every signal, original ones included; a public copy of the dashboard that refreshes prices every five minutes in market hours.</li>
           <li><b>One portfolio.</b> A combined model portfolio with adjustable policy settings and a risk budget by decision; live records and a scorecard for every model; triggers that would change each call and results by backdrop; a real assets model; a currencies page; cross-asset scenarios; email alerts and a weekly committee pack. Trading costs are no longer modeled anywhere: all backtests are gross. The equity risk premium and real yield now have one definition each across the dashboard.</li>
           <li><b>Multi-asset tool.</b> An executive summary up front; two allocation models (stocks vs bonds, and fixed income relative value against the US Aggregate) with their own backtests; multi-asset and fixed income market pages; navigation regrouped into Decide, Markets and Evidence.</li>
-          <li><b>Navigation.</b> Six sections replace thirteen tabs, with an Overview page first. Model settings fold away under the universe filter. Every table sorts by its headings and ranked charts have their own sort.</li>
+          <li><b>Navigation.</b> Sections replaced the original thirteen tabs, with the pulse page (then called Overview) first. Model settings fold away under the universe filter. Every table sorts by its headings and ranked charts have their own sort.</li>
           <li><b>Short term and what&rsquo;s changing.</b> Returns from one day to one month, live rates, dollar, credit and commodity moves, and a rule-based list of moves that run against the longer-term picture.</li>
           <li><b>Commentary from the data.</b> The headline, the scorecard summary, the category notes and the weekly note now quote the underlying numbers rather than the scores. The weekly note is in short bullets.</li>
           <li><b>Longer, truer history.</b> The backtest now starts in 2011 rather than 2015, and the cycle-adjusted P/E uses earnings restated for inflation. On the longer record the cycle-adjusted own-history valuation read is still the best of the five tested, but only slightly positive (12-month rank correlation about +0.03), so valuation is a weak tilt rather than a strong one.</li>
@@ -1733,7 +1832,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li><b>Metric explorer:</b> any two metrics or pillars across the sleeves, with a least-squares line, R² and correlation. The strongest-relationships table ranks every pair of metrics by R², optionally only pairs from different pillars, which shows which signals are telling you the same thing.</li>
           <li><b>Relative strength:</b> a sleeve's month-end price divided by a benchmark's, rebased to 100. A rising line means it is outperforming.</li>
           <li><b>Correlation:</b> correlation of monthly dividend-adjusted returns over the latest 36 months. Below about 0.5 is a meaningful diversifier.</li>
-          <li><b>Equities against bonds:</b> the cycle-adjusted earnings yield of the US, global, developed ex-US and emerging sleeves less the US real 10-year yield (10-year Treasury less trailing CPI inflation), with its range since 2015. The regime table labels each month by rates, curve, dollar, credit, inflation and equity trend, and shows how each pillar ranked sleeves in months like each state.</li>
+          <li><b>Equities against bonds:</b> the cycle-adjusted earnings yield of the US, global, developed ex-US and emerging sleeves less the US real 10-year yield (10-year Treasury less trailing CPI inflation), with its range since 2011. The regime table labels each month by rates, curve, dollar, credit, inflation and equity trend, and shows how each pillar ranked sleeves in months like each state.</li>
           <li><b>Portfolio check:</b> paste holdings and weights to see the portfolio's weighted scores, the share of weight in each signal, holdings ranked low under most settings, sleeves you could add that are in the top fifth under most settings and least correlated with what you hold, and signal-tilted weights using the tilt settings below.</li>
           <li><b>Country tilts:</b> each country's ACWI weight is scaled by one plus the maximum tilt times its score's distance from 50 (as a share of 50), then all weights are rescaled to sum to 100%. Scores inside the neutral band count as 50. Countries without a sleeve stay neutral.</li>
           <li><b>Pair preferences:</b> the score gap between two sleeves; a gap inside the neutral band reads as neutral.</li>
@@ -1753,12 +1852,12 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <ul>
           <li><b>Historical returns</b> come from dividend-adjusted weekly closes since 2005, ending at today's live price. Annualized figures need the full window of history; younger funds show a dash.</li>
           <li><b>Calendar-year and monthly returns</b> use the last weekly close of each year or month.</li>
-          <li><b>The time series explorer</b> shows monthly look-through multiples (trailing P/E, price to book, EV to EBITDA, free cash flow and dividend yields), quality metrics, breadth and rebuilt scores for each sleeve since 2015; the median of each across a group or region; and quarterly multiples for each fund's 25 largest holdings. Multiples are built from quarterly financials, summed over four quarters and used 60 days after each quarter ends, divided by the price at each month-end.</li>
+          <li><b>The time series explorer</b> shows monthly look-through multiples (trailing P/E, price to book, EV to EBITDA, free cash flow and dividend yields), quality metrics, breadth and rebuilt scores for each sleeve since 2011; the median of each across a group or region; and quarterly multiples for each fund's 25 largest holdings. Multiples are built from quarterly financials, summed over four quarters and used 60 days after each quarter ends, divided by the price at each month-end.</li>
           <li><b>Against its own history</b>, a single series is shown with its average and a band of one standard deviation, and the table gives today's percentile within its own range. This answers the question the cross-sectional scores cannot: is a sleeve cheap compared with its own past?</li>
           <li>Each month uses the holdings the fund had filed by then, so the history describes the fund as it actually was. Before a fund's first filing in FMP (late 2019 to late 2021), its earliest filing stands in.</li>
         </ul>
 
-        <h3 id="m-backtest">Backtest</h3>
+        <h3 id="m-backtest">Equity backtest</h3>
         <ul>
           <li><b>How much to trust it.</b> Confidence ranges come from a block bootstrap that resamples whole 12-month stretches of history, so serial correlation is respected. The selection check compares the default setting with all 70 tested: the median setting is the fairer forecast, because the default was chosen after seeing the results.</li>
           <li><b>Live track record.</b> Every weekly snapshot's top and bottom fifth is held until the next snapshot, on the History tab. It is the only evidence the model could not have been tuned to, and it needs a year or more before it means much.</li>
@@ -1817,7 +1916,9 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li>FMP carries analyst ratings and price targets mainly for US-listed companies, so for international sleeves, sentiment rests mostly on fund flows.</li>
           <li>Small-cap and equal-weight look-throughs cover a minority of each fund, so their fundamentals describe the larger holdings more than the whole fund.</li>
           <li>Consensus estimates can be stale or thin for smaller and emerging-market companies. Memory makers dominate Korea and a large part of EM and Taiwan; their consensus EPS is rising very quickly, which makes those sleeves look cheap on forward P/E and fast-growing.</li>
-          <li>Scores are cross-sectional. They say nothing about whether equities as a whole are attractive against bonds or cash.</li>
+          <li>Equity scores are cross-sectional: they rank sleeves against each other and say nothing about whether equities as a whole are attractive. That question belongs to the stocks vs bonds model.</li>
+          <li>The allocation models rest on few live signals (two for stocks vs bonds), with t-stats mostly below 2 and backtests that start in 2010&ndash;16. Treat their calls as one input, sized modestly.</li>
+          <li>Bond spreads in the fixed income model are distribution-yield proxies, not option-adjusted spreads, and FRED&rsquo;s ICE BofA history covers only three years.</li>
           <li>Sector mix drives many fundamental metrics, such as margins, P/B and leverage. Comparing within a group is often more informative than across the whole universe.</li>
         </ul>
       </div>
@@ -1987,27 +2088,34 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
   <section class="gm-page" id="reltrend" role="tabpanel" hidden>
     <template id="tpl-reltrend">
       <div class="gm-block">
-        <div class="gm-hrow"><h2 class="gm-h2">Relative trends: the model against the market</h2><span class="gm-seg" id="rt-range"></span></div>
+        <div class="gm-hrow"><h2 class="gm-h2">Relative trends: the model against the market</h2></div>
         <div class="gm-seg gm-presets" id="rt-dim"></div>
         <p class="gm-note" id="rt-dim-note"></p>
       </div>
       <div class="gm-grid2">
         <div class="gm-block">
-          <h3 class="gm-h3" id="rt-focus-h">—</h3>
+          <div class="gm-hrow"><h3 class="gm-h3" id="rt-focus-h">—</h3><span class="gm-seg x-range" id="rt-range" aria-label="Time frame"></span></div>
           <div class="gm-chart" id="rt-focus" data-source="sleeve_series score_history etf_weekly" style="min-height:420px"></div>
+          <p class="gm-note">Top: the model&rsquo;s reading. Bottom: the price of the favored side relative to the other, rebased to 100 at the start of the time frame.</p>
         </div>
         <div class="gm-block">
-          <h3 class="gm-h3">What the history says</h3>
+          <div class="gm-hrow"><h3 class="gm-h3">How predictive has it been?</h3><span id="rt-verdict" class="x-dchip"></span></div>
           <ul class="gm-bul" id="rt-facts" data-source="sleeve_series etf_weekly"></ul>
+          <h4 class="x-dh4">Next 12 months, by fifth of the reading</h4>
+          <div class="gm-chart" id="rt-buckets" style="min-height:0"></div>
+          <p class="gm-note">Each bar is the average relative return over the following 12 months after months in that fifth of the reading&rsquo;s own history; the label is how often it won. The outlined bar holds today&rsquo;s reading. A model with an edge shows bars rising from left to right.</p>
+          <h4 class="x-dh4">Every month: reading against what followed</h4>
+          <div class="gm-chart" id="rt-scatter" style="min-height:0"></div>
+          <p class="gm-note">Dark dots are the last three years. The dashed line is the fitted slope; the orange line marks today&rsquo;s reading.</p>
         </div>
       </div>
       <div class="gm-block">
-        <h3 class="gm-h3">Every sleeve in this dimension</h3>
-        <p class="gm-note">Top line: score; bottom line: relative price. Click a card to enlarge it.</p>
+        <h3 class="gm-h3">Every call in this dimension</h3>
+        <p class="gm-note">Top line: the reading; bottom line: relative price. Click a card to enlarge it.</p>
         <div class="x-cards" id="rt-grid" data-source="sleeve_series score_history etf_weekly etf_universe"></div>
       </div>
       <div class="gm-block">
-        <h3 class="gm-h3">Scores, relative returns and whether the score led</h3>
+        <h3 class="gm-h3">Readings, relative returns and how predictive each has been</h3>
         <div class="gm-tablewrap"><table class="gm-table gm-compact" id="rt-table" data-source="sleeve_series score_history etf_weekly"><thead></thead><tbody></tbody></table></div>
       </div>
     </template>
@@ -2144,6 +2252,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <script src="app2.js"></script>
 <script src="pulse.js"></script>
 <script src="x_core.js"></script>
+<script src="x_port.js"></script>
 <script src="x_assets.js"></script>
 <script src="x_rates.js"></script>
 <script src="x_rel.js"></script>
@@ -2153,3 +2262,5 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <script src="x_xlab.js"></script>
 <script src="x_fxpair.js"></script>
 <script src="x_exec.js"></script>
+<script src="x_today.js"></script>
+<script src="x_head.js"></script>

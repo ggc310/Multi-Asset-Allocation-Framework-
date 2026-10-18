@@ -1,5 +1,5 @@
 {
- "title": "Global Equity Opportunity Monitor",
+ "title": "Global Multi-Asset Allocation Framework (GMAAF)",
  "datasets": {
   "acwi_countries": {
    "title": "ACWI country weights",
@@ -470,14 +470,14 @@
    "title": "Fund sector make-up",
    "description": "Sector weights of every fund the model portfolio can hold: GICS-style sectors for the equity funds; for bond funds, the bond type (the Aggregate split by its own sectors) and, for corporates, the issuer industry. Cash dropped and the rest rescaled. Built by Claude from FMP ETF sector weightings.",
    "updated": {
-    "at": "2026-10-18T00:50:00Z",
+    "at": "2026-10-18T21:10:00Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fund_sectors.json",
-   "blob": "087ca1aa34d192e55f07bbcae3522438"
+   "blob": "5482a063bda02371f1a933386dc932cf"
   },
   "fx": {
    "title": "Currencies: valuation and trend",
@@ -793,14 +793,14 @@
    "title": "Fund risk model",
    "description": "Annualized covariances of monthly returns over the last five years for 32 funds (country equity funds, ACWI, ACWX, the bond funds, real assets and the dollar), and each fund's sensitivity to global equities, the 10-year yield, the dollar and oil. Built by Claude from FMP prices and Treasury rates.",
    "updated": {
-    "at": "2026-10-18T04:10:00Z",
+    "at": "2026-10-18T21:10:00Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/risk_model.json",
-   "blob": "13d42ef5152e63d43ade10c9614b2374"
+   "blob": "bb13c110600139ffa685e3ecdd8475a3"
   },
   "score_history": {
    "title": "Score snapshots",

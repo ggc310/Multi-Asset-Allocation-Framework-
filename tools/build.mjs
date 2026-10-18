@@ -23,7 +23,7 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Global Equity Opportunity Monitor</title>
+<title>GMAAF · Global Multi-Asset Allocation Framework</title>
 <link rel="stylesheet" href="assets/tokens.css?v=${stamp}">
 <script src="assets/d3.min.js"></script>
 <script src="assets/runtime.js?v=${stamp}"></script>

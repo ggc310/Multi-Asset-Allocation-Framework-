@@ -1,7 +1,7 @@
-# Global Equity Opportunity Monitor (standalone)
+# Global Multi-Asset Allocation Framework (GMAAF), standalone
 
 A public, no-login copy of the Claude dashboard artifact
-"Global Equity Opportunity Monitor", published with GitHub Pages.
+"Global Multi-Asset Allocation Framework" (GMAAF; first built as the Global Equity Opportunity Monitor, later the Global multi-asset monitor), published with GitHub Pages.
 
 ## How it stays current
 
@@ -16,11 +16,13 @@ Live data is fetched at build time and deployed straight to Pages; it is never c
 
 - **Commentary**: Week in Review (Fri after the close), The Week Ahead (Sun afternoon), Month and Quarter in Review; written by Claude scheduled tasks into `data/files/commentary.json` and pushed here when published.
 - **Markets → Inflation, real yields & credit**: FRED breakevens, TIPS real yields, ICE BofA spreads and returns by rating (`rates_credit`, rebuilt by `refresh/fred.py` on full runs).
-- **Decide → Relative trends**: model score vs relative price for every equity dimension and classic pairs.
+- **Decide → Relative trends**: every model's reading against the relative price of what it favors: equity sleeves and pairs, stocks vs bonds, each fixed income lever, the dollar, real assets against 60/40 and each currency; with how predictive each reading has been overall and at today's level.
 - **Companies → Earnings calls** and **Company profile** (top 300 holdings, `profiles`). Any-ticker lookup (`cp_*` datasets) needs Claude's FMP connector, so it works only in the Claude version.
 - **Markets → Compare & correlate** and the **currency pair explorer**: any asset across classes over any time frame (`xasset_weekly` adds weekly history since 2005–07 for non-equity assets). Every time-series chart has a time-frame control.
+- **Header**: GMAAF name, market status, the current calls as chips with evidence grades and reasons, and a live cross-asset pulse.
+- **Model portfolio**: equities can hold any of the 62 sleeves (sector, industry, style, factor, regional) within a sleeve budget, funded within each region.
 - **Executive summary → Decision summary**: views and tilts, change since the previous saved review (from `model_log`, which now also saves each week's observations), driving observations with data dates, a fixed evidence rubric, what dominates the portfolio and what would reverse each call (`src/x_exec.js`).
-- **Today**: event filters; headlines limited to major financial outlets, with Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ RSS feeds merged in by the refresh job.
+- **Today**: a 2×2 of top multi-asset movers, top equity movers, headlines joined to the live moves, and the day in a nutshell; event filters; headlines limited to major financial outlets, with Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ RSS feeds merged in by the refresh job.
 
 ## Layout
 

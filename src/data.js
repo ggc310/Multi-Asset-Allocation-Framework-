@@ -244,8 +244,8 @@ dash.calc('sentiment_metrics', {
 });
 dash.calc('scores', {
   inputs: ['etf_universe', 'fund_metrics', 'tech_metrics', 'sentiment_metrics', 'etf_quotes', 'val_history', 'etf_extras'],
-  title: 'Four-pillar scores',
-  description: 'Percentile rank of every metric across the universe, averaged into quality, growth, valuation, technicals and sentiment, then a composite for each weight preset and sentiment reading, with overall and in-group ranks. Valuation is also measured within category (the default), against each sleeve\u2019s own history, and as a blend.',
+  title: 'Equity pillar scores',
+  description: 'Percentile rank of every metric across the universe, averaged into quality, growth, valuation, technicals and sentiment, then a composite for each weight preset and sentiment reading, with overall and in-group ranks. Valuation is measured five ways: the cycle-adjusted P/E against each sleeve\u2019s own history (the default), within category, all multiples against each sleeve\u2019s own history, across the universe, and as a blend.',
   fn: (etf_universe, fund_metrics, tech_metrics, sentiment_metrics, etf_quotes, val_history, etf_extras) => {
   const X = {};
   for (const r of etf_extras || []) X[r.etf] = r;

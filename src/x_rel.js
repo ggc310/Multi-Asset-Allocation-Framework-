@@ -1,21 +1,32 @@
-// Decide → Relative trends. For every relative dimension of the equity model (core, styles and size,
-// factors, sectors, industries, countries, regions, and classic pairs), the model's composite score over
-// time paired with the sleeve's price relative to its benchmark, so you can see whether the score led.
-// Data: sleeve_series (monthly point-in-time scores since 2005), score_history (weekly live scores),
-// etf_weekly (weekly closes since 2005), etf_universe (labels and groups).
+// Decide → Relative trends. Every relative call the dashboard makes, as the model's score over time paired with the
+// price of the thing it favors relative to what it funds it from, so you can see whether the score led:
+//   equities: every sleeve against its benchmark and classic pairs (equity composite scores, point-in-time);
+//   allocation: stocks vs bonds, each fixed income lever (long fund against its funding leg), and the dollar;
+//   real assets: each diversifier against a 60/40 mix; currencies: each currency against the dollar.
+// The diagnostics answer two questions: how predictive has the score been overall, and how predictive at readings
+// like today's, with the whole range of readings shown in buckets.
+// Data: sleeve_series, score_history, etf_weekly, etf_universe; model_sb, model_fi, model_ra, fx_model; xasset_weekly.
 (() => {
   const G = window.GMX, { el, $, isNum, pct, fx } = G;
+  const M = '−';
   const BENCH = { 'Core': 'ACWI', 'US style & size': 'SPY', 'US factors': 'SPY', 'Intl style & size': 'EFA', 'Sectors': 'SPY', 'Industries': 'SPY', 'Developed countries': 'EFA', 'Emerging countries': 'EEM' };
   const BENCH_OVR = { EMXC: 'EEM', ACWI: 'SPY' };
   const PAIRS = [['IWF', 'IWD', 'US growth vs value'], ['IWM', 'SPY', 'US small vs large'], ['RSP', 'SPY', 'Equal weight vs cap weight'], ['QQQ', 'SPY', 'Nasdaq-100 vs S&P 500'],
     ['IWO', 'IWN', 'Small growth vs small value'], ['MTUM', 'USMV', 'Momentum vs min volatility'], ['QUAL', 'SPY', 'Quality vs market'], ['XLY', 'XLP', 'Cyclicals vs defensives (XLY/XLP)'],
     ['ACWX', 'SPY', 'Global ex-US vs US'], ['EFA', 'SPY', 'Intl developed vs US'], ['EEM', 'EFA', 'Emerging vs developed'], ['EFG', 'EFV', 'Intl growth vs value'], ['SCZ', 'EFA', 'Intl small vs large'], ['EMXC', 'MCHI', 'EM ex-China vs China']];
-  const S = { dim: 'Pairs', range: '10Y', sel: null };
+  const LEVERS = { duration: ['TLT', 'SHY', 'Duration: long vs short Treasuries'], ig: ['LQD', 'IEF', 'IG credit vs Treasuries'], hy: ['HYG', 'IEI', 'High yield vs Treasuries'], mbs: ['MBB', 'IEF', 'Agency MBS vs Treasuries'],
+    emd: ['EMB', 'IEF', 'EM dollar debt vs Treasuries'], tips: ['TIP', 'IEI', 'TIPS vs nominal Treasuries'], fx: ['EMLC', 'SHY', 'EM local currency vs short Treasuries'] };
+  const DIMS = [['Asset allocation', 'Asset allocation'], ['Pairs', 'Equity pairs'], ...Object.keys(BENCH).map((k) => [k, k]), ['Real assets', 'Real assets'], ['Currencies', 'Currencies']];
+  const MODEL_DIMS = new Set(['Asset allocation', 'Real assets', 'Currencies']);
+  const S = { dim: 'Asset allocation', range: '10Y', sel: null };
+  const D = (s) => new Date(String(s).slice(0, 10) + 'T12:00:00Z');
+  const one = (id) => (G.ok(id) ? G.rows(id)[0] : null);
   let C = null;
+
   const build = () => {
-    const ss = G.rows('sleeve_series'), sh = G.rows('score_history'), wk = G.rows('etf_weekly'), uni = G.rows('etf_universe');
-    if (C && C.ss === ss && C.sh === sh && C.wk === wk) return C;
-    const D = (s) => new Date(String(s).slice(0, 10) + 'T12:00:00Z');
+    const ss = G.rows('sleeve_series'), sh = G.rows('score_history'), wk = G.rows('etf_weekly'), xw = G.rows('xasset_weekly'), uni = G.rows('etf_universe');
+    const mods = ['model_sb', 'model_fi', 'model_ra', 'fx_model'].map((k) => G.rows(k));
+    if (C && C.ss === ss && C.sh === sh && C.wk === wk && C.xw === xw && C.mods.every((m, i) => m === mods[i])) return C;
     const score = {};
     for (const r of ss) if (isNum(r.composite)) (score[r.etf] = score[r.etf] || []).push([D(r.month), Number(r.composite)]);
     for (const k in score) score[k].sort((a, b) => a[0] - b[0]);
@@ -25,118 +36,221 @@
       if (!s.length || d > s[s.length - 1][0]) s.push([d, Number(v)]); else if (+d === +s[s.length - 1][0]) s[s.length - 1][1] = Number(v);
     }
     const px = {};
-    for (const r of wk) if (isNum(r.close)) (px[r.symbol] = px[r.symbol] || []).push([D(r.date), Number(r.close)]);
-    for (const k in px) px[k].sort((a, b) => a[0] - b[0]);
+    for (const r of [...wk, ...xw]) if (isNum(r.close) && !(r.symbol in px && wk.length && r === undefined)) (px[r.symbol] = px[r.symbol] || []).push([D(r.date), Number(r.close)]);
+    for (const k in px) { px[k].sort((a, b) => a[0] - b[0]); px[k] = px[k].filter((p, i, a) => !i || +p[0] !== +a[i - 1][0]); }
+    // a weekly-rebalanced 60/40 of ACWI and AGG, for the diversifiers
+    if (px.ACWI && px.AGG) {
+      const g = new Map(px.AGG.map((p) => [+p[0], p[1]])); const a = px.ACWI.filter((p) => g.has(+p[0])); const out = [];
+      let v = 100; for (let i = 0; i < a.length; i++) { if (i) v *= 1 + 0.6 * (a[i][1] / a[i - 1][1] - 1) + 0.4 * (g.get(+a[i][0]) / g.get(+a[i - 1][0]) - 1); out.push([a[i][0], v]); }
+      px['6040'] = out;
+    }
     const lab = Object.fromEntries(uni.map((u) => [u.etf, u.label]));
     const grp = {}; for (const u of uni) (grp[u.group] = grp[u.group] || []).push(u.etf);
-    C = { ss, sh, wk, score, px, lab, grp, stats: {} };
+    C = { ss, sh, wk, xw, mods, score, px, lab, grp, stats: {}, model: {} };
+    // model score series
+    const sb = one('model_sb'), fi = one('model_fi'), ra = one('model_ra'), fm = one('fx_model');
+    const ser = (rows, f) => rows.map((r) => { const v = f(r); return isNum(v) ? [D(r[0] || r.month), Number(v)] : null; }).filter(Boolean);
+    if (sb) C.model.sb = (sb.history || []).filter((r) => isNum(r.score)).map((r) => [D(r.month), r.score]);
+    if (fi) for (const k of Object.keys(LEVERS)) C.model['fi_' + k] = (fi.history || []).filter((r) => isNum(r[k])).map((r) => [D(r.month), r[k]]);
+    if (ra) for (const a of ra.assets || []) C.model['ra_' + a.etf] = ser(a.history || [], (r) => r[1]);
+    if (fm) {
+      for (const c of fm.currencies || []) C.model['fx_' + c.code] = ser(c.history || [], (r) => (isNum(r[1]) ? 0.6 * r[1] + 0.4 * (isNum(r[2]) ? r[2] : 0) : null));
+      const dx = (fm.aggregates || []).find((a) => a.code === 'DXY'); if (dx) C.model.fx_DXY = ser(dx.history || [], (r) => (isNum(r[1]) ? 0.6 * r[1] + 0.4 * (isNum(r[2]) ? r[2] : 0) : null));
+    }
     return C;
   };
   const at = (s, d) => { if (!s || !s.length || s[0][0] > d) return null; let lo = 0, hi = s.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (s[m][0] <= d) lo = m; else hi = m - 1; } return s[lo][1]; };
-  const ratio = (a, b) => { const A = C.px[a], B = C.px[b]; if (!A || !B) return []; const bm = new Map(B.map((p) => [+p[0], p[1]])); return A.filter((p) => bm.has(+p[0])).map((p) => [p[0], p[1] / bm.get(+p[0])]); };
+  const ratio = (a, b) => { const A = C.px[a], B = C.px[b]; if (!A) return []; if (!b) return A; if (!B) return []; const bm = new Map(B.map((p) => [+p[0], p[1]])); return A.filter((p) => bm.has(+p[0])).map((p) => [p[0], p[1] / bm.get(+p[0])]); };
   const scoreOf = (spec) => {
-    if (spec.b && spec.pair) { const A = C.score[spec.a], B = C.score[spec.b]; if (!A || !B) return []; return A.map((p) => { const v = at(B, p[0]); return v == null ? null : [p[0], p[1] - v]; }).filter(Boolean); }
+    if (spec.kind === 'model') return C.model[spec.key] || [];
+    if (spec.kind === 'pair') { const A = C.score[spec.a], B = C.score[spec.b]; if (!A || !B) return []; return A.map((p) => { const v = at(B, p[0]); return v == null ? null : [p[0], p[1] - v]; }).filter(Boolean); }
     return C.score[spec.a] || [];
   };
+  const relOf = (spec) => { const r = ratio(spec.a, spec.b); return spec.invert ? r.map((p) => [p[0], 1 / p[1]]) : r; };
   const rebase = (s, from) => { const c = from ? s.filter((p) => p[0] >= from) : s; if (!c.length) return []; const b = c[0][1]; return c.map((p) => [p[0], (100 * p[1]) / b]); };
   const spearman = (x, y) => {
     const rk = (v) => { const o = v.map((x, i) => [x, i]).sort((a, b) => a[0] - b[0]); const r = new Array(v.length); o.forEach(([, i], k) => { r[i] = k; }); return r; };
     if (x.length < 24) return null; const a = rk(x), b = rk(y), n = x.length; let d = 0; for (let i = 0; i < n; i++) d += (a[i] - b[i]) ** 2; return 1 - (6 * d) / (n * (n * n - 1));
   };
-  // does the score lead? monthly score vs the next 12 months' relative return
+  const tstat = (ic, n) => (isNum(ic) && n / 12 > 2 ? ic * Math.sqrt((n / 12 - 2) / Math.max(1e-9, 1 - ic * ic)) : null);
+  const verdict = (ic, t) => {
+    if (!isNum(ic)) return ['Not enough history', 'muted'];
+    if (ic <= -0.1) return ['Contrary: high readings were followed by underperformance', 'bad'];
+    if (ic < 0.05) return ['No reliable edge', 'warn'];
+    const strength = ic >= 0.3 ? 'Strong' : ic >= 0.15 ? 'Useful' : 'Weak';
+    return [strength + (isNum(t) && t >= 2 ? ', statistically meaningful' : isNum(t) && t >= 1 ? ', but not statistically conclusive' : ', and statistically thin'), ic >= 0.15 && t >= 1.5 ? 'ok' : 'mid'];
+  };
+  // monthly reading against the next 12 months' relative return, with the reading split into fifths
   const lead = (spec) => {
-    const key = spec.a + '|' + spec.b + '|' + (spec.pair ? 1 : 0);
-    if (C.stats[key]) return C.stats[key];
-    const sc = scoreOf(spec).filter((p) => p[0].getUTCDate() >= 25 || p === undefined); // month-end points (backtest)
-    const rel = ratio(spec.a, spec.b);
-    const xs = [], ys = [];
+    const key = spec.id; if (C.stats[key]) return C.stats[key];
+    const all = scoreOf(spec), rel = relOf(spec);
+    const byMonth = new Map(); for (const p of all) byMonth.set(p[0].getUTCFullYear() * 12 + p[0].getUTCMonth(), p);
+    const sc = [...byMonth.values()];
+    const xs = [], ys = [], ds = [];
+    const lastRel = rel.length ? rel[rel.length - 1][0] : null;
     for (const [d, v] of sc) {
       const d12 = new Date(d); d12.setUTCFullYear(d12.getUTCFullYear() + 1);
+      if (!lastRel || lastRel < d12) continue;
       const r0 = at(rel, d), r1 = at(rel, d12);
-      if (r0 && r1 && rel.length && rel[rel.length - 1][0] >= d12) { xs.push(v); ys.push(r1 / r0 - 1); }
+      if (r0 && r1) { xs.push(v); ys.push(r1 / r0 - 1); ds.push(d); }
     }
-    const hi = spec.pair ? 10 : 60, lo = spec.pair ? -10 : 40;
-    const H = ys.filter((_, i) => xs[i] >= hi), Lo = ys.filter((_, i) => xs[i] <= lo);
-    const out = { ic: spearman(xs, ys), n: xs.length, hitHi: H.length >= 6 ? H.filter((r) => r > 0).length / H.length : null, nHi: H.length, hitLo: Lo.length >= 6 ? Lo.filter((r) => r < 0).length / Lo.length : null, nLo: Lo.length,
-      avgHi: H.length >= 6 ? d3.mean(H) : null, avgLo: Lo.length >= 6 ? d3.mean(Lo) : null };
+    const ic = spearman(xs, ys), t = tstat(ic, xs.length), curNow = all.length ? all[all.length - 1][1] : null;
+    let buckets = [];
+    if (xs.length >= 30) {
+      const srt = xs.slice().sort((a, b) => a - b), q = (p) => srt[Math.min(srt.length - 1, Math.floor(p * srt.length))];
+      const cuts = [-Infinity, q(0.2), q(0.4), q(0.6), q(0.8), Infinity];
+      buckets = [0, 1, 2, 3, 4].map((i) => {
+        const idx = xs.map((x, k) => k).filter((k) => xs[k] >= cuts[i] && (i === 4 ? true : xs[k] < cuts[i + 1]));
+        const r = idx.map((k) => ys[k]);
+        return { i, lo: i ? cuts[i] : Math.min(srt[0], isNum(curNow) ? curNow : srt[0]), hi: i < 4 ? cuts[i + 1] : Math.max(srt[srt.length - 1], isNum(curNow) ? curNow : -Infinity), n: r.length, avg: r.length ? d3.mean(r) : null, hit: r.length ? r.filter((v) => v > 0).length / r.length : null };
+      });
+    }
+    const cur = all.length ? all[all.length - 1][1] : null;
+    const curB = buckets.length && isNum(cur) ? buckets.find((b, i) => (i === 0 ? cur < b.hi : i === 4 ? cur >= b.lo : cur >= b.lo && cur < b.hi)) : null;
+    const spread = buckets.length ? buckets[4].avg - buckets[0].avg : null;
+    const out = { ic, t, n: xs.length, xs, ys, ds, buckets, cur, curB, spread, verdict: verdict(ic, t) };
     C.stats[key] = out;
     return out;
   };
   const specs = () => {
-    if (S.dim === 'Pairs') return PAIRS.filter(([a, b]) => C.px[a] && C.px[b]).map(([a, b, l]) => ({ a, b, label: l, pair: true }));
-    const bench = BENCH[S.dim];
-    return (C.grp[S.dim] || []).filter((e) => (BENCH_OVR[e] || bench) !== e).map((e) => ({ a: e, b: BENCH_OVR[e] || bench, label: C.lab[e] || e }));
+    const out = [];
+    if (S.dim === 'Asset allocation') {
+      if (C.model.sb && C.model.sb.length) out.push({ id: 'sb', kind: 'model', key: 'sb', a: 'ACWI', b: 'AGG', label: 'Stocks vs bonds', vs: 'AGG' });
+      for (const [k, [a, b, l]] of Object.entries(LEVERS)) if (C.model['fi_' + k] && C.model['fi_' + k].length && C.px[a] && C.px[b]) out.push({ id: 'fi_' + k, kind: 'model', key: 'fi_' + k, a, b, label: l, vs: b });
+      if (C.model.fx_DXY && C.px.DXUSD) out.push({ id: 'fx_DXY', kind: 'model', key: 'fx_DXY', a: 'DXUSD', b: null, label: 'The dollar index', vs: 'its own level' });
+    } else if (S.dim === 'Real assets') {
+      const ra = one('model_ra');
+      for (const x of (ra && ra.assets) || []) if (C.px[x.etf] && C.px['6040']) out.push({ id: 'ra_' + x.etf, kind: 'model', key: 'ra_' + x.etf, a: x.etf, b: '6040', label: x.label + ' vs 60/40', vs: '60/40' });
+    } else if (S.dim === 'Currencies') {
+      const fm = one('fx_model');
+      for (const c of (fm && fm.currencies) || []) if (C.px[c.code] && C.model['fx_' + c.code] && C.model['fx_' + c.code].length) out.push({ id: 'fx_' + c.code, kind: 'model', key: 'fx_' + c.code, a: c.code, b: null, label: c.label + ' vs the dollar', vs: 'USD' });
+    } else if (S.dim === 'Pairs') return PAIRS.filter(([a, b]) => C.px[a] && C.px[b]).map(([a, b, l]) => ({ id: a + '|' + b, kind: 'pair', a, b, label: l, vs: b }));
+    else {
+      const bench = BENCH[S.dim];
+      return (C.grp[S.dim] || []).filter((e) => (BENCH_OVR[e] || bench) !== e).map((e) => ({ id: e + '|' + (BENCH_OVR[e] || bench), kind: 'eq', a: e, b: BENCH_OVR[e] || bench, label: C.lab[e] || e, vs: BENCH_OVR[e] || bench }));
+    }
+    return out;
   };
-  const fromDate = () => { const y = { '3Y': 3, '5Y': 5, '10Y': 10 }[S.range]; if (!y) return null; const t = new Date(); t.setUTCFullYear(t.getUTCFullYear() - y); return t; };
+  const fromDate = () => { const y = { '1Y': 1, '3Y': 3, '5Y': 5, '10Y': 10, '20Y': 20 }[S.range]; if (!y) return null; const t = new Date(); t.setUTCFullYear(t.getUTCFullYear() - y); return t; };
   const chg = (s, months) => { if (!s.length) return null; const l = s[s.length - 1]; const d = new Date(l[0]); d.setUTCMonth(d.getUTCMonth() - months); const v = at(s, d); return v == null ? null : l[1] - v; };
   const relRet = (rel, months) => { if (!rel.length) return null; const l = rel[rel.length - 1]; const d = new Date(l[0]); d.setUTCMonth(d.getUTCMonth() - months); const v = at(rel, d); return v ? l[1] / v - 1 : null; };
-  const scoreFmt = (spec) => (spec.pair ? (v) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(0) : (v) => v.toFixed(0));
+  const scoreFmt = (spec) => (spec.kind === 'pair' ? (v) => (v >= 0 ? '+' : M) + Math.abs(v).toFixed(0) : spec.kind === 'model' ? (v) => (v >= 0 ? '+' : M) + Math.abs(v).toFixed(2) : (v) => v.toFixed(0));
+  const scoreName = (spec) => (spec.kind === 'pair' ? 'Score gap' : spec.kind === 'model' ? 'Model signal' : 'Score');
 
   const pairChart = (box, spec, h1, h2, opts = {}) => {
     const from = fromDate();
     const sc = scoreOf(spec).filter((p) => !from || p[0] >= from);
-    const rel = rebase(ratio(spec.a, spec.b), from);
+    const rel = rebase(relOf(spec), from);
     const xdom = rel.length && sc.length ? [d3.min([rel[0][0], sc[0][0]]), d3.max([rel[rel.length - 1][0], sc[sc.length - 1][0]])] : undefined;
     const top = el('div'), bot = el('div');
     box.replaceChildren(top, bot);
-    G.line(top, [{ name: spec.pair ? 'Score gap' : 'Score', pts: sc, color: 'var(--gm-blue)' }], { h: h1, xdom, ref: spec.pair ? 0 : 50, band: spec.pair ? null : [40, 60], yfmt: scoreFmt(spec), fmt: scoreFmt(spec), labels: opts.labels, dfmt: '%b %Y', aria: 'Model score' });
-    G.line(bot, [{ name: spec.pair ? spec.a + '/' + spec.b : 'vs ' + spec.b, pts: rel, color: 'var(--gm-navy)' }], { h: h2, xdom, ref: 100, yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(1), labels: opts.labels, dfmt: '%b %-d, %Y', aria: 'Relative price' });
+    const isM = spec.kind === 'model';
+    G.line(top, [{ name: scoreName(spec), pts: sc, color: 'var(--gm-blue)' }], { h: h1, xdom, ref: spec.kind === 'eq' ? 50 : 0, band: spec.kind === 'eq' ? [40, 60] : isM ? [-0.2, 0.2] : null, yfmt: scoreFmt(spec), fmt: scoreFmt(spec), labels: opts.labels, dfmt: '%b %Y', aria: 'Model score', ydom: isM ? [-1, 1] : undefined });
+    G.line(bot, [{ name: spec.b ? spec.a + ' vs ' + spec.vs : spec.a, pts: rel, color: 'var(--gm-navy)' }], { h: h2, xdom, ref: 100, yfmt: (v) => v.toFixed(0), fmt: (v) => v.toFixed(1), labels: opts.labels, dfmt: '%b %-d, %Y', aria: 'Relative price' });
+  };
+
+  // predictiveness across the full range of readings: fifths of the score's history
+  const bucketChart = (box, spec, st) => {
+    box.replaceChildren();
+    if (!st.buckets.length) { box.append(el('p', 'Not enough history to split the readings into fifths.', 'gm-note')); return; }
+    const W = Math.max(280, box.clientWidth || 520), H = 210, m = { t: 22, r: 10, b: 46, l: 44 };
+    const svg = d3.select(box).append('svg').attr('class', 'x-svg').attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const B = st.buckets, x = d3.scaleBand().domain(B.map((b) => b.i)).range([m.l, W - m.r]).padding(0.25);
+    const ext = d3.extent(B.map((b) => b.avg).concat([0])), pad = (ext[1] - ext[0]) * 0.15 || 0.01;
+    const y = d3.scaleLinear().domain([ext[0] - (ext[0] < 0 ? pad : 0), ext[1] + pad]).range([H - m.b, m.t]);
+    svg.append('g').attr('class', 'x-grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(W - m.l - m.r)).tickFormat('')).call((g) => g.select('.domain').remove());
+    svg.append('g').attr('class', 'x-axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat((v) => (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v * 100).toFixed(0) + '%')).call((g) => g.select('.domain').remove());
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+    const f = scoreFmt(spec);
+    const g = svg.selectAll('g.b').data(B).join('g').attr('class', 'b');
+    g.append('rect').attr('x', (b) => x(b.i)).attr('width', x.bandwidth()).attr('y', (b) => Math.min(y(0), y(b.avg))).attr('height', (b) => Math.abs(y(b.avg) - y(0)) || 1)
+      .attr('fill', (b) => (b.avg >= 0 ? 'var(--color-ok)' : 'var(--color-bad)')).attr('opacity', (b) => (b === st.curB ? 0.95 : 0.45))
+      .attr('stroke', (b) => (b === st.curB ? 'var(--color-fg)' : 'none')).attr('stroke-width', 1.5);
+    g.append('text').attr('x', (b) => x(b.i) + x.bandwidth() / 2).attr('y', (b) => (b.avg >= 0 ? y(b.avg) - 5 : y(b.avg) + 13)).attr('text-anchor', 'middle').attr('class', 'x-lab2')
+      .text((b) => `${Math.round(b.hit * 100)}% won`);
+    g.append('text').attr('x', (b) => x(b.i) + x.bandwidth() / 2).attr('y', H - m.b + 15).attr('text-anchor', 'middle').attr('class', 'x-lab').style('fill', 'var(--color-fg-muted)').text((b) => ['Lowest fifth', '2nd', 'Middle', '4th', 'Highest fifth'][b.i]);
+    g.append('text').attr('x', (b) => x(b.i) + x.bandwidth() / 2).attr('y', H - m.b + 29).attr('text-anchor', 'middle').attr('class', 'x-lab').style('fill', 'var(--color-fg-muted)').text((b) => `${f(b.lo)} to ${f(b.hi)}`);
+    if (st.curB) svg.append('text').attr('x', x(st.curB.i) + x.bandwidth() / 2).attr('y', 12).attr('text-anchor', 'middle').attr('class', 'x-lab2').style('font-weight', 600).text('Now: ' + f(st.cur));
+    g.on('pointerenter', (ev, b) => G.showTip(ev, [`${['Lowest fifth', 'Second fifth', 'Middle fifth', 'Fourth fifth', 'Highest fifth'][b.i]} of readings (${f(b.lo)} to ${f(b.hi)})`, `Next 12 months, relative: average ${pct(b.avg)}`, `Beat ${spec.vs}: ${Math.round(b.hit * 100)}% of ${b.n} months`])).on('pointerleave', G.hideTip);
+  };
+  // every month's reading against what followed
+  const scatter = (box, spec, st) => {
+    box.replaceChildren(); if (st.xs.length < 24) return;
+    const W = Math.max(280, box.clientWidth || 520), H = 190, m = { t: 10, r: 10, b: 30, l: 44 };
+    const svg = d3.select(box).append('svg').attr('class', 'x-svg').attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear().domain(d3.extent(st.xs.concat(isNum(st.cur) ? [st.cur] : []))).nice().range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain(d3.extent(st.ys)).nice().range([H - m.b, m.t]);
+    svg.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickFormat(scoreFmt(spec)));
+    svg.append('g').attr('class', 'x-axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat((v) => (v > 0 ? '+' : v < 0 ? M : '') + Math.abs(v * 100).toFixed(0) + '%'));
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).attr('class', 'x-ref');
+    const recent = st.ds.length ? +st.ds[st.ds.length - 1] - 3 * 365 * 864e5 : 0;
+    svg.append('g').selectAll('circle').data(st.xs.map((v, i) => [v, st.ys[i], st.ds[i]])).join('circle').attr('cx', (d) => x(d[0])).attr('cy', (d) => y(d[1])).attr('r', 2.6)
+      .attr('fill', (d) => (+d[2] >= recent ? 'var(--gm-navy)' : 'var(--gm-blue2)')).attr('opacity', 0.6);
+    // least-squares line
+    const n = st.xs.length, mx = d3.mean(st.xs), my = d3.mean(st.ys); let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (st.xs[i] - mx) * (st.ys[i] - my); sxx += (st.xs[i] - mx) ** 2; }
+    const b1 = sxx ? sxy / sxx : 0, x0 = x.domain()[0], x1 = x.domain()[1];
+    svg.append('line').attr('x1', x(x0)).attr('x2', x(x1)).attr('y1', y(my + b1 * (x0 - mx))).attr('y2', y(my + b1 * (x1 - mx))).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    if (isNum(st.cur)) { svg.append('line').attr('x1', x(st.cur)).attr('x2', x(st.cur)).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--color-warn)').attr('stroke-width', 1.5); svg.append('text').attr('x', x(st.cur) + 4).attr('y', m.t + 10).attr('class', 'x-lab2').text('now'); }
   };
 
   G.page('reltrend', (sec) => {
     const grid = $('#rt-grid', sec), focus = $('#rt-focus', sec), tbl = $('#rt-table', sec);
-    const need = ['sleeve_series', 'score_history', 'etf_weekly', 'etf_universe'];
+    const need = MODEL_DIMS.has(S.dim) ? ['model_sb', 'model_fi', 'model_ra', 'fx_model', 'xasset_weekly', 'etf_weekly', 'etf_universe'] : ['sleeve_series', 'score_history', 'etf_weekly', 'etf_universe'];
+    G.seg($('#rt-dim', sec), DIMS, S.dim, (v) => { S.dim = v; S.sel = null; G.redraw(); });
+    G.seg($('#rt-range', sec), [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['10Y', '10Y'], ['20Y', '20Y'], ['All', 'All']], S.range, (v) => { S.range = v; G.redraw(); });
     if (need.some(G.bad)) { G.failed(grid, 'The score or price history'); return; }
     if (!need.every(G.ok)) { G.placeholder(grid); G.placeholder(focus); return; }
     build();
-    const dims = [...Object.keys(BENCH).filter((g) => C.grp[g]), 'Pairs'];
-    G.seg($('#rt-dim', sec), [['Pairs', 'Classic pairs'], ...dims.filter((d) => d !== 'Pairs').map((d) => [d, d])], S.dim, (v) => { S.dim = v; S.sel = null; G.redraw(); });
-    G.seg($('#rt-range', sec), [['3Y', '3Y'], ['5Y', '5Y'], ['10Y', '10Y'], ['All', 'Since 2005']], S.range, (v) => { S.range = v; G.redraw(); });
     const list = specs();
-    if (!list.length) { G.placeholder(grid, 'No sleeves in this dimension.'); return; }
-    const sel = list.find((s) => s.a + '|' + s.b === S.sel) || list[0];
+    if (!list.length) { G.placeholder(grid, 'Nothing to show in this dimension yet.'); return; }
+    const sel = list.find((s) => s.id === S.sel) || list[0];
     $('#rt-dim-note', sec).textContent = S.dim === 'Pairs'
       ? 'Each pair shows the gap between the two sleeves’ composite scores (positive favors the first) above the price of the first relative to the second, rebased to 100.'
+      : S.dim === 'Asset allocation' ? 'Each allocation model’s signal (−1 to +1; positive favors the first leg) above the price of the first leg relative to the second, rebased to 100. Stocks vs bonds is ACWI against AGG; each fixed income lever is the fund it buys against the Treasury fund that pays for it; the dollar index is shown on its own.'
+      : S.dim === 'Real assets' ? 'Each diversifier’s score (−1 to +1) above its price relative to a 60/40 mix of ACWI and AGG, rebased to 100.'
+      : S.dim === 'Currencies' ? 'Each currency model’s combined view (60% cyclical, 40% long-term; −1 to +1, positive expects the currency to gain) above the currency in dollars, rebased to 100.'
       : `Each sleeve’s composite score (0 to 100; the shaded band is 40 to 60, neutral) above its price relative to ${BENCH[S.dim]}${S.dim === 'Intl style & size' ? ' (EM ex-China against EEM)' : ''}, rebased to 100.`;
 
-    // focus chart
-    const st = lead(sel), sc = scoreOf(sel), rel = ratio(sel.a, sel.b);
-    $('#rt-focus-h', sec).textContent = sel.label + (sel.pair ? ` (${sel.a} vs ${sel.b})` : ` (${sel.a} vs ${sel.b})`);
+    // focus chart and the diagnostics
+    const st = lead(sel), sc = scoreOf(sel), rel = relOf(sel), f = scoreFmt(sel);
+    $('#rt-focus-h', sec).textContent = sel.label + (sel.b ? ` (${sel.a} vs ${sel.vs})` : ` (${sel.a})`);
     pairChart(focus, sel, 220, 200, {});
-    const sf = scoreFmt(sel);
+    const vd = $('#rt-verdict', sec);
+    if (vd) { vd.textContent = st.verdict[0]; vd.className = 'x-rt-verdict x-dchip x-dchip-' + st.verdict[1]; }
     const facts = [];
-    if (sc.length) facts.push(`${sel.pair ? 'Score gap' : 'Score'} now ${sf(sc[sc.length - 1][1])}, ${isNum(chg(sc, 3)) ? (chg(sc, 3) >= 0 ? 'up ' : 'down ') + Math.abs(chg(sc, 3)).toFixed(0) + ' points over three months' : 'no three-month history'}.`);
-    if (rel.length) facts.push(`Relative performance: ${pct(relRet(rel, 3))} over three months, ${pct(relRet(rel, 12))} over a year.`);
-    if (isNum(st.ic)) facts.push(`**Did the score lead?** Rank correlation between the monthly score and the next 12 months’ relative return: ${fx(st.ic, 2)} over ${st.n} months since 2005 (**${Math.abs(st.ic) < 0.1 ? 'little evidence either way' : st.ic > 0 ? 'higher scores were followed by outperformance' : 'higher scores were followed by underperformance'}**).`);
-    if (isNum(st.hitHi)) facts.push(`When the ${sel.pair ? 'gap was +10 or more' : 'score was 60 or higher'}, the next 12 months **beat the benchmark ${Math.round(st.hitHi * 100)}% of the time** (${st.nHi} months, average ${pct(st.avgHi)}).`);
-    if (isNum(st.hitLo)) facts.push(`When it was ${sel.pair ? '−10 or lower' : '40 or lower'}, it lagged ${Math.round(st.hitLo * 100)}% of the time (${st.nLo} months, average ${pct(st.avgLo)}).`);
-    facts.push('Scores before the live record are the backtest’s point-in-time scores, monthly; overlapping 12-month windows mean the month counts overstate the independent evidence.');
+    if (isNum(st.ic)) facts.push(`**Overall:** rank correlation between the monthly reading and the next 12 months’ relative return is **${fx(st.ic, 2)}** over ${st.n} months (about ${Math.round(st.n / 12)} independent years; t ${fx(st.t, 1)}). As a guide: 0.05 to 0.15 is weak, 0.15 to 0.3 useful, above 0.3 strong; a t of 2 or more is statistically meaningful.`);
+    if (isNum(st.spread)) facts.push(`**Across the range:** the highest fifth of readings was followed by ${pct(st.buckets[4].avg)} relative over 12 months on average, the lowest fifth by ${pct(st.buckets[0].avg)}: a spread of **${pct(st.spread)}**${st.buckets.every((b, i) => !i || b.avg >= st.buckets[i - 1].avg) ? ', rising steadily from bottom to top' : st.buckets.every((b, i) => !i || b.avg <= st.buckets[i - 1].avg) ? ', falling steadily from bottom to top' : ', but not in a straight line'}.`);
+    if (st.curB) facts.push(`**At today’s reading (${f(st.cur)}):** it sits in the ${['lowest', 'second', 'middle', 'fourth', 'highest'][st.curB.i]} fifth (${f(st.curB.lo)} to ${f(st.curB.hi)}). Months there were followed by **${pct(st.curB.avg)}** against ${sel.vs} on average and **won ${Math.round(st.curB.hit * 100)}% of the time** (${st.curB.n} months).`);
+    if (sc.length) { const c3 = chg(sc, 3), tiny = isNum(c3) && Math.abs(c3) < (sel.kind === 'model' ? 0.005 : 0.5); facts.push(`${scoreName(sel)} ${!isNum(c3) ? 'with no three-month history' : tiny ? 'unchanged over three months' : (c3 >= 0 ? 'up ' : 'down ') + f(Math.abs(c3)).replace(/^[+−]/, '') + ' over three months'}; relative performance ${pct(relRet(rel, 3))} over three months, ${pct(relRet(rel, 12))} over a year.`); }
+    facts.push(sel.kind === 'model' ? 'Signals are the model’s own month-end readings using only data available at the time. Overlapping 12-month windows mean month counts overstate the independent evidence.' : 'Scores before the live record are the backtest’s point-in-time scores, monthly; overlapping 12-month windows mean the month counts overstate the independent evidence.');
     $('#rt-facts', sec).replaceChildren(...facts.map(G.li));
+    bucketChart($('#rt-buckets', sec), sel, st);
+    scatter($('#rt-scatter', sec), sel, st);
 
     // small multiples
     grid.replaceChildren(...list.map((s) => {
       const card = el('button', null, 'x-card' + (s === sel ? ' x-card-on' : '')); card.type = 'button';
-      const ssc = scoreOf(s), rr = ratio(s.a, s.b);
-      const h = el('div', null, 'x-card-h'); h.append(el('span', s.label, 'x-card-t'), el('span', ssc.length ? (s.pair ? 'gap ' : 'score ') + scoreFmt(s)(ssc[ssc.length - 1][1]) : '—', 'x-card-v'));
-      const sub = el('div', `${pct(relRet(rr, 12))} vs ${s.b}, 1Y`, 'gm-note');
+      const ssc = scoreOf(s), rr = relOf(s), ls = lead(s);
+      const h = el('div', null, 'x-card-h'); h.append(el('span', s.label, 'x-card-t'), el('span', ssc.length ? scoreFmt(s)(ssc[ssc.length - 1][1]) : '—', 'x-card-v'));
+      const sub = el('div', `${pct(relRet(rr, 12))} vs ${s.vs}, 1Y · lead ${fx(ls.ic, 2)}`, 'gm-note');
       const ch = el('div', null, 'x-card-c');
       card.append(h, sub, ch);
-      card.addEventListener('click', () => { S.sel = s.a + '|' + s.b; G.redraw(); $('#rt-focus-h', sec).scrollIntoView({ block: 'nearest' }); });
+      card.addEventListener('click', () => { S.sel = s.id; G.redraw(); $('#rt-focus-h', sec).scrollIntoView({ block: 'nearest' }); });
       return card;
     }));
     for (const [i, s] of list.entries()) pairChart(grid.children[i].querySelector('.x-card-c'), s, 90, 80, { labels: false });
 
-    // table for the dimension
+    // table
     G.table(tbl, [
-      { t: S.dim === 'Pairs' ? 'Pair' : 'Sleeve', f: (s) => s.label }, { t: 'Against', f: (s) => s.b },
-      { t: S.dim === 'Pairs' ? 'Score gap' : 'Score', num: true, f: (s) => { const x = scoreOf(s); return x.length ? scoreFmt(s)(x[x.length - 1][1]) : '—'; } },
-      { t: '3M change', num: true, f: (s) => { const v = chg(scoreOf(s), 3); return isNum(v) ? (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(0) : '—'; } },
-      { t: 'Relative 3M', num: true, f: (s) => pct(relRet(ratio(s.a, s.b), 3)), cls: (s) => G.tone(relRet(ratio(s.a, s.b), 3), 0.001) },
-      { t: 'Relative 1Y', num: true, f: (s) => pct(relRet(ratio(s.a, s.b), 12)), cls: (s) => G.tone(relRet(ratio(s.a, s.b), 12), 0.001) },
-      { t: 'Lead correlation', num: true, title: 'Rank correlation of the monthly score with the next 12 months’ relative return, since 2005', f: (s) => fx(lead(s).ic, 2), cls: (s) => G.tone(lead(s).ic, 0.05) },
-      { t: 'Hit rate, high score', num: true, f: (s) => (isNum(lead(s).hitHi) ? Math.round(100 * lead(s).hitHi) + '%' : '—') },
-      { t: 'Hit rate, low score', num: true, f: (s) => (isNum(lead(s).hitLo) ? Math.round(100 * lead(s).hitLo) + '%' : '—') },
+      { t: S.dim === 'Pairs' ? 'Pair' : 'Call', f: (s) => s.label }, { t: 'Against', f: (s) => s.vs },
+      { t: 'Reading now', num: true, f: (s) => { const x = scoreOf(s); return x.length ? scoreFmt(s)(x[x.length - 1][1]) : '—'; } },
+      { t: '3M change', num: true, f: (s) => { const v = chg(scoreOf(s), 3); return isNum(v) ? (s.kind === 'eq' ? (Math.round(v) > 0 ? '+' : Math.round(v) < 0 ? M : '') + Math.abs(Math.round(v)) : scoreFmt(s)(v)) : '—'; } },
+      { t: 'Relative 1Y', num: true, f: (s) => pct(relRet(relOf(s), 12)), cls: (s) => G.tone(relRet(relOf(s), 12), 0.001) },
+      { t: 'How predictive', f: (s) => lead(s).verdict[0].split(',')[0].replace(': high readings were followed by underperformance', '') },
+      { t: 'Lead correlation', num: true, title: 'Rank correlation of the monthly reading with the next 12 months’ relative return', f: (s) => fx(lead(s).ic, 2), cls: (s) => G.tone(lead(s).ic, 0.05) },
+      { t: 'Top minus bottom fifth', num: true, title: 'Average next-12-month relative return after the highest fifth of readings, less after the lowest fifth', f: (s) => pct(lead(s).spread), cls: (s) => G.tone(lead(s).spread, 0.001) },
+      { t: 'Won at today’s level', num: true, title: 'Share of months in today’s fifth of readings that beat the comparison over the next 12 months', f: (s) => (lead(s).curB ? Math.round(lead(s).curB.hit * 100) + '%' : '—') },
       { t: 'Months', num: true, f: (s) => lead(s).n || '—' },
-    ], list, { onRow: (s) => { S.sel = s.a + '|' + s.b; G.redraw(); } });
+    ], list, { onRow: (s) => { S.sel = s.id; G.redraw(); } });
   });
 })();
