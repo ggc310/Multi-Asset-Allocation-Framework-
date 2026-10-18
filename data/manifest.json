@@ -502,14 +502,14 @@
    "title": "Currency models",
    "description": "Cyclical (rates, carry, growth, trend, positioning, risk) and long-term (real exchange rate value, real rates) scores for 14 currencies, the dollar index and an EM basket, with suggested hedge ratios, signal rank correlations and a monthly backtest. Built by Claude from FMP forex prices, Treasury and policy rates, CPI, surprises and CFTC positioning.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-18T22:41:25Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fx_model.json",
-   "blob": "22a438320f997ca6b862cce0106e5a05"
+   "blob": "906b522c45b3949a0881b722a33141a6"
   },
   "fx_stats": {
    "title": "Currencies against the dollar",
