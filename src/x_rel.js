@@ -18,13 +18,16 @@
       ['IWN', 'IWD', 'Small value vs large value'], ['IWO', 'IWF', 'Small growth vs large growth'], ['IJR', 'IWM', 'S&P 600 vs Russell 2000 (quality screen)'], ['SCZ', 'EFA', 'Intl small vs large']],
     'Factors': [['MTUM', 'USMV', 'Momentum vs min volatility'], ['MTUM', 'SPY', 'Momentum vs market'], ['USMV', 'SPY', 'Min volatility vs market'], ['QUAL', 'SPY', 'Quality vs market'],
       ['SCHD', 'SPY', 'Dividend vs market'], ['QQQ', 'SPY', 'Nasdaq-100 vs S&P 500'], ['XLY', 'XLP', 'Cyclicals vs defensives (XLY/XLP)']],
+    'Commodities & themes': [['CPER', 'GLD', 'Copper vs gold (a growth gauge)'], ['URA', 'ACWI', 'Uranium miners vs global equities'], ['GDX', 'GLD', 'Gold miners vs gold'], ['AMLP', 'XLE', 'Pipelines vs energy stocks'],
+      ['BTCUSD', 'GLD', 'Bitcoin vs gold'], ['DBMF', 'AGG', 'Managed futures vs bonds']],
     'Regions': [['ACWX', 'SPY', 'Global ex-US vs US'], ['EFA', 'SPY', 'Intl developed vs US'], ['EEM', 'EFA', 'Emerging vs developed'], ['EEM', 'SPY', 'Emerging vs US'], ['EMXC', 'MCHI', 'EM ex-China vs China']],
   };
   const LEVERS = { duration: ['TLT', 'SHY', 'Duration: long vs short Treasuries'], ig: ['LQD', 'IEF', 'IG credit vs Treasuries'], hy: ['HYG', 'IEI', 'High yield vs Treasuries'], mbs: ['MBB', 'IEF', 'Agency MBS vs Treasuries'],
     emd: ['EMB', 'IEF', 'EM dollar debt vs Treasuries'], tips: ['TIP', 'IEI', 'TIPS vs nominal Treasuries'], fx: ['EMLC', 'SHY', 'EM local currency vs short Treasuries'], intl: ['BNDX', 'IEF', 'International bonds (hedged) vs Treasuries'] };
-  const DIMS = [['Asset allocation', 'Asset allocation'], ...Object.keys(PAIR_DIMS).map((k) => [k, k]), ...Object.keys(BENCH).map((k) => [k, k]), ['Real assets', 'Real assets'], ['Currencies', 'Currencies']];
+  const DIMS = [['Asset allocation', 'Asset allocation'], ...Object.keys(PAIR_DIMS).map((k) => [k, k]), ...Object.keys(BENCH).map((k) => [k, k]), ['Real assets', 'Real assets'], ['Private markets', 'Private markets'], ['Currencies', 'Currencies']];
   const FWD = [6, 12, 24, 36], BACK = [1, 3, 6, 12, 24, 36];
-  const MODEL_DIMS = new Set(['Asset allocation', 'Real assets', 'Currencies']);
+  const MODEL_DIMS = new Set(['Asset allocation', 'Real assets', 'Private markets', 'Currencies']);
+  const PRICE_ONLY = new Set(['Commodities & themes']);   // pairs with no model reading: only the trailing-return statistics apply
   const S = { dim: 'Asset allocation', range: '10Y', sel: null, fwd: 12, back: 12, sample: 'All' };
   // the sample the statistics are calculated over: readings dated within the last N years (outcomes then run up to today)
   const SAMPLES = [['All', 'All history'], ['20', '20Y'], ['15', '15Y'], ['10', '10Y'], ['5', '5Y']];
@@ -35,7 +38,7 @@
 
   const build = () => {
     const ss = G.rows('sleeve_series'), sh = G.rows('score_history'), wk = G.rows('etf_weekly'), xw = G.rows('xasset_weekly'), uni = G.rows('etf_universe');
-    const mods = ['model_sb', 'model_fi', 'model_ra', 'fx_model'].map((k) => G.rows(k));
+    const mods = ['model_sb', 'model_fi', 'model_ra', 'fx_model', 'model_pm'].map((k) => G.rows(k));
     if (C && C.ss === ss && C.sh === sh && C.wk === wk && C.xw === xw && C.mods.every((m, i) => m === mods[i])) return C;
     const score = {};
     for (const r of ss) if (isNum(r.composite)) (score[r.etf] = score[r.etf] || []).push([D(r.month), Number(r.composite)]);
@@ -58,7 +61,8 @@
     const grp = {}; for (const u of uni) (grp[u.group] = grp[u.group] || []).push(u.etf);
     C = { ss, sh, wk, xw, mods, score, px, lab, grp, stats: {}, model: {} };
     // model score series
-    const sb = one('model_sb'), fi = one('model_fi'), ra = one('model_ra'), fm = one('fx_model');
+    const sb = one('model_sb'), fi = one('model_fi'), ra = one('model_ra'), fm = one('fx_model'), pmm = one('model_pm');
+    if (pmm) for (const p of pmm.pairs || []) C.model['pm_' + p.key] = (p.history || []).map((r) => [D(r[0]), r[1]]).filter((r) => isNum(r[1]));
     const ser = (rows, f) => rows.map((r) => { const v = f(r); return isNum(v) ? [D(r[0] || r.month), Number(v)] : null; }).filter(Boolean);
     if (sb) C.model.sb = (sb.history || []).filter((r) => isNum(r.score)).map((r) => [D(r.month), r.score]);
     if (fi) for (const k of Object.keys(LEVERS)) C.model['fi_' + k] = (fi.history || []).filter((r) => isNum(r[k])).map((r) => [D(r.month), r[k]]);
@@ -73,6 +77,7 @@
   const ratio = (a, b) => { const A = C.px[a], B = C.px[b]; if (!A) return []; if (!b) return A; if (!B) return []; const bm = new Map(B.map((p) => [+p[0], p[1]])); return A.filter((p) => bm.has(+p[0])).map((p) => [p[0], p[1] / bm.get(+p[0])]); };
   const scoreOf = (spec) => {
     if (spec.kind === 'model') return C.model[spec.key] || [];
+    if (spec.kind === 'px') return [];
     if (spec.kind === 'pair') { const A = C.score[spec.a], B = C.score[spec.b]; if (!A || !B) return []; return A.map((p) => { const v = at(B, p[0]); return v == null ? null : [p[0], p[1] - v]; }).filter(Boolean); }
     return C.score[spec.a] || [];
   };
@@ -163,10 +168,13 @@
     } else if (S.dim === 'Real assets') {
       const ra = one('model_ra');
       for (const x of (ra && ra.assets) || []) if (C.px[x.etf] && C.px['6040']) out.push({ id: 'ra_' + x.etf, kind: 'model', key: 'ra_' + x.etf, a: x.etf, b: '6040', label: x.label + ' vs 60/40', vs: '60/40' });
+    } else if (S.dim === 'Private markets') {
+      const pmm = one('model_pm');
+      for (const p of (pmm && pmm.pairs) || []) if (C.px[p.long] && C.px[p.short]) out.push({ id: 'pm_' + p.key, kind: 'model', key: 'pm_' + p.key, a: p.long, b: p.short, label: p.label, vs: p.short });
     } else if (S.dim === 'Currencies') {
       const fm = one('fx_model');
       for (const c of (fm && fm.currencies) || []) if (C.px[c.code] && C.model['fx_' + c.code] && C.model['fx_' + c.code].length) out.push({ id: 'fx_' + c.code, kind: 'model', key: 'fx_' + c.code, a: c.code, b: null, label: c.label + ' vs the dollar', vs: 'USD' });
-    } else if (PAIR_DIMS[S.dim]) return PAIR_DIMS[S.dim].filter(([a, b]) => C.px[a] && C.px[b]).map(([a, b, l]) => ({ id: a + '|' + b, kind: 'pair', a, b, label: l, vs: b }));
+    } else if (PAIR_DIMS[S.dim]) return PAIR_DIMS[S.dim].filter(([a, b]) => C.px[a] && C.px[b]).map(([a, b, l]) => ({ id: a + '|' + b, kind: PRICE_ONLY.has(S.dim) ? 'px' : 'pair', a, b, label: l, vs: b }));
     else {
       const bench = BENCH[S.dim];
       return (C.grp[S.dim] || []).filter((e) => (BENCH_OVR[e] || bench) !== e).map((e) => ({ id: e + '|' + (BENCH_OVR[e] || bench), kind: 'eq', a: e, b: BENCH_OVR[e] || bench, label: C.lab[e] || e, vs: BENCH_OVR[e] || bench }));
@@ -237,7 +245,7 @@
 
   G.page('reltrend', (sec) => {
     const grid = $('#rt-grid', sec), focus = $('#rt-focus', sec), tbl = $('#rt-table', sec);
-    const need = MODEL_DIMS.has(S.dim) ? ['model_sb', 'model_fi', 'model_ra', 'fx_model', 'xasset_weekly', 'etf_weekly', 'etf_universe'] : ['sleeve_series', 'score_history', 'etf_weekly', 'etf_universe'];
+    const need = MODEL_DIMS.has(S.dim) ? ['model_sb', 'model_fi', 'model_ra', 'fx_model', 'model_pm', 'xasset_weekly', 'etf_weekly', 'etf_universe'] : PRICE_ONLY.has(S.dim) ? ['xasset_weekly', 'etf_weekly', 'etf_universe'] : ['sleeve_series', 'score_history', 'etf_weekly', 'etf_universe'];
     G.seg($('#rt-dim', sec), DIMS, S.dim, (v) => { S.dim = v; S.sel = null; G.redraw(); });
     G.seg($('#rt-range', sec), [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['10Y', '10Y'], ['20Y', '20Y'], ['All', 'All']], S.range, (v) => { S.range = v; G.redraw(); });
     G.seg($('#rt-fwd', sec), FWD.map((h) => [String(h), h + 'M']), String(S.fwd), (v) => { S.fwd = Number(v); G.redraw(); });
@@ -248,7 +256,9 @@
     const list = specs();
     if (!list.length) { G.placeholder(grid, 'Nothing to show in this dimension yet.'); return; }
     const sel = list.find((s) => s.id === S.sel) || list[0];
-    $('#rt-dim-note', sec).textContent = PAIR_DIMS[S.dim]
+    $('#rt-dim-note', sec).textContent = PRICE_ONLY.has(S.dim) ? 'Price-only pairs: no model makes these calls, so there is no reading on top; the R² grid and the trailing-return scatter show whether each relative trend has tended to persist or reverse.'
+      : S.dim === 'Private markets' ? 'Listed proxies for private markets, each against what it would replace: BDCs (BIZD) against high yield and listed private equity (PSP) against global equities. The signal (−1 to +1) uses only inputs that passed the evidence test; listed proxies move more than the private funds they stand in for.'
+      : PAIR_DIMS[S.dim]
       ? 'Each pair shows the gap between the two sleeves’ composite scores (positive favors the first) above the price of the first relative to the second, rebased to 100.'
       : S.dim === 'Asset allocation' ? 'Each allocation model’s signal (−1 to +1; positive favors the first leg) above the price of the first leg relative to the second, rebased to 100. Stocks vs bonds is ACWI against AGG; each fixed income lever is the fund it buys against the Treasury fund that pays for it; the dollar index is shown on its own.'
       : S.dim === 'Real assets' ? 'Each diversifier’s score (−1 to +1) above its price relative to a 60/40 mix of ACWI and AGG, rebased to 100.'
