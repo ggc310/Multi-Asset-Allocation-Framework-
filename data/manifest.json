@@ -651,14 +651,14 @@
    "title": "Saved weekly calls",
    "description": "Each Saturday's stocks vs bonds weight, fixed income tilts and their pair funds, real asset scores, equity preferences, regime, macro axes and currency views, kept for the live records. Appended by Claude every week.",
    "updated": {
-    "at": "2026-10-18T04:10:00Z",
+    "at": "2026-10-18T20:30:00Z",
     "by": "Claude"
    },
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_log.json",
-   "blob": "3d121468fc6a8e3e50d4ca18f0e048f4"
+   "blob": "718846249eee04221e9fff0407ff70a4"
   },
   "model_ra": {
    "title": "Real assets and commodities model",

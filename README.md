@@ -19,6 +19,7 @@ Live data is fetched at build time and deployed straight to Pages; it is never c
 - **Decide → Relative trends**: model score vs relative price for every equity dimension and classic pairs.
 - **Companies → Earnings calls** and **Company profile** (top 300 holdings, `profiles`). Any-ticker lookup (`cp_*` datasets) needs Claude's FMP connector, so it works only in the Claude version.
 - **Markets → Compare & correlate** and the **currency pair explorer**: any asset across classes over any time frame (`xasset_weekly` adds weekly history since 2005–07 for non-equity assets). Every time-series chart has a time-frame control.
+- **Executive summary → Decision summary**: views and tilts, change since the previous saved review (from `model_log`, which now also saves each week's observations), driving observations with data dates, a fixed evidence rubric, what dominates the portfolio and what would reverse each call (`src/x_exec.js`).
 - **Today**: event filters; headlines limited to major financial outlets, with Bloomberg, ZeroHedge, Fox Business, CNBC and WSJ RSS feeds merged in by the refresh job.
 
 ## Layout
