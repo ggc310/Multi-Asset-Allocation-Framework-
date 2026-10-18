@@ -2106,7 +2106,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         </div>
         <div class="gm-block">
           <div class="gm-hrow"><h3 class="gm-h3">How predictive has it been?</h3><span id="rt-verdict" class="x-dchip"></span></div>
-          <div class="gm-hrow x-rt-hz"><span class="gm-label">Forward</span><span class="gm-seg" id="rt-fwd" aria-label="Forward horizon"></span><span class="gm-label">Trailing</span><span class="gm-seg" id="rt-back" aria-label="Trailing horizon"></span></div>
+          <div class="gm-hrow x-rt-hz"><span class="gm-label">Forward</span><span class="gm-seg" id="rt-fwd" aria-label="Forward horizon"></span><span class="gm-label">Sample</span><span class="gm-seg" id="rt-sample" aria-label="Sample period for the statistics"></span></div>
           <ul class="gm-bul" id="rt-facts" data-source="sleeve_series etf_weekly"></ul>
           <h4 class="x-dh4" id="rt-bk-h">Next 12 months, by fifth of the reading</h4>
           <div class="gm-chart" id="rt-buckets" style="min-height:0"></div>
@@ -2116,7 +2116,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <p class="gm-note">Dark dots are the last three years. The dashed line is the fitted slope; the orange line marks today&rsquo;s reading.</p>
           <h4 class="x-dh4">R² against forward relative returns</h4>
           <div class="gm-tablewrap"><table class="gm-table gm-compact gm-static x-r2t" id="rt-r2" data-source="sleeve_series etf_weekly"><thead></thead><tbody></tbody></table></div>
-          <p class="gm-note">How much of the variation in the next 6 to 36 months&rsquo; relative return a straight line through each predictor explains. + means higher values were followed by better relative returns (for trailing returns, the trend persisted); &minus; means they reversed. Click a trailing row to plot it below. Longer horizons overlap heavily, which flatters R².</p>
+          <p class="gm-note">How much of the variation in the next 6 to 36 months&rsquo; relative return a straight line through each predictor explains. + means higher values were followed by better relative returns (for trailing returns, the trend persisted); &minus; means they reversed. Click a trailing row to plot it below. All figures use the sample chosen above. Longer horizons overlap heavily, which flatters R².</p>
           <h4 class="x-dh4" id="rt-sc2-h">Trailing relative return against what followed</h4>
           <div class="gm-chart" id="rt-scatter2" style="min-height:0"></div>
           <p class="gm-note" id="rt-sc2-note"></p>

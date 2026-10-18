@@ -25,7 +25,10 @@
   const DIMS = [['Asset allocation', 'Asset allocation'], ...Object.keys(PAIR_DIMS).map((k) => [k, k]), ...Object.keys(BENCH).map((k) => [k, k]), ['Real assets', 'Real assets'], ['Currencies', 'Currencies']];
   const FWD = [6, 12, 24, 36], BACK = [1, 3, 6, 12, 24, 36];
   const MODEL_DIMS = new Set(['Asset allocation', 'Real assets', 'Currencies']);
-  const S = { dim: 'Asset allocation', range: '10Y', sel: null, fwd: 12, back: 12 };
+  const S = { dim: 'Asset allocation', range: '10Y', sel: null, fwd: 12, back: 12, sample: 'All' };
+  // the sample the statistics are calculated over: readings dated within the last N years (outcomes then run up to today)
+  const SAMPLES = [['All', 'All history'], ['20', '20Y'], ['15', '15Y'], ['10', '10Y'], ['5', '5Y']];
+  const sampleStart = () => { if (S.sample === 'All') return null; const t = new Date(); t.setUTCFullYear(t.getUTCFullYear() - Number(S.sample)); return t; };
   const D = (s) => new Date(String(s).slice(0, 10) + 'T12:00:00Z');
   const one = (id) => (G.ok(id) ? G.rows(id)[0] : null);
   let C = null;
@@ -98,13 +101,13 @@
   const monthEnds = (s) => { const m = new Map(); for (const p of s) m.set(p[0].getUTCFullYear() * 12 + p[0].getUTCMonth(), p); return [...m.values()]; };
   // every month: the trailing B-month relative return and the reading, against the next F-month relative return
   const panel = (spec, back, fwd) => {
-    const key = spec.id + '|p|' + back + '|' + fwd; if (C.stats[key]) return C.stats[key];
+    const key = spec.id + '|p|' + back + '|' + fwd + '|' + S.sample, from = sampleStart(); if (C.stats[key]) return C.stats[key];
     const rel = relOf(spec), out = { xs: [], ys: [], ds: [] };
     if (rel.length) {
       const first = rel[0][0], last = rel[rel.length - 1][0];
       for (const [d, v] of monthEnds(rel)) {
         const b0 = addM(d, -back), f1 = addM(d, fwd);
-        if (b0 < first || f1 > last) continue;
+        if (b0 < first || f1 > last || (from && d < from)) continue;
         const pb = at(rel, b0), pf = at(rel, f1); if (!pb || !pf) continue;
         out.xs.push(v / pb - 1); out.ys.push(pf / v - 1); out.ds.push(d);
       }
@@ -112,7 +115,7 @@
     out.fit = rsq(out.xs, out.ys); C.stats[key] = out; return out;
   };
   const r2grid = (spec) => {
-    const key = spec.id + '|grid'; if (C.stats[key]) return C.stats[key];
+    const key = spec.id + '|grid|' + S.sample; if (C.stats[key]) return C.stats[key];
     const rows = [{ k: 'reading', label: scoreName(spec), cells: FWD.map((h) => { const o = S.fwd; S.fwd = h; const st = lead(spec); S.fwd = o; return st.r2; }) }];
     for (const b of BACK) rows.push({ k: b, label: `Trailing ${b}-month relative return`, cells: FWD.map((h) => panel(spec, b, h).fit) });
     C.stats[key] = rows; return rows;
@@ -120,13 +123,14 @@
   const r2fmt = (f) => (f ? (f.r2 * 100).toFixed(f.r2 < 0.1 ? 1 : 0) + '%' : '—');
   // monthly reading against the next S.fwd months' relative return, with the reading split into fifths
   const lead = (spec) => {
-    const H = S.fwd, key = spec.id + '|' + H; if (C.stats[key]) return C.stats[key];
+    const H = S.fwd, key = spec.id + '|' + H + '|' + S.sample, from = sampleStart(); if (C.stats[key]) return C.stats[key];
     const all = scoreOf(spec), rel = relOf(spec);
     const byMonth = new Map(); for (const p of all) byMonth.set(p[0].getUTCFullYear() * 12 + p[0].getUTCMonth(), p);
     const sc = [...byMonth.values()];
     const xs = [], ys = [], ds = [];
     const lastRel = rel.length ? rel[rel.length - 1][0] : null;
     for (const [d, v] of sc) {
+      if (from && d < from) continue;
       const d12 = new Date(d); d12.setUTCMonth(d12.getUTCMonth() + H);
       if (!lastRel || lastRel < d12) continue;
       const r0 = at(rel, d), r1 = at(rel, d12);
@@ -237,7 +241,7 @@
     G.seg($('#rt-dim', sec), DIMS, S.dim, (v) => { S.dim = v; S.sel = null; G.redraw(); });
     G.seg($('#rt-range', sec), [['1Y', '1Y'], ['3Y', '3Y'], ['5Y', '5Y'], ['10Y', '10Y'], ['20Y', '20Y'], ['All', 'All']], S.range, (v) => { S.range = v; G.redraw(); });
     G.seg($('#rt-fwd', sec), FWD.map((h) => [String(h), h + 'M']), String(S.fwd), (v) => { S.fwd = Number(v); G.redraw(); });
-    G.seg($('#rt-back', sec), BACK.map((h) => [String(h), h + 'M']), String(S.back), (v) => { S.back = Number(v); G.redraw(); });
+    G.seg($('#rt-sample', sec), SAMPLES, S.sample, (v) => { S.sample = v; G.redraw(); });
     if (need.some(G.bad)) { G.failed(grid, 'The score or price history'); return; }
     if (!need.every(G.ok)) { G.placeholder(grid); G.placeholder(focus); return; }
     build();
@@ -258,6 +262,8 @@
     const vd = $('#rt-verdict', sec);
     if (vd) { vd.textContent = st.verdict[0]; vd.className = 'x-rt-verdict x-dchip x-dchip-' + st.verdict[1]; }
     const facts = [];
+    const smp = st.ds.length ? `${G.mon(st.ds[0].toISOString())} to ${G.mon(st.ds[st.ds.length - 1].toISOString())}` : '';
+    if (smp) facts.push(`**Sample:** readings from ${smp}${S.sample === 'All' ? ' (all history)' : ` (last ${S.sample} years)`}, each matched with the ${S.fwd} months that followed.`);
     if (isNum(st.ic)) facts.push(`**Overall:** rank correlation between the monthly reading and the next ${S.fwd} months’ relative return is **${fx(st.ic, 2)}** over ${st.n} months (about ${Math.max(1, Math.round(st.n / S.fwd))} independent ${S.fwd}-month periods; t ${fx(st.t, 1)})${st.r2 ? `; the reading explains **${r2fmt(st.r2)}** of the variation (R²)` : ''}. As a guide: 0.05 to 0.15 is weak, 0.15 to 0.3 useful, above 0.3 strong; a t of 2 or more is statistically meaningful.`);
     if (isNum(st.spread)) facts.push(`**Across the range:** the highest fifth of readings was followed by ${pct(st.buckets[4].avg)} relative over ${S.fwd} months on average, the lowest fifth by ${pct(st.buckets[0].avg)}: a spread of **${pct(st.spread)}**${st.buckets.every((b, i) => !i || b.avg >= st.buckets[i - 1].avg) ? ', rising steadily from bottom to top' : st.buckets.every((b, i) => !i || b.avg <= st.buckets[i - 1].avg) ? ', falling steadily from bottom to top' : ', but not in a straight line'}.`);
     if (st.curB) facts.push(`**At today’s reading (${f(st.cur)}):** it sits in the ${['lowest', 'second', 'middle', 'fourth', 'highest'][st.curB.i]} fifth (${f(st.curB.lo)} to ${f(st.curB.hi)}). Months there were followed by **${pct(st.curB.avg)}** against ${sel.vs} on average and **won ${Math.round(st.curB.hit * 100)}% of the time** (${st.curB.n} months).`);
@@ -289,7 +295,7 @@
     $('#rt-sc2-h', sec).textContent = `Trailing ${S.back}-month relative return against the next ${S.fwd} months`;
     scatter($('#rt-scatter2', sec), { ...sel, kind: 'trail' }, { xs: pn.xs, ys: pn.ys, ds: pn.ds, cur: (() => { const r = relOf(sel); return r.length ? relRet(r, S.back) : null; })() });
     $('#rt-sc2-note', sec).textContent = pn.fit
-      ? `R² ${r2fmt(pn.fit)} over ${pn.fit.n} months (correlation ${fx(pn.fit.r, 2)}): ${pn.fit.r2 < 0.02 ? 'the trailing return says almost nothing about what follows' : pn.fit.sign > 0 ? `${sel.a} has tended to keep going: past winners kept winning over the next ${S.fwd} months` : `${sel.a} has tended to reverse: past winners lagged over the next ${S.fwd} months`}. Dark dots are the last three years; the orange line is today’s trailing return.`
+      ? `R² ${r2fmt(pn.fit)} over ${pn.fit.n} months${S.sample === 'All' ? '' : ` in the last ${S.sample} years`} (correlation ${fx(pn.fit.r, 2)}): ${pn.fit.r2 < 0.02 ? 'the trailing return says almost nothing about what follows' : pn.fit.sign > 0 ? `${sel.a} has tended to keep going: past winners kept winning over the next ${S.fwd} months` : `${sel.a} has tended to reverse: past winners lagged over the next ${S.fwd} months`}. Dark dots are the last three years; the orange line is today’s trailing return.`
       : 'Not enough price history for this pair of horizons.';
 
     // small multiples
