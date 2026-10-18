@@ -17,7 +17,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/bond_curve.json"
+   "path": "data/files/bond_curve.json",
+   "blob": "575320a414ae504a1f9a508803ee634d"
   },
   "bond_history": {
    "title": "Bond ETF price history",
@@ -41,7 +42,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/bond_stats.json"
+   "path": "data/files/bond_stats.json",
+   "blob": "b2b422daffc3f939b42d7843c6ba5c7d"
   },
   "bt_candidates": {
    "title": "Backtest: candidate metrics",
@@ -53,7 +55,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_candidates.json"
+   "path": "data/files/bt_candidates.json",
+   "blob": "ed5dde4d8dc2d7f8df64fb4950901942"
   },
   "bt_honesty": {
    "title": "Backtest confidence and costs",
@@ -65,7 +68,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 1080,
    "kind": "file",
-   "path": "data/files/bt_honesty.json"
+   "path": "data/files/bt_honesty.json",
+   "blob": "92d77fa6c7df0b542ea34fbdf2b3bff1"
   },
   "bt_horizon": {
    "title": "Backtest: weights by horizon",
@@ -77,7 +81,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_horizon.json"
+   "path": "data/files/bt_horizon.json",
+   "blob": "8d2bf500b0bca66483f80c25271e37d3"
   },
   "bt_ic": {
    "title": "Backtest rank correlations",
@@ -89,7 +94,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_ic.json"
+   "path": "data/files/bt_ic.json",
+   "blob": "85d80020f8daae570a6737310d668a55"
   },
   "bt_pairs": {
    "title": "Backtest: theme pairs",
@@ -101,7 +107,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_pairs.json"
+   "path": "data/files/bt_pairs.json",
+   "blob": "d2837439ae1ceae6f410ef01cf120b99"
   },
   "bt_performance": {
    "title": "Backtest growth of 100",
@@ -113,7 +120,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_performance.json"
+   "path": "data/files/bt_performance.json",
+   "blob": "763a00743de4a6d465bcd1b7e69b3126"
   },
   "bt_presets": {
    "title": "Backtest by weight preset",
@@ -125,7 +133,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_presets.json"
+   "path": "data/files/bt_presets.json",
+   "blob": "6cfd39788c97be6e9760bb096a8824c1"
   },
   "bt_quintiles": {
    "title": "Backtest returns by score fifth",
@@ -137,7 +146,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_quintiles.json"
+   "path": "data/files/bt_quintiles.json",
+   "blob": "a75f80c33de1abdff0fdd7fb8dfa928f"
   },
   "bt_regime": {
    "title": "Backtest by regime",
@@ -149,7 +159,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 1080,
    "kind": "file",
-   "path": "data/files/bt_regime.json"
+   "path": "data/files/bt_regime.json",
+   "blob": "a2067419c870faf972da66f2dd32e26f"
   },
   "bt_robustness": {
    "title": "Backtest: robustness",
@@ -161,7 +172,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_robustness.json"
+   "path": "data/files/bt_robustness.json",
+   "blob": "518ae9f2e99789cef5276e5e765c9af3"
   },
   "bt_rolling": {
    "title": "Backtest rolling excess",
@@ -173,7 +185,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_rolling.json"
+   "path": "data/files/bt_rolling.json",
+   "blob": "664b614140cfa5aabb1e9cb03034af68"
   },
   "bt_settings": {
    "title": "Backtest: every setting",
@@ -185,7 +198,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 1080,
    "kind": "file",
-   "path": "data/files/bt_settings.json"
+   "path": "data/files/bt_settings.json",
+   "blob": "7f3d665a93d391e056e384dbd6b79a63"
   },
   "bt_stats": {
    "title": "Backtest statistics",
@@ -197,7 +211,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_stats.json"
+   "path": "data/files/bt_stats.json",
+   "blob": "4b62bbbae7afce2bc6f1a5850860a8e1"
   },
   "bt_valuation": {
    "title": "Backtest: valuation methods",
@@ -209,7 +224,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/bt_valuation.json"
+   "path": "data/files/bt_valuation.json",
+   "blob": "a83d42ed60c50194d6fa59254f96de57"
   },
   "calendar_live": {
    "title": "Economic calendar, live",
@@ -227,7 +243,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/call_index.json"
+   "path": "data/files/call_index.json",
+   "blob": "f463c0c64a1b011a2bdee26ac1531957"
   },
   "call_scores": {
    "title": "Scored earnings calls",
@@ -239,7 +256,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/call_scores.json"
+   "path": "data/files/call_scores.json",
+   "blob": "82acfbbdd845f9ab707ab2dd4dc9c0ea"
   },
   "call_sleeves": {
    "title": "Earnings calls by fund",
@@ -251,7 +269,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/call_sleeves.json"
+   "path": "data/files/call_sleeves.json",
+   "blob": "4bd23a707dde79e25a6c37cded2fe4e1"
   },
   "call_tests": {
    "title": "Earnings-call signal tests",
@@ -263,7 +282,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/call_tests.json"
+   "path": "data/files/call_tests.json",
+   "blob": "1a15977e1477c0a01ae0a31c2946669c"
   },
   "constituent_quotes": {
    "title": "Holdings live quotes",
@@ -281,7 +301,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/constituent_series.json"
+   "path": "data/files/constituent_series.json",
+   "blob": "88b2391387a2aa9f244547b0f9c67054"
   },
   "constituents": {
    "title": "Holdings fundamentals",
@@ -293,7 +314,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/constituents.json"
+   "path": "data/files/constituents.json",
+   "blob": "afef4551c9ce0419f256fec541a5cd4b"
   },
   "country_risk": {
    "title": "Country risk premiums",
@@ -305,7 +327,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/country_risk.json"
+   "path": "data/files/country_risk.json",
+   "blob": "e11a8df93d481910ddc1256afad142c3"
   },
   "dq_report": {
    "title": "Data checks",
@@ -317,7 +340,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/dq_report.json"
+   "path": "data/files/dq_report.json",
+   "blob": "a6a2fd9e15f076a34b8d5d6ef5f8c38b"
   },
   "estimate_history": {
    "title": "Consensus estimate snapshots",
@@ -329,7 +353,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/estimate_history.json"
+   "path": "data/files/estimate_history.json",
+   "blob": "86a3231fe233a548e9ede7441baeb925"
   },
   "etf_extras": {
    "title": "ETF costs and flows",
@@ -341,7 +366,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/etf_extras.json"
+   "path": "data/files/etf_extras.json",
+   "blob": "cf2709f69b11b2e2da9157b6c1b0f4d8"
   },
   "etf_history": {
    "title": "ETF price history",
@@ -365,7 +391,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/etf_universe.json"
+   "path": "data/files/etf_universe.json",
+   "blob": "4430591fe829216e8d833524105bcddb"
   },
   "etf_weekly": {
    "title": "ETF weekly prices since 2005",
@@ -377,7 +404,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/etf_weekly.json"
+   "path": "data/files/etf_weekly.json",
+   "blob": "7f489828581a58610f8ecfd2a22bae2f"
   },
   "fund_holdings": {
    "title": "ETF top holdings",
@@ -389,7 +417,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/fund_holdings.json"
+   "path": "data/files/fund_holdings.json",
+   "blob": "6f0b3a310e4494a422be7c02592b45ac"
   },
   "fund_sectors": {
    "title": "Fund sector make-up",
@@ -401,7 +430,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/fund_sectors.json"
+   "path": "data/files/fund_sectors.json",
+   "blob": "087ca1aa34d192e55f07bbcae3522438"
   },
   "fx": {
    "title": "Currencies: valuation and trend",
@@ -413,7 +443,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/fx.json"
+   "path": "data/files/fx.json",
+   "blob": "2843c8d6897f1d7cdf76ac6573a69a76"
   },
   "fx_history": {
    "title": "Currency price history",
@@ -431,7 +462,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/fx_model.json"
+   "path": "data/files/fx_model.json",
+   "blob": "b1152919552fc2f1d40ccaf772d5bdb9"
   },
   "fx_stats": {
    "title": "Currencies against the dollar",
@@ -443,7 +475,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/fx_stats.json"
+   "path": "data/files/fx_stats.json",
+   "blob": "b3f67b7ad385341be000e1e9392e4360"
   },
   "insider_sleeves": {
    "title": "Insider activity by fund",
@@ -455,7 +488,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/insider_sleeves.json"
+   "path": "data/files/insider_sleeves.json",
+   "blob": "e3ecf04df7467adb1b8bf7ca7b7ee3e2"
   },
   "lab_experiments": {
    "title": "Saved lab experiments",
@@ -467,7 +501,8 @@
    "schedule": "Updated when an experiment is saved, and every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/lab_experiments.json"
+   "path": "data/files/lab_experiments.json",
+   "blob": "8ab199e822316acc82ace12ece4d9041"
   },
   "lab_inputs": {
    "title": "Model lab signal history",
@@ -479,7 +514,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/lab_inputs.json"
+   "path": "data/files/lab_inputs.json",
+   "blob": "ea0e733e7e3d6dfe3ca8d922e5fa653d"
   },
   "lab_log": {
    "title": "Lab experiments' weekly calls",
@@ -491,7 +527,8 @@
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/lab_log.json"
+   "path": "data/files/lab_log.json",
+   "blob": "337b00ddd35c245aaf5d206aedacb44a"
   },
   "lab_spec": {
    "title": "Model lab settings",
@@ -503,7 +540,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/lab_spec.json"
+   "path": "data/files/lab_spec.json",
+   "blob": "b0f1a4a5e745154d757b34606779e928"
   },
   "macro_history": {
    "title": "US rates and risk premiums",
@@ -515,7 +553,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/macro_history.json"
+   "path": "data/files/macro_history.json",
+   "blob": "762b86d53e268800f5393103c8d26050"
   },
   "macro_px": {
    "title": "Macro proxies, daily",
@@ -533,7 +572,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/macro_state.json"
+   "path": "data/files/macro_state.json",
+   "blob": "a4e3cbdba6add1ab365090d87654672f"
   },
   "model_bt": {
    "title": "Model backtests: real assets and the models together",
@@ -545,7 +585,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/model_bt.json"
+   "path": "data/files/model_bt.json",
+   "blob": "e0065f917cc5b01920afa9454dcff3eb"
   },
   "model_fi": {
    "title": "Fixed income relative value model",
@@ -557,7 +598,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/model_fi.json"
+   "path": "data/files/model_fi.json",
+   "blob": "e4631b6740ed9958c405fb177004b115"
   },
   "model_log": {
    "title": "Saved weekly calls",
@@ -569,7 +611,8 @@
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/model_log.json"
+   "path": "data/files/model_log.json",
+   "blob": "3d121468fc6a8e3e50d4ca18f0e048f4"
   },
   "model_ra": {
    "title": "Real assets and commodities model",
@@ -581,7 +624,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/model_ra.json"
+   "path": "data/files/model_ra.json",
+   "blob": "ddc1a721c3af2eb0c3bde804bfc5a472"
   },
   "model_sb": {
    "title": "Stocks vs bonds model",
@@ -593,7 +637,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/model_sb.json"
+   "path": "data/files/model_sb.json",
+   "blob": "0a69965c5758b88bd6a75eabdc8891d0"
   },
   "multi_history": {
    "title": "Other-asset price history",
@@ -617,7 +662,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/multi_stats.json"
+   "path": "data/files/multi_stats.json",
+   "blob": "db930a5a7401f09912c7371425c8ef27"
   },
   "pack_link": {
    "title": "Committee pack",
@@ -629,7 +675,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/pack_link.json"
+   "path": "data/files/pack_link.json",
+   "blob": "899601de25de68ac4778d7397c81b066"
   },
   "pit_val": {
    "title": "Point-in-time S&P 500 valuation",
@@ -641,7 +688,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/pit_val.json"
+   "path": "data/files/pit_val.json",
+   "blob": "cc87ab48572afee56775f3e62ccaa931"
   },
   "positioning": {
    "title": "Futures positioning",
@@ -653,7 +701,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/positioning.json"
+   "path": "data/files/positioning.json",
+   "blob": "9fbdb6137ed44891b19934ae4ab1e99a"
   },
   "regime_playbook": {
    "title": "Regime playbook",
@@ -665,7 +714,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/regime_playbook.json"
+   "path": "data/files/regime_playbook.json",
+   "blob": "1f7e10211098843160b83ca326d14cfb"
   },
   "risk_model": {
    "title": "Fund risk model",
@@ -677,7 +727,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/risk_model.json"
+   "path": "data/files/risk_model.json",
+   "blob": "13d42ef5152e63d43ade10c9614b2374"
   },
   "score_history": {
    "title": "Score snapshots",
@@ -689,7 +740,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/score_history.json"
+   "path": "data/files/score_history.json",
+   "blob": "4531da98b1275351e42196f48494504b"
   },
   "sensitivities": {
    "title": "Macro sensitivities",
@@ -701,7 +753,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/sensitivities.json"
+   "path": "data/files/sensitivities.json",
+   "blob": "a2efc290744ea41f1c979778e3739342"
   },
   "signal_registry": {
    "title": "Signal registry",
@@ -713,7 +766,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/signal_registry.json"
+   "path": "data/files/signal_registry.json",
+   "blob": "bdcd5e77e70e11c4c1359982bab12b99"
   },
   "sleeve_series": {
    "title": "Sleeve history, monthly",
@@ -725,7 +779,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/sleeve_series.json"
+   "path": "data/files/sleeve_series.json",
+   "blob": "cafd0c4240c144cf41b2b1e61538cc06"
   },
   "surprise": {
    "title": "Economic surprises",
@@ -737,7 +792,8 @@
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/surprise.json"
+   "path": "data/files/surprise.json",
+   "blob": "2ed0ea87766be48ac35d02403293a077"
   },
   "today_earnings": {
    "title": "Large-company earnings",
@@ -779,7 +835,8 @@
    "schedule": "Rebuilt from FMP on the first scheduled refresh of each month",
    "staleAfterHours": 720,
    "kind": "file",
-   "path": "data/files/val_history.json"
+   "path": "data/files/val_history.json",
+   "blob": "d793d0fedee899020a3c994430860b08"
   },
   "weekly_note": {
    "title": "Weekly committee note",
@@ -791,7 +848,8 @@
    "schedule": "Rewritten every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
-   "path": "data/files/weekly_note.json"
+   "path": "data/files/weekly_note.json",
+   "blob": "a212801aa3224eedd6e933395d220406"
   }
  }
 }
