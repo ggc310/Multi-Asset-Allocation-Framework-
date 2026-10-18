@@ -257,7 +257,7 @@
       out.push({ id: 'eqr', name: 'Equities: where in the world', go: 'scoreboard',
         tilt: leaning ? 'Lean to ' + ll(lean[0].l) : act.length ? 'Close to ACWI by region' : best ? 'Scores prefer ' + ll(best.l) : '—',
         sub: act.length ? act.map((x) => `${x.l} ${pc(x.m, 0)} of equities (${pts(x.a, 1)})`).join(' · ') : 'scores only',
-        because: (act.length && !leaning ? `country weights land within a point of ACWI in every region, although the scores favor ${ll(top.l)}. ` : '') + (best && worst ? `${ll(best.l)} scores ${Math.round(best.s)} against ${Math.round(worst.s)} for ${ll(worst.l)}${gaps.length ? `, mostly on ${gaps[0].p} (${Math.round(gaps[0].b)} vs ${Math.round(gaps[0].w)})` : ''}.` : ''),
+        because: (act.length && !leaning ? `country weights land within a point of ACWI in every region, although the scores favor ${ll(top.l)}. ` : '') + (best && worst ? `${act.length && !leaning ? best.l : ll(best.l)} scores ${Math.round(best.s)} against ${Math.round(worst.s)} for ${ll(worst.l)}${gaps.length ? `, mostly on ${gaps[0].p} (${Math.round(gaps[0].b)} vs ${Math.round(gaps[0].w)})` : ''}.` : ''),
         drivers, ev: evq, rev, cover: coverR, key: { act } });
 
       // style and size, as pairs; deliberately the broad pairs only
