@@ -7,7 +7,7 @@ A public, no-login copy of the Claude dashboard artifact
 
 | Part | What updates it | When |
 | --- | --- | --- |
-| Live market data (`data/live/`): ETF, bond, cross-asset, FX and constituent prices, Treasury curve, calendar, earnings, headlines | GitHub Actions runs `refresh/refresh.mjs` against FMP, using the same loaders the artifact uses | Weekdays ~5:45am and ~2:15pm PT, and on every push |
+| Live market data (`data/live/`): ETF, bond, cross-asset, FX and constituent prices, Treasury curve, calendar, earnings, headlines | GitHub Actions runs `refresh/refresh.mjs` against FMP, using the same loaders the artifact uses | Every 30 minutes on weekdays, about 6am–2:30pm PT, and on every push |
 | Model outputs and narrative (`data/files/`, `src/`): scores, backtests, model calls, weekly note, the page itself | A Claude scheduled task copies the artifact's latest files here and pushes | Weekday mornings |
 
 Live data is fetched at build time and deployed straight to Pages; it is never committed.

@@ -2,9 +2,10 @@ name: Refresh and publish dashboard
 
 on:
   schedule:
-    # Weekdays: before the US open (~5:45am PT) and after the close (~2:15pm PT)
-    - cron: '45 12 * * 1-5'
-    - cron: '15 21 * * 1-5'
+    # Weekdays every 30 minutes, 13:05-21:35 UTC: covers the US session
+    # (9:30am-4pm ET) in both daylight and standard time, plus a pre-open
+    # and a post-close run. GitHub may start scheduled runs a few minutes late.
+    - cron: '5,35 13-21 * * 1-5'
   push:
     branches: [main]
   workflow_dispatch:
