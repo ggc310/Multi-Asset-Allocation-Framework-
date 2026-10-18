@@ -1,5 +1,5 @@
-index.html
-page/
+/index.html
+/page/
 data/live/*.json
 _site/
 node_modules/
