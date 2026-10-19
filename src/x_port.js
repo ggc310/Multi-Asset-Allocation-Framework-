@@ -18,7 +18,9 @@
     if (!base || !cfg.budget) { last = { picks: [], cfg }; return base; }
     const U = new Map(G.rows('etf_universe').map((u) => [u.etf, u]));
     const key = (alloc && alloc.key) || 'composite', band = (alloc && alloc.band) || 0;
-    const RM = G.ok('risk_model') ? G.rows('risk_model')[0] : null;
+    const arr = (v) => { if (Array.isArray(v)) return v; if (typeof v === 'string') { try { const p = JSON.parse(v); return Array.isArray(p) ? p : null; } catch (e) { return null; } } return null; };
+    const RM0 = G.ok('risk_model') ? G.rows('risk_model')[0] : null;
+    const RM = RM0 && arr(RM0.symbols) && arr(RM0.cov) ? { ...RM0, symbols: arr(RM0.symbols), cov: arr(RM0.cov) } : null;   // without a usable risk model, picks skip the correlation screen
     const ix = RM ? new Map(RM.symbols.map((s, i) => [s, i])) : null;
     const corr = (a, b) => { if (!ix || !ix.has(a) || !ix.has(b)) return 0; const i = ix.get(a), j = ix.get(b); return RM.cov[i][j] / Math.sqrt(RM.cov[i][i] * RM.cov[j][j]); };
     // candidates: every sleeve not already held by layer 1 and not a broad index
