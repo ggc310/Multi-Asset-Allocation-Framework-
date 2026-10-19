@@ -1,3 +1,100 @@
+// Model portfolio: a 1% minimum position and a long-only fixed income sleeve. app2.js's portfolio builder calls
+// window.GMX_FLOOR before it adds the asset classes together, so the Executive summary (which reads the same
+// portfolio) sees the same weights.
+//  net(fi)              the bond model's pair trades (long a fund, short duration-matched Treasuries) become funds
+//                       actually held: each short leg is paid for by trimming AGG, so nothing is negative.
+//  cls(w, scale, core)  drops any fund below 1% of the whole portfolio (w is a share of its asset class, scale the
+//                       class's weight) and gives the weight back to `core` (AGG for bonds) or pro rata.
+//  role(etf)            "Core: " or "Tilt: " for the bond rows.
+//  rows(...)            under the bond funds, a look-through by bond type and duration, model against the Agg.
+(() => {
+  const G = window.GMX;
+  const MIN = 0.01;
+  const net = (h) => {
+    const o = { ...h };
+    if (!('AGG' in o)) return o;
+    for (const k of Object.keys(o)) if (k !== 'AGG' && o[k] < 0) { o.AGG += o[k]; delete o[k]; }
+    if (o.AGG < 0) o.AGG = 0;
+    return o;
+  };
+  const cls = (w, scale, core) => {
+    if (!w || !(scale > 0)) return w;
+    const o = { ...w };
+    for (let it = 0; it < 30; it++) {
+      let cut = 0;
+      for (const k of Object.keys(o)) if (k !== core && Math.abs(o[k]) * scale < MIN - 1e-9) { cut += o[k]; delete o[k]; }
+      if (Math.abs(cut) < 1e-12) break;
+      if (core && core in o) o[core] += cut;
+      else { const t = Object.values(o).reduce((a, b) => a + Math.max(b, 0), 0); if (!(t > 0)) break; for (const k of Object.keys(o)) if (o[k] > 0) o[k] += cut * o[k] / t; }
+    }
+    if (core && core in o && o[core] * scale < MIN - 1e-9 && Object.keys(o).length > 1) {   // a tiny core: hand it to the rest
+      const c = o[core]; delete o[core]; const t = Object.values(o).reduce((a, b) => a + b, 0);
+      for (const k of Object.keys(o)) o[k] += c * o[k] / t;
+    }
+    return o;
+  };
+  const role = (e) => (e === 'AGG' ? 'Core: ' : 'Tilt: ');
+  // bond-type buckets, from each fund's sector breakdown (fund_sectors, kind 'bond')
+  const BUCKET = { Treasuries: 'US Treasuries', 'Agency MBS': 'Agency mortgages', 'Investment-grade corporates': 'Investment-grade corporates',
+    'Other securitized': 'Other securitized and government-related', 'Government-related': 'Other securitized and government-related',
+    'Inflation-linked Treasuries': 'Inflation-linked Treasuries (TIPS)', 'High-yield corporates': 'High yield', 'EM government (USD)': 'Emerging markets, dollar',
+    'EM local currency': 'Emerging markets, local currency' };
+  const FALLBACK = { BNDX: 'International government, dollar-hedged' };
+  const ORDER = ['US Treasuries', 'Agency mortgages', 'Investment-grade corporates', 'Other securitized and government-related', 'Inflation-linked Treasuries (TIPS)',
+    'International government, dollar-hedged', 'High yield', 'Emerging markets, dollar', 'Emerging markets, local currency'];
+  let sec = null, dur = null;
+  const prep = () => {
+    if (!sec && G.ok('fund_sectors')) { sec = new Map(); for (const r of G.rows('fund_sectors')) if (r.kind === 'bond') { if (!sec.has(r.etf)) sec.set(r.etf, []); sec.get(r.etf).push(r); } }
+    if (!dur && G.ok('bond_stats')) dur = new Map(G.rows('bond_stats').map((r) => [r.etf, r.duration]));
+  };
+  const look = (w, isFI) => {
+    const o = new Map();
+    for (const [e, v] of Object.entries(w)) {
+      if (!isFI(e) || !v) continue;
+      const S = (sec && sec.get(e)) || [];
+      const tot = S.reduce((a, r) => a + r.weight, 0);
+      if (!S.length || !(tot > 0)) { const b = FALLBACK[e] || e; o.set(b, (o.get(b) || 0) + v); continue; }
+      for (const r of S) { const b = BUCKET[r.sector] || r.sector; o.set(b, (o.get(b) || 0) + v * r.weight / tot); }
+    }
+    return o;
+  };
+  const durOf = (w, isFI) => { let a = 0, s = 0; for (const [e, v] of Object.entries(w)) if (isFI(e) && v > 0 && dur && G.isNum(dur.get(e))) { a += v * dur.get(e); s += v; } return s > 0 ? a / s : null; };
+  // t: the portfolio; d: the table rows built so far; r: element maker; N, I: weight and active formatters
+  const rows = (t, d, r, N, I) => {
+    prep();
+    const isFI = (e) => t.fi && e in t.fi || (e === 'AGG');
+    const at = d.findIndex((tr) => tr.querySelector && tr.querySelector('button[data-shut="Fixed income"]'));
+    if (at < 0) return;
+    let end = d.length;
+    for (let k = at + 1; k < d.length; k++) if (d[k].classList.contains('gm-subtot')) { end = k; break; }
+    const m = look(t.hold, isFI), f = look(t.ref, isFI);
+    const keys = [...new Set([...m.keys(), ...f.keys()])].filter((k) => Math.abs(m.get(k) || 0) >= 5e-4 || Math.abs(f.get(k) || 0) >= 5e-4)
+      .sort((a, b) => (ORDER.indexOf(a) + 1 || 99) - (ORDER.indexOf(b) + 1 || 99));
+    if (!keys.length) return;
+    const muted = 'color:var(--gm-muted,#5b6475);font-size:0.92em';
+    const out = [];
+    const hd = r('tr'), c0 = r('td', 'What the bonds hold, looked through the funds');
+    c0.colSpan = 4; c0.setAttribute('style', muted + ';font-style:italic;padding-top:6px'); hd.append(c0); out.push(hd);
+    for (const k of keys) {
+      const a = m.get(k) || 0, b = f.get(k) || 0, tr = r('tr'), td = r('td', '  ↳ ' + k, 'gm-txt');
+      td.setAttribute('style', muted);
+      const cells = [r('td', N(a), 'gm-num'), r('td', N(b), 'gm-num'), r('td', I(a - b), 'gm-num' + (Math.abs(a - b) >= 0.01 ? ' gm-strong' : ''))];
+      for (const c of cells) c.setAttribute('style', muted);
+      tr.append(td, ...cells); out.push(tr);
+    }
+    const dm = durOf(t.hold, isFI), dr = durOf(t.ref, isFI);
+    if (G.isNum(dm) && G.isNum(dr)) {
+      const tr = r('tr'), td = r('td', '  ↳ Duration of the bonds, years', 'gm-txt'), x = dm - dr;
+      const cells = [r('td', dm.toFixed(1), 'gm-num'), r('td', dr.toFixed(1), 'gm-num'), r('td', (Math.abs(x) < 0.05 ? '—' : (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1)), 'gm-num')];
+      for (const c of [td, ...cells]) c.setAttribute('style', muted);
+      tr.title = 'Weighted by fund. The bond model measures each tilt against duration-matched Treasuries; paying for the tilts out of AGG instead moves duration by the amount shown.';
+      tr.append(td, ...cells); out.push(tr);
+    }
+    d.splice(end, 0, ...out);
+  };
+  window.GMX_FLOOR = { MIN, net, cls, role, rows };
+})();
+
 // Model portfolio, equity sleeve: the whole equity universe, not only country funds.
 // Layer 1 (unchanged): ACWI's country weights tilted by the country scores (Equity allocation settings), with
 // countries that have no fund held through ACWX. Layer 2 (this file): part of each region's broad exposure moves into
