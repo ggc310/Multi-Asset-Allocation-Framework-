@@ -750,6 +750,19 @@
    "path": "data/files/pack_link.json",
    "blob": "cac406ca4bacb0c6e48db3238019688f"
   },
+  "pipeline_checks": {
+   "title": "Pipeline checks",
+   "description": "Results of the checks run at the end of every weekly rebuild: outputs present, fresh and within size limits, the signal registry agreeing with the models, the weekly note agreeing with the models, and no credentials in uploaded files. Written by checks.py.",
+   "updated": {
+    "at": "2026-10-19T00:39:46Z",
+    "by": "Claude"
+   },
+   "schedule": "Rebuilt every week by a scheduled task",
+   "staleAfterHours": 360,
+   "kind": "file",
+   "path": "data/files/pipeline_checks.json",
+   "blob": "ff27706adae7f5831efe069a61877808"
+  },
   "pit_val": {
    "title": "Point-in-time S&P 500 valuation",
    "description": "Monthly since 2004: the S&P 500's trailing and five-year cycle-adjusted earnings yields, summed over the companies in the index on each date using only earnings already filed, and the equity risk premium against the real 10-year yield, with how many members FMP covers. Built by Claude from FMP income statements, market values, index changes, CPI and Treasury rates.",
