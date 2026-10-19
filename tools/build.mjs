@@ -9,14 +9,24 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const body = readFileSync(join(root, 'src/index.html'), 'utf8');
 const scripts = [...body.matchAll(/<script\s+src="([^"]+)"\s*><\/script>/g)].map((m) => m[1]);
-const markup = body.replace(/<script\s+src="[^"]+"\s*><\/script>\s*/g, '');
+const stamp = Date.now().toString(36);
+// Page stylesheets (<link rel="stylesheet" href="x.css">) are copied beside the scripts in page/.
+const styles = [];
+const markup = body
+  .replace(/<script\s+src="[^"]+"\s*><\/script>\s*/g, '')
+  .replace(/<link\s+rel="stylesheet"\s+href="([^":\/?#]+\.css)"\s*\/?>/g, (_, f) => {
+    styles.push(f);
+    return `<link rel="stylesheet" href="page/${f}?v=${stamp}">`;
+  });
 
 mkdirSync(join(root, 'page'), { recursive: true });
 for (const f of readdirSync(join(root, 'src')).filter((f) => f.endsWith('.js'))) {
   const code = readFileSync(join(root, 'src', f), 'utf8');
   writeFileSync(join(root, 'page', f), `(function () {\n${code}\n})();\n`);
 }
-const stamp = Date.now().toString(36);
+for (const f of styles) {
+  writeFileSync(join(root, 'page', f), readFileSync(join(root, 'src', f), 'utf8'));
+}
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -38,4 +48,4 @@ ${scripts.map((s) => `<script src="page/${s}?v=${stamp}"></script>`).join('\n')}
 </html>
 `;
 writeFileSync(join(root, 'index.html'), html);
-console.log('built index.html with', scripts.length, 'scripts');
+console.log('built index.html with', scripts.length, 'scripts and', styles.length, 'stylesheets');
