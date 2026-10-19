@@ -957,11 +957,11 @@ dash.calc('curve_live', {
 });
 
 dash.loader('multi_history', {
-  description: 'Runs the same price-history call for REITs, infrastructure, MLPs, commodities, currencies and bitcoin, a few at a time, and keeps symbol, date and dividend-adjusted close. Bitcoin keeps weekdays only, to line up with the other markets.',
+  description: 'Runs the same price-history call for REITs, infrastructure, MLPs, commodities, currencies, bitcoin and the alternatives (managed futures, BDCs, listed private equity, uranium miners), a few at a time, and keeps symbol, date and dividend-adjusted close. Bitcoin keeps weekdays only, to line up with the other markets.',
   fn: async ({ answer, call, args }) => {
     const first = parseRows(answer);
     if (!first.length) throw new Error('FMP returned no price history for ' + args.symbol);
-    const rest = await fetchAll(call, 'chart', ['VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD'].map((symbol) => ({ ...args, symbol })), parseRows);
+    const rest = await fetchAll(call, 'chart', ['VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD', 'DBMF', 'BIZD', 'PSP', 'URA'].map((symbol) => ({ ...args, symbol })), parseRows);
     return [...first, ...rest].map((r) => ({ symbol: r.symbol, date: String(r.date).slice(0, 10), adjClose: Number(r.adjClose) }))
       .filter((r) => r.symbol !== 'BTCUSD' || [1, 2, 3, 4, 5].includes(new Date(r.date + 'T12:00:00Z').getUTCDay()));
   },
@@ -970,13 +970,13 @@ dash.calc('multi_hist_all', {
   inputs: ['etf_history', 'bond_history', 'multi_history'],
   title: 'Cross-asset price history',
   description: 'Daily dividend-adjusted closes for the multi-asset set, gathered from the equity, bond and other-asset histories.',
-  fn: (etf_history, bond_history, multi_history) => { const S = new Set(['SGOV', 'ACWI', 'SPY', 'QQQ', 'IWM', 'VGK', 'EWJ', 'EEM', 'AGG', 'SHY', 'IEF', 'TLT', 'TIP', 'BNDX', 'MUB', 'LQD', 'HYG', 'BKLN', 'EMB', 'EMLC', 'VNQ', 'VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD']); return [...etf_history, ...bond_history, ...multi_history].filter((r) => S.has(r.symbol)); },
+  fn: (etf_history, bond_history, multi_history) => { const S = new Set(['SGOV', 'ACWI', 'SPY', 'QQQ', 'IWM', 'VGK', 'EWJ', 'EEM', 'AGG', 'SHY', 'IEF', 'TLT', 'TIP', 'BNDX', 'MUB', 'LQD', 'HYG', 'BKLN', 'EMB', 'EMLC', 'VNQ', 'VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD', 'DBMF', 'BIZD', 'PSP', 'URA']); return [...etf_history, ...bond_history, ...multi_history].filter((r) => S.has(r.symbol)); },
 });
 dash.calc('multi_quotes_all', {
   inputs: ['etf_quotes', 'bond_quotes', 'multi_quotes'],
   title: 'Cross-asset quotes',
   description: 'Live quotes for the multi-asset set, gathered from the equity, bond and other-asset quotes.',
-  fn: (etf_quotes, bond_quotes, multi_quotes) => { const S = new Set(['SGOV', 'ACWI', 'SPY', 'QQQ', 'IWM', 'VGK', 'EWJ', 'EEM', 'AGG', 'SHY', 'IEF', 'TLT', 'TIP', 'BNDX', 'MUB', 'LQD', 'HYG', 'BKLN', 'EMB', 'EMLC', 'VNQ', 'VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD']), seen = new Set(); return [...etf_quotes, ...bond_quotes, ...multi_quotes].filter((q) => S.has(q.symbol) && !seen.has(q.symbol) && seen.add(q.symbol)); },
+  fn: (etf_quotes, bond_quotes, multi_quotes) => { const S = new Set(['SGOV', 'ACWI', 'SPY', 'QQQ', 'IWM', 'VGK', 'EWJ', 'EEM', 'AGG', 'SHY', 'IEF', 'TLT', 'TIP', 'BNDX', 'MUB', 'LQD', 'HYG', 'BKLN', 'EMB', 'EMLC', 'VNQ', 'VNQI', 'IGF', 'AMLP', 'DBC', 'GLD', 'SLV', 'USO', 'UNG', 'CPER', 'DBA', 'UUP', 'FXE', 'FXY', 'BTCUSD', 'DBMF', 'BIZD', 'PSP', 'URA']), seen = new Set(); return [...etf_quotes, ...bond_quotes, ...multi_quotes].filter((q) => S.has(q.symbol) && !seen.has(q.symbol) && seen.add(q.symbol)); },
 });
 dash.calc('multi_short', {
   inputs: ['multi_hist_all', 'multi_quotes_all'],

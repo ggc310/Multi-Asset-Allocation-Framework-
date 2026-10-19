@@ -466,7 +466,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
     <span class="gm-subl" data-sec="decide">Allocation</span>
     <button class="gm-sub" data-sec="decide" data-page="sb" id="tab-sb">Stocks vs bonds</button>
     <button class="gm-sub" data-sec="decide" data-page="firv" id="tab-firv">Fixed income relative value</button>
-    <button class="gm-sub" data-sec="decide" data-page="ra" id="tab-ra">Real assets</button>
+    <button class="gm-sub" data-sec="decide" data-page="ra" id="tab-ra">Real assets &amp; alternatives</button>
     <button class="gm-sub" data-sec="decide" data-page="fxm" id="tab-fxm">Currencies</button>
     <button class="gm-sub" data-sec="decide" data-page="lab" id="tab-lab">Model lab</button>
     <span class="gm-subl" data-sec="decide">Equities</span>
@@ -708,11 +708,16 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
   </section>
 
   <section class="gm-page" id="ra" role="tabpanel" hidden>
-    <div class="gm-hrow"><h2 class="gm-h2">Real assets and commodities<button type="button" class="gm-i" data-info="raTab" aria-label="About the real assets model">i</button></h2></div>
+    <div class="gm-hrow"><h2 class="gm-h2">Real assets, commodities and alternatives<button type="button" class="gm-i" data-info="raTab" aria-label="About the real assets model">i</button></h2></div>
     <ul class="gm-bul" id="ra-notes" data-source="model_ra"></ul>
     <div class="gm-block"><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="ra-table" data-source="model_ra"><thead></thead><tbody></tbody></table></div></div>
     <div class="gm-block"><div class="gm-hrow"><h3 class="gm-h3">Signal history</h3><select id="ra-sel"></select></div><div class="gm-chart" id="ra-hist" data-source="model_ra" style="min-height:220px"></div></div>
     <p class="gm-note"><button type="button" class="gm-linkbtn" data-go="rabt">Backtest of the real assets sleeve</button></p>
+    <div class="gm-block" id="pm-block">
+      <div class="gm-hrow"><h3 class="gm-h3">Private markets, through listed proxies<button type="button" class="gm-i" data-info="pmTab" aria-label="About the private markets calls">i</button></h3><button type="button" class="gm-linkbtn" data-go="reltrend">History on Relative trends</button></div>
+      <ul class="gm-bul" id="pm-notes" data-source="model_pm"></ul>
+      <div class="gm-tablewrap"><table class="gm-table gm-compact" id="pm-table" data-source="model_pm"><thead></thead><tbody></tbody></table></div>
+    </div>
   </section>
 
   <section class="gm-page" id="fx" role="tabpanel" hidden>
@@ -1312,7 +1317,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
   <section class="gm-page" id="rabt" role="tabpanel" hidden>
     <div class="gm-hrow"><h2 class="gm-h2">Real assets: backtest<button type="button" class="gm-i" data-info="raTab" aria-label="About this backtest">i</button></h2></div>
-    <p class="gm-note">Monthly from 2009, gross of costs. The model sleeve holds the real assets scoring above 0.1, in proportion to their scores, and sits in the Agg when none does; it is compared with holding all four equally. <button type="button" class="gm-linkbtn" data-go="ra">Back to the current scores</button></p>
+    <p class="gm-note">Monthly from 2009, gross of costs. The model sleeve holds the real assets scoring above 0.1, weighted by score over three-year volatility with at most 35% in any one, and sits in the Agg when none does; it is compared with holding every asset at equal risk. Managed futures before mid-2019 and copper before late 2011 use proxies (a trend-following construction and the front copper future); Bitcoin enters in 2015. <button type="button" class="gm-linkbtn" data-go="ra">Back to the current scores</button></p>
     <ul class="gm-bul" id="rb-notes" data-source="model_bt"></ul>
     <div class="gm-grid2">
       <div class="gm-block"><h3 class="gm-h3">60/40 with a 10% sleeve: model against equal weight</h3><div class="gm-chart" id="rb-cum" data-source="model_bt" style="min-height:260px"></div></div>
@@ -1551,7 +1556,8 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
         <a href="#m-dec">Decision summary</a>
         <a href="#m-sb">Stocks vs bonds model</a>
         <a href="#m-firv">Fixed income model</a>
-        <a href="#m-ra">Real assets</a>
+        <a href="#m-ra">Real assets &amp; alternatives</a>
+        <a href="#m-pm">Private markets</a>
         <a href="#m-fx">Currencies</a>
         <a href="#m-mp">Model portfolio and risk</a>
         <a href="#m-live">Live records and alerts</a>
@@ -1596,7 +1602,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <thead><tr><th>Layer</th><th>What it covers</th><th>Refreshed</th><th>Current as of</th></tr></thead>
           <tbody>
             <tr><td><b>Live</b></td><td>ETF quotes and daily price history; quotes for every holding in the look-through; Treasury yields; dollar, credit, oil, gold and VIX proxies. Everything computed from them: technicals, short-term returns, What&rsquo;s changing, breadth, the price-driven repricing of valuation multiples, target upside, and every score, rank and composite.</td><td>Each time the page opens</td><td id="mf-live">—</td></tr>
-            <tr><td><b>Weekly</b></td><td>The allocation models (stocks vs bonds, fixed income, real assets, currencies) and the saved review behind the live records and the decision summary; the macro record, surprises and futures positioning; FRED breakevens, real yields and credit spreads; fund holdings and weights; company fundamentals, consensus estimates and revisions; analyst ratings and targets; fund flows and fees; earnings-call scores; company profiles; the dated score snapshot; the weekly note, its saved doc and the committee pack.</td><td>Saturday 6:45 am Pacific, by a scheduled task</td><td id="mf-snap">—</td></tr>
+            <tr><td><b>Weekly</b></td><td>The allocation models (stocks vs bonds, fixed income, real assets &amp; alternatives, private markets, currencies) and the saved review behind the live records and the decision summary; the macro record, surprises and futures positioning; FRED breakevens, real yields and credit spreads; fund holdings and weights; company fundamentals, consensus estimates and revisions; analyst ratings and targets; fund flows and fees; earnings-call scores; company profiles; the dated score snapshot; the weekly note, its saved doc and the committee pack.</td><td>Saturday 6:45 am Pacific, by a scheduled task</td><td id="mf-snap">—</td></tr>
             <tr><td><b>Monthly</b></td><td>The backtest, the rebuilt monthly history of every sleeve since 2010, regime results, calibration and the horizon-fitted weights.</td><td>First Saturday of each month</td><td id="mf-bt">—</td></tr>
             <tr><td><b>Commentary</b></td><td>The Day Ahead and Day in Review on trading days; Week in Review, The Week Ahead, Month in Review and Quarter in Review; earnings-call takeaways in busy reporting weeks. Each ends with the models&rsquo; live track record.</td><td>Trading days 5:30 am and 3 pm PT;<br>Fri after the close; Sun afternoon</td><td>—</td></tr>
           </tbody>
@@ -1612,7 +1618,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li><b>Today</b> is the daily read: market moves, headlines from major financial outlets, and the economic and earnings calendar with filters.</li>
           <li><b>Executive summary</b> is the decision page. The decision summary at the top gives each view and its size, what changed since the previous saved review, the observations behind it, how strong the evidence is, what dominates the resulting portfolio and what would reverse each call. Below it: the combined model portfolio and its risk, what markets have done over the period you pick, what is changing, the risks to the view and how much to trust each model.</li>
           <li><b>Commentary</b> holds the written pieces, from The Day Ahead to the Quarter in Review.</li>
-          <li><b>Decide</b> holds the forward-looking models. Allocation: stocks vs bonds, fixed income relative value, real assets, currencies and the model lab. Equities: the scorecard that ranks 62 equity sleeves, relative trends (each dimension&rsquo;s score against its relative price), country and style allocation with the portfolio check, cash deployment and scenarios.</li>
+          <li><b>Decide</b> holds the forward-looking models. Allocation: stocks vs bonds, fixed income relative value, real assets &amp; alternatives (with private markets through listed proxies), currencies and the model lab. Equities: the scorecard that ranks 62 equity sleeves, relative trends (each dimension&rsquo;s score against its relative price), country and style allocation with the portfolio check, cash deployment and scenarios.</li>
           <li><b>Markets</b> looks back: multi-asset performance across 36 assets from one day to twenty years; the macro backdrop; Compare &amp; correlate for any assets across classes; equity pulse, short-term returns, long-run returns, time series, visuals and breadth; the Treasury curve and bond markets; inflation, real yields and credit; currencies and the pair explorer.</li>
           <li><b>Companies</b> holds the earnings-call analysis and the company profiles for the largest holdings.</li>
           <li><b>Evidence</b> holds the model scorecard, each model&rsquo;s backtest, the equity live record and score history, and this page.</li>
@@ -1622,7 +1628,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
         <h3 id="m-dec">Decision summary</h3>
         <ul>
-          <li><b>What it shows.</b> One row per view (stocks vs bonds, duration, bond sectors, equity regions, equity style and size, diversifiers, the dollar): the tilt and its size, the evidence grade, the main observation behind it and the first condition that would reverse it. Opening a row shows every driver, the context the models do not use, what supports and weakens the call, the reversal levels and the coverage warnings.</li>
+          <li><b>What it shows.</b> One row per view (stocks vs bonds, duration, bond sectors, equity regions, equity style and size, diversifiers, private markets, the dollar): the tilt and its size, the evidence grade, the main observation behind it and the first condition that would reverse it. Opening a row shows every driver, the context the models do not use, what supports and weakens the call, the reversal levels and the coverage warnings.</li>
           <li><b>Reversal levels.</b> For stocks vs bonds they are solved from the live score&rsquo;s own arithmetic: the level of one input, others held where they are, at which the equity weight would go to neutral or to the mirror-image underweight. For bond levers they are the yield gaps at which a position starts and reaches full size.</li>
           <li><b>Evidence grade.</b> A fixed rubric, applied the same way to every view: +1 if every live signal predicted in both halves of the record (before 2019 and from 2020), &minus;1 if one has turned negative since 2020; +1 if a live signal has a t-stat of 1.5 or more since 2020; +1 if the backtest&rsquo;s 90% range is above zero, &minus;1 if the timing itself lost money; +1 if the live inputs agree, &minus;1 if they offset. Strong is 3 or more, Moderate 2, Mixed 1, Weak 0 or less.</li>
           <li><b>What changed.</b> Each weekly review saves its calls and the observations behind them. The page compares the latest review with the previous saved one using those saved values; recorded market series such as Treasury yields are read at the earlier review&rsquo;s date. When there is no earlier review, the page says so instead of reconstructing one from backtest history.</li>
@@ -1649,6 +1655,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li><b>High yield</b> (up to 10%, HYG against IEI) and <b>EM dollar debt</b> (up to 8%, EMB against IEF): added only when cheap, since the Agg holds none.</li>
           <li><b>TIPS</b> (up to 10%, TIP against IEI): when inflation has been rising over six months.</li>
           <li><b>EM local currency</b> (up to 5%, EMLC against short Treasuries): after a strong six-month dollar run, which leaves EM currencies cheap. Local yields and the currency model are shown as evidence only.</li>
+          <li><b>International bonds, hedged</b> (&plusmn;10%, BNDX against IEF): toward hedged foreign bonds when the hedged yield pickup is high against its history, that is when foreign yield curves (10-year less 3-month) are steeper than the US curve. Foreign yields are OECD monthly averages from FRED, used a month late. The six-month change in the US-minus-foreign yield gap is shown as evidence only. Because hedged foreign bonds barely move with US yields, this swap lowers the portfolio&rsquo;s US-rate exposure.</li>
           <li><b>Signals</b> follow the same z-score method and promotion rule as the stocks vs bonds model. Spreads are distribution yields over Treasury ETFs of similar duration, a proxy for option-adjusted spreads, which FMP does not carry.</li>
           <li><b>Backtest.</b> Monthly from December 2010, when at least five levers have enough history: the Agg plus each lever&rsquo;s position times the return of its long leg less its short leg. Reported against the Agg: excess return with a 90% range, tracking error, information ratio, months ahead, worst run behind, and each lever&rsquo;s contribution, hit rate and rank correlation.</li>
           <li><b>Design choice.</b> An earlier version also used momentum and risk-off (VIX) signals. Over this period they reduced returns at the 12-month horizon, so the model now buys value only. That choice was made after seeing results; treat the backtest as an upper bound.</li>
@@ -1656,18 +1663,25 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
         <h3 id="m-mp">Model portfolio and risk</h3>
         <ul>
-          <li><b>Combination.</b> Equities get the policy neutral plus the band times the stocks vs bonds score; the equity share is first split into country funds by tilting ACWI&rsquo;s country weights with the equity scores (the Equity allocation page settings), with countries that have no fund held through ACWX. Then up to the sleeve budget (20% of equities by default, at most 5% in any one sleeve) moves into the best-scoring sleeves anywhere in the equity universe: sectors, industries, US and international styles and sizes, factors and regional funds. A sleeve qualifies when its composite is more than the allocation band (at least 5 points) above 50; weights follow how far above, up to ten sleeves, skipping any that moves almost one-for-one (correlation above 0.92) with a better-scoring pick. Each is funded pro rata from the broad and country funds of its own region, so region weights, and the region look-through, are unchanged. Negative views are expressed by not holding a sleeve; nothing is sold short. Bonds are the Agg plus the fixed income pair trades. An optional diversifier sleeve, funded pro rata, holds the real assets that score above zero.</li>
+          <li><b>Combination.</b> Equities get the policy neutral plus the band times the stocks vs bonds score; the equity share is first split into country funds by tilting ACWI&rsquo;s country weights with the equity scores (the Equity allocation page settings), with countries that have no fund held through ACWX. Then up to the sleeve budget (20% of equities by default, at most 5% in any one sleeve) moves into the best-scoring sleeves anywhere in the equity universe: sectors, industries, US and international styles and sizes, factors and regional funds. A sleeve qualifies when its composite is more than the allocation band (at least 5 points) above 50; weights follow how far above, up to ten sleeves, skipping any that moves almost one-for-one (correlation above 0.92) with a better-scoring pick. Each is funded pro rata from the broad and country funds of its own region, so region weights, and the region look-through, are unchanged. Negative views are expressed by not holding a sleeve; nothing is sold short. Bonds are the Agg plus the fixed income pair trades. An optional diversifier sleeve, funded pro rata, holds the real assets that score above 0.1, weighted by score over volatility with at most 35% in any one.</li>
           <li><b>Reference.</b> The neutral weight in ACWI, the rest in AGG. The table shows ACWI split into the same country funds, so active weights read country by country.</li>
-          <li><b>Risk.</b> A covariance matrix of every fund the portfolio can hold (78: all 62 equity sleeves plus the bond, real-asset and dollar funds) from the last five years of monthly returns. The active risk is split into the stocks vs bonds call, the country tilts, the sleeve tilts, holding country funds instead of ACWI (an implementation choice), the fixed income tilts and the diversifiers. Tracking error is the volatility of the active weights; each decision&rsquo;s contribution is its covariance with the total active position divided by the tracking error, so contributions add to the total.</li>
+          <li><b>Risk.</b> A covariance matrix of every fund the portfolio can hold (all 62 equity sleeves plus the bond, real-asset, alternative and dollar funds) from the last five years of monthly returns. The active risk is split into the stocks vs bonds call, the country tilts, the sleeve tilts, holding country funds instead of ACWI (an implementation choice), the fixed income tilts and the diversifiers. Tracking error is the volatility of the active weights; each decision&rsquo;s contribution is its covariance with the total active position divided by the tracking error, so contributions add to the total.</li>
           <li><b>Scenarios.</b> Each fund&rsquo;s sensitivity to global equities, the 10-year yield, the dollar and oil comes from a five-year monthly regression; a shock is applied through those sensitivities to every fund and to the portfolio and reference.</li>
         </ul>
 
         <h3 id="m-ra">Real assets and commodities</h3>
         <ul>
-          <li><b>Assets.</b> Gold (GLD), broad commodities (DBC), US REITs (VNQ) and global infrastructure (IGF), judged as diversifiers for a 60/40 portfolio.</li>
-          <li><b>Signals.</b> Trend (the 12-month return and the price against its 10-month average) is live for gold and broad commodities; the inflation nowcast is live for commodities. Diversification, the three-year correlation with 60/40 (good below 0.5), is kept for all four as a risk property, not a forecast. Value (the real 10-year yield for gold, the REIT yield over the 10-year) and positioning failed the promotion rule and are shown as evidence. Each signal is scaled to &minus;1 to +1 and averaged.</li>
-          <li><b>Use in the portfolio.</b> The diversifier sleeve on the model portfolio is 0% unless you set it; when used, it holds the assets that score above zero in proportion to their scores.</li>
+          <li><b>Assets.</b> Gold (GLD), broad commodities (DBC), US REITs (VNQ), global infrastructure (IGF), managed futures (DBMF), copper (CPER), energy pipelines (AMLP) and Bitcoin, judged as diversifiers for a 60/40 portfolio. Proxies fill early history: a trend-following construction for managed futures before mid-2019 (ten markets, long or short on the sign of the 12-month return, equal risk, less a 0.85% fee), and the front copper future before CPER in late 2011. Bitcoin enters in 2015.</li>
+          <li><b>Signals.</b> Every asset has trend (the 12-month return and the price against its 10-month average) and diversification (the three-year correlation with 60/40, good below 0.5, kept for all as a risk property, not a forecast). Each also has its own candidates: real yields for gold; the inflation nowcast and oil and copper positioning for commodities; the REIT yield over the 10-year; trend strength across the markets it trades and financial stress for managed futures; global growth, China growth surprises and positioning for copper; the pipeline yield over the 10-year and oil positioning for MLPs; financial conditions and the dollar model for Bitcoin. Each faces the promotion rule every week; the page and the signal registry show which are live. Each signal is scaled to &minus;1 to +1 and the live ones are averaged.</li>
+          <li><b>Use in the portfolio.</b> The diversifier sleeve on the model portfolio is 0% unless you set it; when used, it holds the assets that score above 0.1, weighted by score over three-year volatility (so a volatile asset such as Bitcoin does not swamp the sleeve&rsquo;s risk), with at most 35% in any one.</li>
           <li><b>Evidence.</b> The 12-month rank correlation of the score with the next year&rsquo;s return over 60/40 since 2009 is small for every asset; read the scores as a guide to which diversifier is in a supportive state, not as a forecast.</li>
+        </ul>
+
+        <h3 id="m-pm">Private markets, through listed proxies</h3>
+        <ul>
+          <li><b>What it decides.</b> Relative-value calls, not diversifiers: business development companies (BIZD) against high yield (HYG), and listed private equity (PSP) against global equities (ACWI). The calls are shown on Real assets &amp; alternatives and Relative trends; they are not held in the model portfolio.</li>
+          <li><b>Signals.</b> For BDCs: the discount to book value (the median price to last reported book value of twelve BDCs, each book value counted 60 days after its quarter ends), the BDC distribution yield over high yield, and the 12-month relative trend. For listed private equity: the relative trend, the high yield spread against its history and financial conditions. Each faces the promotion rule; a pair with no live signal makes no call.</li>
+          <li><b>Caveat.</b> Listed proxies trade daily and move more than the private funds they stand in for, and their history starts in 2006 (PSP) and 2013 (BIZD).</li>
         </ul>
 
         <h3 id="m-fx">Currencies</h3>
@@ -1724,7 +1738,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 
         <h3 id="m-xlab">Compare &amp; correlate</h3>
         <ul>
-          <li><b>Coverage.</b> Equity sleeves, bond funds, real assets, commodity futures, the dollar index and twelve currencies, bitcoin and ether, the VIX, and Treasury yields, real yields, breakevens and credit spreads, in one list.</li>
+          <li><b>Coverage.</b> Equity sleeves, bond funds, real assets, commodity futures, alternatives (managed futures, BDCs, listed private equity) and uranium miners, the dollar index and twelve currencies, bitcoin and ether, the VIX, and Treasury yields, real yields, breakevens and credit spreads, in one list.</li>
           <li><b>History.</b> Weekly closes from 2005&ndash;07 for the non-equity assets, joined to the daily history of the last few years and scaled where they meet. Rates and spreads are levels in percent from FRED.</li>
           <li><b>Views.</b> Growth of 100, relative to a benchmark, drawdown, rolling volatility, rolling correlation and levels; statistics, a correlation matrix (daily, weekly or monthly returns) and calendar-year returns follow the time frame you pick. Yields and spreads are compared in basis-point changes, not returns.</li>
         </ul>
@@ -1906,7 +1920,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
           <li><b>Three axes.</b> Growth: industrial production, payrolls, unemployment, jobless claims, real retail sales, housing starts, consumer sentiment, and US and global growth surprises. Inflation: CPI acceleration and trend, commodities, import prices, wages, consumer inflation expectations, and inflation surprises. Financial conditions: high yield against Treasuries, the VIX, the dollar, the equity trend, mortgage rates and the 10-year yield. Each input is scaled against its own history to that month; monthly data are lagged a month for publication.</li>
           <li><b>Regimes.</b> Each axis is on one side or the other, with a probability from a normal curve; two axes give four states and three give eight. History runs from 2001.</li>
           <li><b>Positioning.</b> Speculators&rsquo; net position in 23 futures markets as a share of open interest, against its own past three years, from the CFTC reports in FMP. Read as contrarian.</li>
-          <li><b>Currency models.</b> Cyclical: the policy-rate gap and its six-month change, the growth-surprise gap, the 12-1 month trend, positioning (contrarian) and sensitivity to financial conditions (havens gain as conditions tighten). Long-term: the real exchange rate against its 10-year average and the real policy-rate gap. Purchasing-power parity is shown but left out of the score, since its factors are estimated after the fact. Equal weights within each, as specified before testing.</li>
+          <li><b>Currency models.</b> Cyclical: the policy-rate gap and its six-month change, the growth-surprise gap, the 12-1 month trend, positioning (contrarian) and sensitivity to financial conditions (havens gain as conditions tighten). Long-term: the real exchange rate against its 10-year average and the real policy-rate gap. Added in October 2026 under the promotion rule (cross-currency 12-month rank correlation, spot plus carry): the six-month change in the 10-year government yield gap against the US (live), and, as candidates, the growth-momentum gap (activity data against the US), the inflation-surprise gap and the inflation gap, which carry weight only once they pass. Purchasing-power parity is shown but left out of the score, since its factors are estimated after the fact; the pair explorer draws both the value model&rsquo;s fair value and PPP. Equal weights within each, as specified before testing. The backtest is also run rebalancing every three and six months.</li>
           <li><b>Promotion rule.</b> Every signal, the original ones included, carries weight only if its 12-month rank correlation with what it predicts is at least 0.05 on signals dated to 2018 and no worse than &minus;0.05 from 2020. Signals that fail stay visible as evidence. Correlations on overlapping 12-month windows overstate the evidence, so each comes with a t-stat that counts only one independent observation a year; few are above 2. Equity valuation uses the point-in-time S&amp;P 500 equity risk premium, built from the index&rsquo;s members on each date and earnings as filed. The registry below lists every signal and its status.</li>
         </ul>
         <div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="m-registry" data-source="signal_registry"><thead></thead><tbody></tbody></table></div>
@@ -2268,6 +2282,7 @@ td.gm-cur { outline: 1.5px solid var(--gm-navy, #14305c); outline-offset: -2px; 
 <script src="x_port.js"></script>
 <script src="x_assets.js"></script>
 <script src="x_gyield.js"></script>
+<script src="x_pm.js"></script>
 <script src="x_rates.js"></script>
 <script src="x_rel.js"></script>
 <script src="x_calls.js"></script>

@@ -4,7 +4,7 @@
 // today_px; since late 2023). Rates and spreads are levels in percent from rates_credit (FRED, daily).
 window.GMXA = (() => {
   const G = window.GMX, { isNum } = G;
-  const CLASSES = ['Equities', 'Bonds', 'Real assets', 'Commodities', 'Currencies', 'Crypto', 'Volatility', 'Rates & spreads', 'Cash'];
+  const CLASSES = ['Equities', 'Bonds', 'Real assets', 'Commodities', 'Alternatives', 'Currencies', 'Crypto', 'Volatility', 'Rates & spreads', 'Cash'];
   const FUT = { GCUSD: 'Gold futures', SIUSD: 'Silver futures', HGUSD: 'Copper futures', CLUSD: 'WTI crude futures', BZUSD: 'Brent crude futures', NGUSD: 'Natural gas futures', DXUSD: 'US dollar index (DXY)' };
   const LEVELS = [['n3m', '3-month Treasury yield'], ['n2', '2-year Treasury yield'], ['n10', '10-year Treasury yield'], ['n30', '30-year Treasury yield'], ['s2s10s', '2s10s curve (10y − 2y)'],
     ['ry10', '10-year real yield (TIPS)'], ['be10', '10-year breakeven inflation'], ['be5y5y', '5y5y forward inflation'],
@@ -87,6 +87,8 @@ window.GMXA = (() => {
     ['Defensives vs cyclicals', ['XLP', 'XLU', 'USMV', 'XLY', 'XLI', 'SMH', 'SPY'], 'SPY'],
     ['Global regions', ['SPY', 'VGK', 'EWJ', 'EWU', 'EEM', 'MCHI', 'INDA'], 'ACWI'],
     ['Crypto, gold & tech', ['BTCUSD', 'ETHUSD', 'GLD', 'SLV', 'QQQ'], 'QQQ'],
+    ['Alternatives & diversifiers', ['DBMF', 'BIZD', 'PSP', 'URA', 'CPER', 'AMLP', 'GLD', 'ACWI'], 'ACWI'],
+    ['Private markets proxies', ['BIZD', 'HYG', 'PSP', 'ACWI', 'oas_hy'], 'ACWI'],
   ];
   return { CLASSES, catalog, series, needs, weeklyOf, monthlyOf, PRESETS };
 })();

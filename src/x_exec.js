@@ -4,7 +4,7 @@
 // neutralize or reverse each call. Built from the same datasets as the model pages; nothing here is a new model.
 (() => {
   const G = window.GMX, A = window.GMXA, { el, $, isNum } = G;
-  const IDS = ['model_sb', 'model_fi', 'model_ra', 'model_log', 'macro_state', 'signal_registry', 'bt_ic', 'bt_honesty', 'dq_report', 'positioning', 'fx_model', 'rates_credit', 'score_history', 'etf_universe', 'model_bt'];
+  const IDS = ['model_sb', 'model_fi', 'model_ra', 'model_log', 'macro_state', 'signal_registry', 'bt_ic', 'bt_honesty', 'dq_report', 'positioning', 'fx_model', 'rates_credit', 'score_history', 'etf_universe', 'model_bt', 'model_pm'];
   const n = (x) => (isNum(x) ? Number(x) : null);
   const one = (id) => { const r = G.rows(id); const e = r && r.length ? r[0] : null; return e && window.GM_LABOV && window.GM_LABOV[id] ? window.GM_LABOV[id](e) : e; };
   const atanh = (x) => 0.5 * Math.log((1 + x) / (1 - x));
@@ -283,13 +283,30 @@
       const bt = (one('model_bt') || {}).ra;
       const drivers = A_.slice().sort((a, b) => b.score - a.score).map((a) => `**${a.label} ${f2(a.score)}**: 12 months ${spc(a.ret12m, 0)}, ${spc(a.vs10m, 0)} vs its 10-month average, correlation with 60/40 ${f2(a.corr60_40)}.`);
       const sigs = A_.flatMap((a) => regSig('Real assets', a.label + ':'));
-      const ev = rubric(sigs.filter((r) => !/Diversification/.test(r.signal)), bt ? { ex: bt.excess, lo: bt.excessLo90, hi: bt.excessHi90, start: (bt.model || {}).start, what: 'an equal-weight real-asset sleeve' } : null, null);
+      const ev = rubric(sigs.filter((r) => !/Diversification/.test(r.signal)), bt ? { ex: bt.excess, lo: bt.excessLo90, hi: bt.excessHi90, start: (bt.model || {}).start, what: 'a real-asset sleeve holding every asset at equal risk' } : null, null);
       out.push({ id: 'ra', name: 'Diversifiers', go: 'ra',
         tilt: fav.length ? fav.map((a) => a.label.replace('Broad commodities', 'Commodities') + ' ' + pc(a.sleeveWeight, 0)).join(', ') : 'None favored',
         sub: D > 0 ? `${pc(D, 0)} diversifier sleeve in the portfolio` : 'not in the portfolio (diversifier sleeve set to 0%); shares of the sleeve if one is used',
         because: fav.length ? fav.map((a) => `${a.label.toLowerCase()} ${spc(a.vs10m, 0)} vs its 10-month average with a ${f2(a.corr60_40)} correlation to 60/40`).join('; ') + '; the score rewards trend and low correlation.' : '',
         drivers, ev, rev: [...fav.map((a) => a.vs10m >= 0 ? `${a.label} drops out if its trend breaks (price below its 10-month average; now ${spc(a.vs10m, 0)} above) and its correlation with 60/40 rises.` : `${a.label} is held for its low correlation with 60/40 (${f2(a.corr60_40)}) despite a broken trend (${spc(a.vs10m, 0)} vs its 10-month average); it drops out if that correlation rises or the trend weakens further.`), bad.length ? `${bad.map((a) => a.label).join(' and ')} come back only if ${bad.length > 1 ? 'their' : 'its'} correlation with 60/40 falls well below today's ${bad.map((a) => f2(a.corr60_40)).join(' and ')}.` : null].filter(Boolean),
         cover: [], key: {} });
+    }
+
+    // 6b. Private markets, through listed proxies
+    const pmm = one('model_pm');
+    if (pmm && (pmm.pairs || []).length) {
+      const PP = pmm.pairs, side = (p) => (!isNum(p.score) ? null : p.score > 0.1 ? p.long : p.score < -0.1 ? p.short : null);
+      const calls = PP.filter((p) => side(p));
+      const sigs = regSig('Private markets');
+      const ev = rubric(sigs, null, null);
+      const pc_ = PP.find((p) => p.key === 'pc');
+      out.push({ id: 'pm', name: 'Private markets (listed proxies)', go: 'ra',
+        tilt: calls.length ? calls.map((p) => `${side(p)} over ${side(p) === p.long ? p.short : p.long}`).join('; ') : 'No call',
+        sub: 'relative-value calls on BDCs and listed private equity; not held in the model portfolio',
+        because: [pc_ && isNum(pc_.score) && isNum(pmm.bdcPriceToBook) ? `BDCs trade at ${f2(pmm.bdcPriceToBook)}x book against a ${f2(pmm.bdcPriceToBookMedian)}x median` : '', ...PP.filter((p) => !isNum(p.score)).map((p) => `${p.label.toLowerCase()}: no signal has passed the evidence test`)].filter(Boolean).join('; ') + '.',
+        drivers: PP.map((p) => `**${p.label} ${isNum(p.score) ? f2(p.score) : 'no call'}**: ${p.components.map((c) => `${c.name.split(':')[0].toLowerCase()} ${isNum(c.value) ? f2(c.value) : '—'}${c.live ? '' : ' (evidence only)'}`).join(', ')}; 12-month relative return ${spc(p.rel12m, 0)}.`),
+        ev, rev: calls.map((p) => p.key === 'pc' ? `The BDC call fades as the discount to book closes toward the ${f2(pmm.bdcPriceToBookMedian)}x median or the yield gap over high yield narrows.` : `The ${p.label.toLowerCase()} call reverses if its live signals turn.`),
+        cover: [pmm.note], more: 'Listed proxies trade daily and move more than the private funds they stand in for. Full history on Relative trends, Private markets.', key: { pm: Object.fromEntries(PP.map((p) => [p.key, p.score])) } });
     }
 
     // 7. The dollar
@@ -517,6 +534,7 @@
       if (v.id === 'sb') { const d_ = (v.key.w - prev.sbWeight) * 100; v.change = [Math.abs(d_) < 0.5 ? 'Unchanged since ' + day(prev.date) : sg(d_, 0) + ' pts since ' + day(prev.date), Math.abs(d_) >= 3 ? 'warn' : 'muted']; }
       else if (v.id === 'dur') { const fi = one('model_fi'), l = (fi.levers || []).find((x) => x.key === 'duration'), d_ = ((l.position || 0) - ((prev.fi || {}).duration || 0)) * (l.durGap || 14); v.change = [Math.abs(d_) < 0.1 ? 'Unchanged' : sg(d_, 1) + ' yrs', Math.abs(d_) >= 0.5 ? 'warn' : 'muted']; }
       else if (v.id === 'fi') { const fi = one('model_fi'), mx = Math.max(0, ...(fi.levers || []).filter((l) => l.key !== 'duration').map((l) => Math.abs((l.position || 0) - ((prev.fi || {})[l.key] || 0)))); v.change = [mx < 0.005 ? 'Unchanged' : 'Up to ' + (mx * 100).toFixed(0) + ' pts moved', mx >= 0.05 ? 'warn' : 'muted']; }
+      else if (v.id === 'pm' && prev.pm) { const mx = Math.max(0, ...Object.entries(v.key.pm || {}).map(([k, x]) => (isNum(x) && isNum(prev.pm[k]) ? Math.abs(x - prev.pm[k]) : 0))); v.change = [mx < 0.05 ? 'Unchanged' : 'Moved up to ' + mx.toFixed(2), mx >= 0.3 ? 'warn' : 'muted']; }
       else if (v.id === 'usd' && isNum(prev.dxy)) { const d_ = v.key.dxy - prev.dxy; v.change = [Math.abs(d_) < 0.05 ? 'Unchanged' : sg(d_, 2), Math.abs(d_) >= 0.2 ? 'warn' : 'muted']; }
       else v.change = ['See changes below', 'muted'];
     }
