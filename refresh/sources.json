@@ -416,7 +416,10 @@
     "USDMXN",
     "^VIX",
     "BTCUSD",
-    "ETHUSD"
+    "ETHUSD",
+    "ACWI",
+    "ACWX",
+    "IEF"
    ]
   }
  },

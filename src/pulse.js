@@ -15,10 +15,10 @@ const tdFetchAll = async (call, tool, argList, parse) => {
 };
 
 dash.loader('today_px', {
-  description: 'Runs the same daily price-history call for each of the 45 priced assets on the Today page, a few at a time (dividend-adjusted closes for funds; plain closes for futures, currencies, the VIX and crypto), and keeps symbol, date and close.',
+  description: 'Runs the same daily price-history call for each of the 48 priced assets on the Today page, a few at a time (dividend-adjusted closes for funds; plain closes for futures, currencies, the VIX and crypto), and keeps symbol, date and close.',
   fn: async ({ answer, call, args }) => {
     const LIGHT = ['GCUSD', 'SIUSD', 'HGUSD', 'CLUSD', 'BZUSD', 'NGUSD', 'DXUSD', 'EURUSD', 'USDJPY', 'GBPUSD', 'USDCNH', 'AUDUSD', 'USDMXN', '^VIX', 'BTCUSD', 'ETHUSD'];
-    const FUNDS = ['QQQ', 'RSP', 'IWM', 'IWF', 'IWD', 'EFA', 'VGK', 'EWJ', 'EEM', 'MCHI', 'INDA', 'SMH', 'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'TLT', 'AGG', 'TIP', 'LQD', 'HYG', 'EMB', 'BKLN', 'DBC', 'VNQ'];
+    const FUNDS = ['QQQ', 'RSP', 'IWM', 'IWF', 'IWD', 'EFA', 'VGK', 'EWJ', 'EEM', 'MCHI', 'INDA', 'SMH', 'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'TLT', 'AGG', 'TIP', 'LQD', 'HYG', 'EMB', 'BKLN', 'DBC', 'VNQ', 'ACWI', 'ACWX', 'IEF'];
     const pick = (r) => ({ symbol: r.symbol, date: String(r.date).slice(0, 10), close: Number(r.adjClose ?? r.price ?? r.close) });
     const first = tdRows(answer);
     if (!first.length) throw new Error('FMP returned no price history for ' + args.symbol);

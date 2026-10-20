@@ -127,5 +127,5 @@
 
     box.replaceChildren(b1, b2, b3, b4);
   };
-  G.page('today', draw);
+  G.page('today', (sec) => { draw(sec); for (const f of G.todayAlso || []) { try { f(sec); } catch (e) { console.error('today extra', e); } } });
 })();

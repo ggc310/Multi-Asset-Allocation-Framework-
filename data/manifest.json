@@ -244,7 +244,7 @@
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_index.json",
-   "blob": "d71150bb06496495d01c94dc34d234f4"
+   "blob": "8d0cb815b8d9546fe8b6979010a520e8"
   },
   "call_meta": {
    "title": "Earnings-call company names",
@@ -302,7 +302,7 @@
    "title": "Commentary",
    "description": "Week in Review, The Week Ahead, Month in Review, Quarter in Review and earnings-call takeaways, written by Claude from this dashboard\u2019s FMP and FRED data. One row per piece: id, kind, title, headline, period, date, asOf, body (Markdown).",
    "updated": {
-    "at": "2026-10-19T21:56:52Z",
+    "at": "2026-10-19T22:10:00Z",
     "by": "Claude"
    },
    "schedule": "Appended by Claude after Friday\u2019s close, on Sunday afternoons, and after each month\u2019s and quarter\u2019s last close",
@@ -602,6 +602,19 @@
    "path": "data/files/lab_spec.json",
    "blob": "fd958b464d5664909e5294cb8b2cd89b"
   },
+  "live_log": {
+   "title": "Live record of the model portfolio",
+   "description": "The model portfolio as published each week (fund weights at the default 60/40 policy), the 60/40 reference, the active weights behind each decision and the expected risk at the time. The Live results page compounds daily returns on these weights from the next trading day. Appended by Claude every week.",
+   "updated": {
+    "at": "2026-10-19T18:30:00Z",
+    "by": "Claude"
+   },
+   "schedule": "Appended every week by a scheduled task",
+   "staleAfterHours": 360,
+   "kind": "file",
+   "path": "data/files/live_log.json",
+   "blob": "055aabb7783253afdadd2201bf72d447"
+  },
   "macro_history": {
    "title": "US rates and risk premiums",
    "description": "Month-end US Treasury yields, CPI inflation and the real 10-year yield, recession probability, the dollar (UUP), high yield against Treasuries (HYG/IEF), ACWI's trend, regime labels, and the cycle-adjusted earnings yield and equity risk premium of the global, US, developed ex-US and emerging sleeves since 2010. The single source for the real yield and equity risk premium used across the dashboard. Built by Claude from FMP treasury rates, economic indicators and prices.",
@@ -806,7 +819,7 @@
    "title": "Inflation, real yields, credit",
    "description": "Treasury breakeven inflation (5-year, 10-year, 5y5y forward), TIPS real yields (5, 10, 30 years), nominal Treasury yields, ICE BofA option-adjusted spreads and total-return indexes for US investment grade and high yield by rating, from FRED. Breakevens and real yields since 2003; ICE series cover the past three years, the history FRED serves.",
    "updated": {
-    "at": "2026-10-19T21:56:52Z",
+    "at": "2026-10-19T22:10:00Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FRED by the weekly refresh (fred.py) and by each commentary run",
@@ -920,7 +933,7 @@
   },
   "today_px": {
    "title": "Cross-asset price history",
-   "description": "Daily closes since January 2024 for the 45 priced assets on the Today page: dividend-adjusted for funds, plain closes for futures, currencies, the VIX and crypto. The call shown is SPY\u2019s and the same call runs for each of the others. Reads FMP EOD prices.",
+   "description": "Daily closes since January 2024 for the 48 priced assets on the Today page: dividend-adjusted for funds, plain closes for futures, currencies, the VIX and crypto. The call shown is SPY\u2019s and the same call runs for each of the others. Reads FMP EOD prices.",
    "kind": "live",
    "path": "data/live/today_px.json"
   },
