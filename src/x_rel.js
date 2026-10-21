@@ -9,7 +9,7 @@
 (() => {
   const G = window.GMX, { el, $, isNum, pct, fx } = G;
   const M = '−';
-  const BENCH = { 'Core': 'ACWI', 'US style & size': 'SPY', 'US factors': 'SPY', 'Intl style & size': 'EFA', 'Sectors': 'SPY', 'Industries': 'SPY', 'Developed countries': 'EFA', 'Emerging countries': 'EEM' };
+  const BENCH = { 'Core': 'ACWI', 'US style & size': 'SPY', 'US factors': 'SPY', 'Intl style & size': 'EFA', 'Sectors': 'SPY', 'Industries': 'SPY', 'Themes': 'SPY', 'Developed countries': 'EFA', 'Emerging countries': 'EEM' };
   const BENCH_OVR = { EMXC: 'EEM', ACWI: 'SPY' };
   const PAIR_DIMS = {
     'Growth vs value': [['IWF', 'IWD', 'US large growth vs large value'], ['IWO', 'IWN', 'US small growth vs small value'], ['EFG', 'EFV', 'Intl growth vs value'], ['QQQ', 'IWD', 'Nasdaq-100 vs US large value'],

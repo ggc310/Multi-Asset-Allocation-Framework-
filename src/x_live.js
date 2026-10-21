@@ -11,7 +11,7 @@
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* private window */ } } };
   const LV = { h: 'inception', from: '', v: store.get('gm-live-v') === 'div' ? 'div' : 'base', at: '', histView: 'class' };
   const VARIANTS = { base: { short: 'Tracked portfolio', long: 'the tracked portfolio (no diversifiers)' }, div: { short: 'With diversifiers', long: 'the portfolio with a 10% diversifier sleeve' } };
-  const LIVE_DECISIONS = ['Stocks vs bonds', 'Equity country tilts', 'Holding country funds instead of ACWI', 'Fixed income tilts', 'Diversifiers'];
+  const LIVE_DECISIONS = ['Stocks vs bonds', 'Equity country tilts', 'Sector, style and industry sleeves', 'Holding country funds instead of ACWI', 'Fixed income tilts', 'Diversifiers'];
   const CLASSES = [['equity', 'Equities'], ['fixedIncome', 'Fixed income'], ['diversifiers', 'Diversifiers']];
   const CLASS_COLOR = { equity: 'var(--gm-blue, #1f5fa8)', fixedIncome: '#7c8798', diversifiers: '#0f766e' };
   const M = '−';
@@ -23,7 +23,7 @@
   let LCACHE = null, LKEY = null;
 
   // the record: every published entry, in date order, with nested fields parsed
-  const logRows = () => rows('live_log').map((l) => ({ ...l, hold: J(l.hold), ref: J(l.ref), comps: J(l.comps), exAnte: J(l.exAnte), eqTop: J(l.eqTop), div: J(l.div), universe: J(l.universe), policy: J(l.policy) }))
+  const logRows = () => rows('live_log').map((l) => ({ ...l, hold: J(l.hold), ref: J(l.ref), comps: J(l.comps), exAnte: J(l.exAnte), eqTop: J(l.eqTop), div: J(l.div), universe: J(l.universe), policy: J(l.policy), sleeves: J(l.sleeves) }))
     .sort((a, b) => (a.date < b.date ? -1 : 1));
   // one version of an entry: the tracked portfolio, or its with-diversifiers twin (null when that entry has none)
   const pick = (l, v) => (v === 'div' ? (l.div ? { ...l, ...l.div, ref: l.ref, isDiv: true } : null) : l);
@@ -147,7 +147,7 @@
     const L = S.log.find((l) => l.date === LV.at), cls = classOf(L);
     const i = dates.indexOf(LV.at), next = dates[i + 1];
     const P = L.policy || { neutral: L.neutral || 0.6, band: 0.15 };
-    lead.textContent = `${VARIANTS[LV.v].short}, published ${G.mon(L.date)}: ${pcl(L.equityWeight, 1)} equities, ${pcl(L.bondWeight, 1)} fixed income${L.divWeight ? ', ' + pcl(L.divWeight, 0) + ' diversifiers' : ''}, against 60% global equities (ACWI) and 40% US Aggregate (AGG). Policy: ${Math.round((P.neutral || 0.6) * 100)}/${Math.round((1 - (P.neutral || 0.6)) * 100)} neutral, ±${Math.round((P.band || 0.15) * 100)} points for stocks vs bonds, ${L.divWeight ? pcl(L.divWeight, 0) + ' diversifier sleeve funded pro rata from stocks and bonds' : 'no diversifier sleeve'}. ${next ? 'Held from the next trading day until the portfolio of ' + G.mon(next) + '.' : 'Held from the next trading day; it is the portfolio being tracked now.'}`;
+    lead.textContent = `${VARIANTS[LV.v].short}, published ${G.mon(L.date)}: ${pcl(L.equityWeight, 1)} equities, ${pcl(L.bondWeight, 1)} fixed income${L.divWeight ? ', ' + pcl(L.divWeight, 0) + ' diversifiers' : ''}, against 60% global equities (ACWI) and 40% US Aggregate (AGG). Policy: ${Math.round((P.neutral || 0.6) * 100)}/${Math.round((1 - (P.neutral || 0.6)) * 100)} neutral, ±${Math.round((P.band || 0.15) * 100)} points for stocks vs bonds, ${P.sleeveBudget ? 'equities in country funds plus up to ' + Math.round(P.sleeveBudget * 100) + '% of equities in the best-scoring sector, industry, style, factor, theme and regional sleeves (' + (L.sleeves || []).length + ' held, at most ' + Math.round((P.sleeveCap || 0.05) * 100) + '% of equities each)' : 'equities in country funds only'}, ${L.divWeight ? pcl(L.divWeight, 0) + ' diversifier sleeve funded pro rata from stocks and bonds' : 'no diversifier sleeve'}.${L.note ? ' ' + L.note : ''} ${next ? 'Held from the next trading day until the portfolio of ' + G.mon(next) + '.' : 'Held from the next trading day; it is the portfolio being tracked now.'}`;
     const funds = new Set([...Object.keys(L.hold), ...Object.keys(L.ref)]);
     const tbody = [];
     const fmtW = (w) => (Math.abs(w) < 5e-5 ? '—' : pcl(w, 1));
@@ -221,8 +221,12 @@
       const cur = new Map(); for (const [k] of CLASSES) for (const x of l.universe[k] || []) cur.set(x.etf, k);
       for (const e of cur.keys()) if (!first.has(e)) first.set(e, l.date);
       if (prev) {
-        for (const e of cur.keys()) if (!prev.has(e)) events.push({ d: l.date, t: `Added ${nm.get(e) || e} (${e}) to ${CLASSES.find((c) => c[0] === cur.get(e))[1].toLowerCase()}` });
-        for (const e of prev.keys()) if (!cur.has(e)) events.push({ d: l.date, t: `Removed ${nm.get(e) || e} (${e}) from ${CLASSES.find((c) => c[0] === prev.get(e))[1].toLowerCase()}` });
+        for (const [k, label] of CLASSES) {
+          const add = [...cur.keys()].filter((e) => !prev.has(e) && cur.get(e) === k), rem = [...prev.keys()].filter((e) => !cur.has(e) && prev.get(e) === k);
+          const nm2 = (e) => `${nm.get(e) || e} (${e})`;
+          if (add.length) events.push({ d: l.date, t: `Added ${add.length} to ${label.toLowerCase()}: ${add.map(nm2).join(', ')}` });
+          if (rem.length) events.push({ d: l.date, t: `Removed ${rem.length} from ${label.toLowerCase()}: ${rem.map(nm2).join(', ')}` });
+        }
       }
       prev = cur;
     }
@@ -266,7 +270,7 @@
       <div class="gm-block"><h3 class="gm-h3">Attribution by decision</h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="lv-attr" data-source="live_log"><thead></thead><tbody></tbody></table></div><p class="gm-note">Each decision&rsquo;s active weights times each fund&rsquo;s daily return, summed over the window. The decisions add up to each day&rsquo;s difference from 60/40 exactly; over several days compounding leaves a small residual, shown separately. With diversifiers, the diversifier decision is the sleeve funded pro rata from the 60/40 reference.</p></div>
       <div class="gm-block"><h3 class="gm-h3">Largest contributions by fund</h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="lv-funds" data-source="live_log"><thead></thead><tbody></tbody></table></div><p class="gm-note">Each fund&rsquo;s active weight times its return over its asset class: ACWI for equity funds, the US Aggregate for bond funds, and the whole return for a diversifier. How much sits in equities against bonds is the stocks vs bonds decision.</p></div>
     </div>
-    <div class="gm-block"><h3 class="gm-h3">Investable universe</h3><p class="gm-note">Everything the tracked portfolios may hold as of the latest published portfolio. Equities are held through country funds at ACWI&rsquo;s country weights tilted by the equity scores, with every country lacking its own fund in ACWX; the equity scores also rank 62 sector, style, factor and regional sleeves, which the portfolio does not hold directly.</p><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="lv-univ" data-source="live_log"><thead></thead><tbody></tbody></table></div></div>
+    <div class="gm-block"><h3 class="gm-h3">Investable universe</h3><p class="gm-note">Everything the tracked portfolios may hold as of the latest published portfolio. Equities start from country funds at ACWI&rsquo;s country weights tilted by the country scores, with every country lacking its own fund in ACWX. Since Oct 21, 2026, up to 20% of equities also moves into the best-scoring sleeves of the whole equity universe (sectors, industries, US and international style and size, factors, themes and regions), at most 5% of equities each and 10 in all, each funded from its own region so regional weights stay where the country layer put them.</p><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="lv-univ" data-source="live_log"><thead></thead><tbody></tbody></table></div></div>
     <div class="gm-block"><h3 class="gm-h3">Portfolios published</h3><div class="gm-tablewrap"><table class="gm-table gm-compact gm-static" id="lv-log" data-source="live_log"><thead></thead><tbody></tbody></table></div><p class="gm-note" id="lv-log-note"></p></div>
     <style>
       #live .x-lvfrom{display:inline-flex;align-items:center;gap:.4rem;margin-left:.75rem}
@@ -338,7 +342,7 @@
       G.line($('#lv-cum', sec), [{ name: VARIANTS[LV.v].short, color: G.PAL ? G.PAL[0] : 'var(--gm-blue)', pts: pm }, { name: '60/40', color: '#7c8798', pts: pb }], { h: 240, ref: 100, fmt: (v) => v.toFixed(2) });
       G.line($('#lv-rel', sec), [{ name: 'Less 60/40', color: G.PAL ? G.PAL[0] : 'var(--gm-blue)', pts: pr }], { h: 180, ref: 0, yfmt: d3.format('+.2%'), fmt: (v) => fs(v) });
     }
-    kv($('#lv-log', sec), ['Published', 'Equities', 'Fixed income', 'Diversifiers', 'Largest equity tilts', 'Expected tracking error', 'Scores as of'], S.log.slice().reverse().map((l) => [G.mon(l.date) + (l.recreated ? ' (recreated)' : ''), pcl(l.equityWeight, 1), pcl(l.bondWeight, 1), l.divWeight ? pcl(l.divWeight, 0) : '—', (l.eqTop || []).join(', ') || '—', pcl(l.exAnte && l.exAnte.te, 2), l.scoresAsOf ? G.mon(l.scoresAsOf) : '—']));
+    kv($('#lv-log', sec), ['Published', 'Equities', 'Fixed income', 'Diversifiers', 'Largest country and sleeve tilts', 'Expected tracking error', 'Scores as of'], S.log.slice().reverse().map((l) => [G.mon(l.date) + (l.recreated ? ' (recreated)' : ''), pcl(l.equityWeight, 1), pcl(l.bondWeight, 1), l.divWeight ? pcl(l.divWeight, 0) : '—', [...(l.eqTop || []), ...((l.sleeves || []).slice(0, 3).map((s) => s.etf))].join(', ') || '—', pcl(l.exAnte && l.exAnte.te, 2), l.scoresAsOf ? G.mon(l.scoresAsOf) : '—']));
     const ln = $('#lv-log-note', sec);
     if (ln) ln.textContent = `Each weekly refresh records both portfolios the dashboard publishes at the default policy (60/40 neutral, ±15 points): the tracked portfolio with no diversifier sleeve, and the same portfolio with a 10% diversifier sleeve at the real assets model's weights. Each applies from the next trading day until the next refresh. Daily returns use dividend-adjusted closes, and today uses live prices; weights are held at the published level each day, gross of costs. Backtests are on the Evidence pages and are kept apart from this record.`;
   });
