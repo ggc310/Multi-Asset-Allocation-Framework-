@@ -302,14 +302,14 @@
    "title": "Commentary",
    "description": "Week in Review, The Week Ahead, Month in Review, Quarter in Review and earnings-call takeaways, written by Claude from this dashboard\u2019s FMP and FRED data. One row per piece: id, kind, title, headline, period, date, asOf, body (Markdown).",
    "updated": {
-    "at": "2026-10-21T12:33:34Z",
+    "at": "2026-10-21T22:04:43Z",
     "by": "Claude"
    },
    "schedule": "Appended by Claude after Friday\u2019s close, on Sunday afternoons, and after each month\u2019s and quarter\u2019s last close",
    "staleAfterHours": 200,
    "kind": "file",
    "path": "data/files/commentary.json",
-   "blob": "be10eea5dc1738b7eb53714b4acf8421"
+   "blob": "10ccf129e2b330900243e389cba2a905"
   },
   "constituent_quotes": {
    "title": "Holdings live quotes",
