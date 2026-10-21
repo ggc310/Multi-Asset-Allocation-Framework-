@@ -604,16 +604,16 @@
   },
   "live_log": {
    "title": "Live record of the model portfolio",
-   "description": "The model portfolio as published each week (fund weights at the default 60/40 policy), the 60/40 reference, the active weights behind each decision and the expected risk at the time. The Live results page compounds daily returns on these weights from the next trading day. Appended by Claude every week.",
+   "description": "Each Saturday's published model portfolios, in two versions (the tracked portfolio with no diversifiers, and the same policy with a 10% diversifier sleeve): fund weights, the 60/40 reference, the active weights behind each decision, expected risk, and the investable universe that week. The Live results page compounds daily returns on these weights from the next trading day. Appended by Claude every week.",
    "updated": {
-    "at": "2026-10-19T18:30:00Z",
+    "at": "2026-10-21T04:40:00Z",
     "by": "Claude"
    },
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/live_log.json",
-   "blob": "055aabb7783253afdadd2201bf72d447"
+   "blob": "91ed62c19cf026bf0956cf9271b718d9"
   },
   "macro_history": {
    "title": "US rates and risk premiums",
