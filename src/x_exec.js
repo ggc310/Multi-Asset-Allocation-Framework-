@@ -358,11 +358,11 @@
     const rows = [];
     const add = (what, a, b, d, big) => rows.push({ what, a, b, d, big, same: String(a) === String(b) });
     add('Stocks vs bonds: equity weight', pc(prev.sbWeight, 0), pc(sb ? sb.equityWeight : cur.sbWeight, 0), pts((sb ? sb.equityWeight : cur.sbWeight) - prev.sbWeight, 1), Math.abs((sb ? sb.equityWeight : cur.sbWeight) - prev.sbWeight) >= 0.03);
-    const LBL = { duration: 'Duration', ig: 'IG credit', hy: 'High yield', mbs: 'Agency MBS', emd: 'EM dollar debt', tips: 'TIPS', fx: 'EM local currency' };
+    const LBL = { duration: 'Duration', ig: 'IG credit', hy: 'High yield', mbs: 'Agency MBS', emd: 'EM dollar debt', tips: 'TIPS', fx: 'EM local currency', intl: 'International bonds, hedged' };
     for (const l of (fi && fi.levers) || []) {
       const a = (prev.fi || {})[l.key], b = l.position; if (!isNum(a) && !isNum(b)) continue;
       if (l.key === 'duration') { const g = l.durGap || 14; add('Duration vs the Agg', sg((a || 0) * g, 2, ' yrs'), sg((b || 0) * g, 2, ' yrs'), sg(((b || 0) - (a || 0)) * g, 2, ' yrs'), Math.abs(((b || 0) - (a || 0)) * g) >= 0.5); }
-      else add(LBL[l.key] + ' tilt', spc(a || 0, 1), spc(b || 0, 1), pts((b || 0) - (a || 0), 1), Math.abs((b || 0) - (a || 0)) >= 0.05 || (a > 1e-3) !== (b > 1e-3));
+      else add((LBL[l.key] || l.label || l.key) + ' tilt', spc(a || 0, 1), spc(b || 0, 1), pts((b || 0) - (a || 0), 1), Math.abs((b || 0) - (a || 0)) >= 0.05 || (a > 1e-3) !== (b > 1e-3));
     }
     for (const x of (ra && ra.assets) || []) { const a = (prev.ra || {})[x.etf]; if (isNum(a)) add(x.label + ' diversifier score', f2(a), f2(x.score), sg(x.score - a, 2), (a > 0) !== (x.score > 0)); }
     const dxy = fxm && (fxm.aggregates || []).find((a) => a.code === 'DXY');
