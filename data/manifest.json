@@ -302,14 +302,14 @@
    "title": "Commentary",
    "description": "Week in Review, The Week Ahead, Month in Review, Quarter in Review and earnings-call takeaways, written by Claude from this dashboard\u2019s FMP and FRED data. One row per piece: id, kind, title, headline, period, date, asOf, body (Markdown).",
    "updated": {
-    "at": "2026-10-22T12:35:52Z",
+    "at": "2026-10-22T21:57:07Z",
     "by": "Claude"
    },
    "schedule": "Appended by Claude after Friday\u2019s close, on Sunday afternoons, and after each month\u2019s and quarter\u2019s last close",
    "staleAfterHours": 200,
    "kind": "file",
    "path": "data/files/commentary.json",
-   "blob": "6ee93ef352cbecaf443be7de6575a4f6"
+   "blob": "05018d18d779aa56d955db4f9e2e6170"
   },
   "constituent_quotes": {
    "title": "Holdings live quotes",
@@ -819,14 +819,14 @@
    "title": "Inflation, real yields, credit",
    "description": "Treasury breakeven inflation (5-year, 10-year, 5y5y forward), TIPS real yields (5, 10, 30 years), nominal Treasury yields, ICE BofA option-adjusted spreads and total-return indexes for US investment grade and high yield by rating, from FRED. Breakevens and real yields since 2003; ICE series cover the past three years, the history FRED serves.",
    "updated": {
-    "at": "2026-10-22T12:35:52Z",
+    "at": "2026-10-22T21:57:07Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FRED by the weekly refresh (fred.py) and by each commentary run",
    "staleAfterHours": 200,
    "kind": "file",
    "path": "data/files/rates_credit.json",
-   "blob": "3d005367317c1452a8a4f06f44b12e89"
+   "blob": "bdd05029309e9c0257251f7bdc09160d"
   },
   "regime_playbook": {
    "title": "Regime playbook",
