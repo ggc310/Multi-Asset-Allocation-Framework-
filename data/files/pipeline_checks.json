@@ -1,1 +1,1 @@
-[{"date":"2026-10-19","passed":288,"failures":[],"warnings":["the last saved call is dated 2026-10-18, not today"]}]
+[{"date":"2026-10-24","passed":300,"failures":[],"warnings":[],"githubSync":{"at":"2026-10-23T20:30:00-07:00","result":"pass","after":"932a88a","note":"Live results: previous-policy comparison, return and risk by horizon with turnover, cost and fee metrics, signal-or-noise gauge, change log; new Evidence > System status page. Every page of the deployed site loaded without errors."}}]

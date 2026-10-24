@@ -11,14 +11,14 @@
    "title": "Treasury curve, month-end since 2005",
    "description": "Month-end US Treasury yields from one month to 30 years since 2005. Built by Claude from FMP treasury rates.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/bond_curve.json",
-   "blob": "b7af4eccb1c4b4679da4d7257cb3d519"
+   "blob": "d681bbc864e6e63ef9a521c95d4cf095"
   },
   "bond_history": {
    "title": "Bond ETF price history",
@@ -36,14 +36,14 @@
    "title": "Bond ETF yields, duration and risk",
    "description": "For 27 bond ETFs: trailing and latest distribution yield, empirical duration and equity beta (weekly returns regressed on Treasury yield changes and US equities over three years), yield over duration-matched Treasury ETFs, annualized returns over 3 to 15 years, volatility, drawdowns, fees and assets. Built by Claude from FMP prices, dividends, ETF data and Treasury rates.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/bond_stats.json",
-   "blob": "2713758c82edf43f164cbcea2aa8e367"
+   "blob": "dc46c89dc80cf8ea61bdaa2872244bc4"
   },
   "bt_candidates": {
    "title": "Backtest: candidate metrics",
@@ -237,66 +237,66 @@
    "title": "Earnings-call readings",
    "description": "Tone, tone against each company's own history, net guidance and topic mentions across S&P 500 earnings calls in the past three months, monthly since 2014, with this quarter's biggest tone moves among the largest companies. Scored by Claude from FMP earnings call transcripts.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_index.json",
-   "blob": "8d0cb815b8d9546fe8b6979010a520e8"
+   "blob": "cbef061fc6ddfdd074f65339ae2f5565"
   },
   "call_meta": {
    "title": "Earnings-call company names",
    "description": "Name and sector for every company with a scored earnings call: S&P 500 members from FMP, holdings from the universe data, and former members from their FMP profiles.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every Saturday by the weekly refresh (profiles.py)",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_meta.json",
-   "blob": "73667dfe85028a4b676c7865f0d85914"
+   "blob": "72f8085fb522ceb0ffc87562c6125972"
   },
   "call_scores": {
    "title": "Scored earnings calls",
    "description": "Tone and topic scores for every S&P 500 earnings call since 2014 that FMP has a transcript for (no transcript text), kept so each week only new calls are scored. Scored by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_scores.json",
-   "blob": "ceef775f4bae3c329b0c07e49d7300bb"
+   "blob": "bab42f4c275b97fd634cad5c71435c31"
   },
   "call_sleeves": {
    "title": "Earnings calls by fund",
    "description": "Holdings-weighted earnings-call tone change, guidance and main topics for each fund's US holdings over the past 100 days. Scored by Claude from FMP earnings call transcripts.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_sleeves.json",
-   "blob": "994ec829fd2083a64f5fcb9d8a81634b"
+   "blob": "789ca2649717c7e8d34a4f0698a4222e"
   },
   "call_tests": {
    "title": "Earnings-call signal tests",
    "description": "Rank correlations of the earnings-call readings with later stock returns, growth and inflation, on non-overlapping periods before 2019 and from 2020, and whether each passed the promotion rule. Computed by Claude from FMP transcripts and prices.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/call_tests.json",
-   "blob": "01aebc0a2f62b2e3ca9bb996b8d93499"
+   "blob": "c567b31b575ad154392dc1f7e7dc1a5b"
   },
   "commentary": {
    "title": "Commentary",
@@ -334,27 +334,27 @@
    "title": "Holdings fundamentals",
    "description": "Per-company TTM ratios and key metrics, annual consensus EPS and revenue for the last, current and next fiscal year, consensus price targets and analyst grades for every holding in the look-through. Snapshot of FMP ratios-ttm, key-metrics-ttm, analyst-estimates, price-target-consensus, grades-consensus and profile.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/constituents.json",
-   "blob": "6259bed4629dd12a734cfe7246dddd42"
+   "blob": "1c7b7c89a66ceff406a9e6558b43ee60"
   },
   "country_risk": {
    "title": "Country risk premiums",
    "description": "Country risk premium and total equity risk premium for each country fund's market from FMP, against the United States. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/country_risk.json",
-   "blob": "1ad78ff822bc78d3c5eed66b84311d36"
+   "blob": "8474964b1fe1e345299e6bef1e373c6b"
   },
   "cp_income": {
    "title": "Company lookup: income",
@@ -380,40 +380,40 @@
    "title": "Data checks",
    "description": "Flags raised when the snapshot is rebuilt: unusable or partial holdings files, thin data coverage, implausible multiples, estimates that do not reconcile with trailing EPS, and multiples that disagree with their own history. Computed by Claude.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/dq_report.json",
-   "blob": "44710dc3782f0d25f037cb1fa8d28c80"
+   "blob": "6da8b84a8e4adbb4b5f4894eb1ab83cc"
   },
   "estimate_history": {
    "title": "Consensus estimate snapshots",
    "description": "Weekly snapshots of consensus EPS for the current and next fiscal year for every holding, saved from FMP since October 2026 because FMP keeps no estimate history. The revision metrics are measured against these.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/estimate_history.json",
-   "blob": "72d4aea3fb0008683ce6f4b527b78a95"
+   "blob": "b0528954102829f5730a14ee30e68f80"
   },
   "etf_extras": {
    "title": "ETF costs and flows",
    "description": "Each ETF\u2019s expense ratio, assets, and net creation or redemption of shares over six and twelve months, as a share of assets. Built by Claude from FMP ETF information and market-cap history.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/etf_extras.json",
-   "blob": "a978f4964b9644daa98d5649b04c43d8"
+   "blob": "0252292d313f6c91e85f8c77526876c1"
   },
   "etf_history": {
    "title": "ETF price history",
@@ -431,14 +431,14 @@
    "title": "Sleeve universe",
    "description": "The 62 building blocks with their ETF proxy, benchmark, group, region, country, look-through coverage and price on the snapshot date. Built by Claude from FMP ETF holdings and quotes.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/etf_universe.json",
-   "blob": "109635b3de8ecbd2259a0eb44a15b7a8"
+   "blob": "2280899feeb275774689edd8b735f13c"
   },
   "etf_weekly": {
    "title": "ETF weekly prices since 2005",
@@ -457,40 +457,40 @@
    "title": "ETF top holdings",
    "description": "Each ETF's largest holdings and weights, as reported by FMP (IWN uses VTWV, which tracks the same Russell 2000 Value index). Snapshot of FMP ETF holdings.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/fund_holdings.json",
-   "blob": "586021d0bdbb3d0d1b4ab6873e9f2d12"
+   "blob": "42ed5061677b3566cc1d5ef623919b8c"
   },
   "fund_sectors": {
    "title": "Fund sector make-up",
    "description": "Sector weights of every fund the model portfolio can hold, including all 62 equity sleeves: GICS-style sectors for the equity funds (FMP ETF sector weightings, or the look-through holdings where FMP has none); for bond funds, the bond type and, for corporates, the issuer industry. Cash dropped and the rest rescaled.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fund_sectors.json",
-   "blob": "b7eed2371a3d7d18cdea08b09fd29c9d"
+   "blob": "2d0cbda2c33b4881924046ba43e3e34d"
   },
   "fx": {
    "title": "Currencies: valuation and trend",
    "description": "Each currency in the universe against the US dollar: the dollar price of one unit, the 12-month change, and a purchasing-power valuation (World Bank PPP price level relative to peers, net of the dollar\u2019s). Built by Claude from FMP exchange rates and World Bank PPP factors.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fx.json",
-   "blob": "b9faf5931f837c0a66772ebbdc845e80"
+   "blob": "46f376b6ff9c00d4ec3d607a5a795c8b"
   },
   "fx_history": {
    "title": "Currency price history",
@@ -502,131 +502,131 @@
    "title": "Currency models",
    "description": "Cyclical (rates, carry, growth surprises, the 10-year yield gap, trend, positioning, risk) and long-term (real exchange rate value, real rates) scores for 14 currencies, the dollar index and an EM basket, with candidate signals tested weekly, monthly fair values (value model and PPP), suggested hedge ratios, signal rank correlations and backtests rebalanced monthly, quarterly and half-yearly. Built by Claude from FMP forex prices, policy rates, the macro record, CFTC positioning and OECD yields.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fx_model.json",
-   "blob": "69156adb6f7be9f3bedba592501977cf"
+   "blob": "322834594e1bb8bdd3579ecf9529aada"
   },
   "fx_stats": {
    "title": "Currencies against the dollar",
    "description": "Twelve developed and emerging currencies: returns from one month to ten years, the level against the 10-year average and against World Bank purchasing-power parity, the 200-day trend, a suggested hedge ratio for developed currencies, and a 52-week weekly sparkline. Built by Claude from FMP forex history.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/fx_stats.json",
-   "blob": "5bdeaab6ec085d83ae679f4c0844d35f"
+   "blob": "86dd9b993d31695ce77ca3799c1a06e2"
   },
   "global_yields": {
    "title": "Government yields abroad",
    "description": "10-year government bond yields and 3-month interbank rates for the US and 14 other markets, monthly averages from the OECD series on FRED.",
    "updated": {
-    "at": "2026-10-18T23:26:13Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every week by a scheduled task",
    "staleAfterHours": 1080,
    "kind": "file",
    "path": "data/files/global_yields.json",
-   "blob": "0d4efa1e60ea0904475ac3b4c7457c16"
+   "blob": "9e182de4e1e7096e8f5b253bdabc7c72"
   },
   "insider_sleeves": {
    "title": "Insider activity by fund",
    "description": "Company insiders' open-market purchases against sales over the last two quarters, weighted across each fund's US-listed holdings, from FMP insider trading statistics, with coverage. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/insider_sleeves.json",
-   "blob": "6eac5529cb4e2ca0d9a107d688942295"
+   "blob": "dabeeebf90d05d09009c391c8ccb3045"
   },
   "lab_experiments": {
    "title": "Saved lab experiments",
    "description": "Model-lab experiments saved for everyone, with who asked for each, when, its settings and its backtest result, refreshed weekly; also the log of experiments made the published model. Kept by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Updated when an experiment is saved, and every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/lab_experiments.json",
-   "blob": "fadb5e733d98445de2473f8719116bc8"
+   "blob": "72380ed1e58fa5683721af0e6899384c"
   },
   "lab_inputs": {
    "title": "Model lab signal history",
    "description": "Every signal in the stocks vs bonds, fixed income and real assets models, live or evidence only, as known at each month-end since 2008, with the next month's returns of the funds the models hold. Built by Claude from FMP data for the model lab.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/lab_inputs.json",
-   "blob": "60d27a529f79b4cc1cc2bf19d6f456c0"
+   "blob": "053b4f71a1c12ec2672a45812bd5cb67"
   },
   "lab_log": {
    "title": "Lab experiments' weekly calls",
    "description": "Each week's current calls (equity weight, fixed income positions, real asset shares) for the published settings and every saved experiment, kept for their live records. Appended by Claude.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/lab_log.json",
-   "blob": "064c3f77ecf3855840e9985c53ab0bc5"
+   "blob": "8d30c14362c9cb46899c6c82be3fd805"
   },
   "lab_spec": {
    "title": "Model lab settings",
    "description": "The published settings of the three allocation models (which signals are on, pillar weights, position sizes, the real assets threshold) and their published backtest results, for the model lab. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/lab_spec.json",
-   "blob": "fd958b464d5664909e5294cb8b2cd89b"
+   "blob": "9cd535d10ca0d32324e1977a792f5d29"
   },
   "live_log": {
    "title": "Live record of the model portfolio",
    "description": "Each Saturday's published model portfolios, in two versions (the tracked portfolio with no diversifiers, and the same policy with a 10% diversifier sleeve): fund weights, the 60/40 reference, the active weights behind each decision, expected risk, the investable universe that week, the previous policy run on the same calls (shadow) and each fund's expense ratio. The Live results page compounds daily returns on these weights from the next trading day. Appended by Claude every week.",
    "updated": {
-    "at": "2026-10-24T04:30:00Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/live_log.json",
-   "blob": "e54638ac31494e024c489b55ecc2b54a"
+   "blob": "0f5807fdefeb4af207a578ecc7adeb4d"
   },
   "macro_history": {
    "title": "US rates and risk premiums",
    "description": "Month-end US Treasury yields, CPI inflation and the real 10-year yield, recession probability, the dollar (UUP), high yield against Treasuries (HYG/IEF), ACWI's trend, regime labels, and the cycle-adjusted earnings yield and equity risk premium of the global, US, developed ex-US and emerging sleeves since 2010. The single source for the real yield and equity risk premium used across the dashboard. Built by Claude from FMP treasury rates, economic indicators and prices.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/macro_history.json",
-   "blob": "4b65a500363cb533776a803d6a341b14"
+   "blob": "67984d416ec816eeb539d16162aabec1"
   },
   "macro_px": {
    "title": "Macro proxies, daily",
@@ -638,92 +638,92 @@
    "title": "Macro state and regime",
    "description": "Growth, inflation and financial conditions scored against their own history from FMP economic indicators, the economic calendar, CPI, policy rate decisions, Treasury rates and market prices; the regime probabilities, the latest releases and surprises, the coming week's calendar, policy rates and monthly history since 2001. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T23:02:42Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/macro_state.json",
-   "blob": "efe31e85590bc636748377dcef69d4ac"
+   "blob": "d910cf50767bc681c1d9e1303264e422"
   },
   "model_bt": {
    "title": "Model backtests: real assets and the models together",
    "description": "Monthly backtests of the real assets sleeve (model-chosen against every asset at equal risk, inside a 60/40) since 2009, and of the stocks vs bonds weight and fixed income tilts run together against a static 60/40, with 90% ranges and growth-of-100 series. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_bt.json",
-   "blob": "317b3f2080a3b8f1d5ad5cba83297997"
+   "blob": "005a25c07da365502b38acacb6510abc"
   },
   "model_fi": {
    "title": "Fixed income relative value model",
    "description": "Eight tilts against the US Aggregate (including hedged international bonds) with their signals, positions, the input levels that would make each neutral or full size, results by backdrop, and a backtest since December 2010. Built by Claude from FMP bond ETF prices and yields, Treasury rates, CPI and OECD yields abroad.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_fi.json",
-   "blob": "153224cd1db4be45cb3c516572cf30b0"
+   "blob": "9154031613041ea7a2081290551bdd99"
   },
   "model_log": {
    "title": "Saved weekly calls",
    "description": "Each Saturday\u2019s stocks vs bonds weight, fixed income tilts and their pair funds, real asset scores, private markets calls, equity preferences, regime, macro axes and currency views, plus the observations behind them (\u2018obs\u2019), kept for the live records and the Executive summary\u2019s change table. Appended by Claude every week.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Appended every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_log.json",
-   "blob": "304a30f6bd28b5efcf99513dd5b44da4"
+   "blob": "94ce1ad315ac9dbc3e732e5bcd4e2e87"
   },
   "model_pm": {
    "title": "Private markets (listed proxies)",
    "description": "Relative-value calls on listed proxies for private markets: BDCs (BIZD) against high yield and listed private equity (PSP) against global equities, with the BDC discount to book value. Built by models.py.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_pm.json",
-   "blob": "eb838d9350b5614dc619620ad8c971b1"
+   "blob": "4e5def31ef58b5482589fe2813890c1b"
   },
   "model_ra": {
    "title": "Real assets and alternatives model",
    "description": "Gold, broad commodities, US REITs, global infrastructure, managed futures, copper, energy pipelines and Bitcoin scored as diversifiers for a 60/40 portfolio, each on trend, diversification and its own signals under the promotion rule, with sleeve shares weighted by score over volatility (at most 35% each), each score\u2019s monthly history and its rank correlation with the next year\u2019s return over 60/40. Proxies fill early history for managed futures and copper. Built by Claude from FMP prices and the macro record.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_ra.json",
-   "blob": "d50e9f802066ee9a728e3bf7ecc5b905"
+   "blob": "8b9267a03d886e46fcf8280b35d979ff"
   },
   "model_sb": {
    "title": "Stocks vs bonds model",
    "description": "The current equity weight for a global equities and US bonds portfolio around a 60/40 neutral, from the signals that pass the promotion rule (now applied to every signal), with every other signal shown; the point-in-time US equity risk premium; what would change the call; results by regime; and a backtest split into the excess from sitting above neutral and the excess from timing. Built by Claude from FMP prices, Treasury rates, CPI, S&P 500 members' filings, the economic calendar and CFTC positioning.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/model_sb.json",
-   "blob": "9a61ff95825d86e7325c97cd60f0194d"
+   "blob": "4440c2fb1ec840655a0d8ee0380cbb4a"
   },
   "multi_history": {
    "title": "Other-asset price history",
@@ -741,157 +741,157 @@
    "title": "Multi-asset long-run returns",
    "description": "For 39 assets across equities, bonds, credit, real assets, commodities, alternatives, currencies and bitcoin, plus a 60/40 blend: annualized returns over 3 to 20 years, volatility, worst drawdown, calendar-year returns and three-year correlations with global equities and US bonds. Built by Claude from FMP dividend-adjusted prices.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/multi_stats.json",
-   "blob": "e602b6501ce02609d134085e3a4b961d"
+   "blob": "7b88b6b6cf50015b6ffbbe28343190de"
   },
   "pack_link": {
    "title": "Committee pack",
    "description": "Date and link of this week's committee pack PDF: the weekly note, the model calls and the main charts. Built by Claude every week.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/pack_link.json",
-   "blob": "cac406ca4bacb0c6e48db3238019688f"
+   "blob": "10c1906cc9bc4024361d14610d4ccca0"
   },
   "pipeline_checks": {
    "title": "Pipeline checks",
    "description": "Results of the checks run at the end of every weekly rebuild: outputs present, fresh and within size limits, the signal registry agreeing with the models, the weekly note agreeing with the models, and no credentials in uploaded files. Written by checks.py.",
    "updated": {
-    "at": "2026-10-19T00:39:46Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/pipeline_checks.json",
-   "blob": "ff27706adae7f5831efe069a61877808"
+   "blob": "6cab3eec0c5fb54c7624169191e1592d"
   },
   "pit_val": {
    "title": "Point-in-time S&P 500 valuation",
    "description": "Monthly since 2004: the S&P 500's trailing and five-year cycle-adjusted earnings yields, summed over the companies in the index on each date using only earnings already filed, and the equity risk premium against the real 10-year yield, with how many members FMP covers. Built by Claude from FMP income statements, market values, index changes, CPI and Treasury rates.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/pit_val.json",
-   "blob": "74d409dac94ccaaf6c2839ed4b22a588"
+   "blob": "edb934afc7bea351d68ec34666f0bc0a"
   },
   "positioning": {
    "title": "Futures positioning",
    "description": "Speculators' net position as a share of open interest in 23 futures contracts from the CFTC Commitments of Traders reports in FMP, with how extreme each is against the past three years, weekly since 2008 and monthly history. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/positioning.json",
-   "blob": "fb1e6528d9cd712a1510f9549658b821"
+   "blob": "52d5da691f89c2c56aa3fe400b4e5e18"
   },
   "profiles": {
    "title": "Company profiles, top 300",
    "description": "For the 300 largest holdings by combined weight across the universe: FMP profile, five years of annual and eight quarters of income statements, cash flow, balance sheet, key metrics, analyst estimates, earnings results against estimates, peers and five years of weekly prices.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every Saturday by the weekly refresh (profiles.py)",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/profiles.json",
-   "blob": "55596b46f009d27aa5ad72419086440a"
+   "blob": "7cf60bae23a83222540d935abdef8238"
   },
   "rates_credit": {
    "title": "Inflation, real yields, credit",
    "description": "Treasury breakeven inflation (5-year, 10-year, 5y5y forward), TIPS real yields (5, 10, 30 years), nominal Treasury yields, ICE BofA option-adjusted spreads and total-return indexes for US investment grade and high yield by rating, from FRED. Breakevens and real yields since 2003; ICE series cover the past three years, the history FRED serves.",
    "updated": {
-    "at": "2026-10-23T22:05:00Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FRED by the weekly refresh (fred.py) and by each commentary run",
    "staleAfterHours": 200,
    "kind": "file",
    "path": "data/files/rates_credit.json",
-   "blob": "bcf6c6e6fe1732b2ad3c2be8345ae97a"
+   "blob": "7ec643fa9c294a4df12a51be6c14e7ae"
   },
   "regime_playbook": {
    "title": "Regime playbook",
    "description": "Average next-month return, hit rate and volatility of each fund and model sleeve in each growth, inflation and financial conditions state since 2001, using only the state known at each month-end. Built by Claude from FMP prices and the macro state history.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/regime_playbook.json",
-   "blob": "414707ec335b94f1cb93a49f7f4667be"
+   "blob": "d710b314c4497171e2dd358930065823"
   },
   "risk_model": {
    "title": "Fund risk model",
    "description": "Annualized covariances of monthly returns over the last five years for every fund the model portfolio can hold (all 62 equity sleeves, ACWI, the bond funds, real assets, alternatives and the dollar), and each fund\u2019s sensitivity to global equities, the 10-year yield, the dollar and oil. Built by Claude from FMP prices and Treasury yields.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/risk_model.json",
-   "blob": "2e95cd600d9118118758c841b142f354"
+   "blob": "041feba9c9b8a04f2c89604ae13cf8f0"
   },
   "score_history": {
    "title": "Score snapshots",
    "description": "Every sleeve's pillar scores and composites for each weight preset and sentiment reading, saved by Claude each time the fundamentals snapshot is rebuilt.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 720,
    "kind": "file",
    "path": "data/files/score_history.json",
-   "blob": "ed382c516bf74bef0c7779af674eb315"
+   "blob": "750eae3fe7278dd2488496af7215543c"
   },
   "sensitivities": {
    "title": "Macro sensitivities",
    "description": "Each sleeve\u2019s 60-month regression on global equities (ACWI), the change in the 10-year Treasury yield, the dollar (UUP) and oil (USO), plus beta, downside and upside capture and residual volatility. Built by Claude from FMP prices and treasury rates.",
    "updated": {
-    "at": "2026-10-18T22:39:03Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/sensitivities.json",
-   "blob": "e70a08cfa8839300ee125c6b678fd311"
+   "blob": "cc07914d61cfd9fa14d1a5ea0f6f0d64"
   },
   "signal_registry": {
    "title": "Signal registry",
    "description": "Every signal in the stocks vs bonds, fixed income, real assets, private markets and currency models with its rank correlation with next-year returns before 2019 and from 2020, months used, and whether it passed the promotion rule into the live model or stays evidence only. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/signal_registry.json",
-   "blob": "cfd3ff5be09b6bc1c0156e3a7044a5df"
+   "blob": "fff50f7a77493ea7e90f6c93650b7c53"
   },
   "sleeve_series": {
    "title": "Sleeve history, monthly",
@@ -910,14 +910,14 @@
    "title": "Economic surprises",
    "description": "Weekly growth and inflation surprise indices by region since mid-2014: each release's actual against consensus from the FMP economic calendar, scaled by that indicator's own surprise history and smoothed. Built by Claude.",
    "updated": {
-    "at": "2026-10-18T23:02:42Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt from FMP every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/surprise.json",
-   "blob": "2c9770aebc7fafc5cf3b42acee2c667d"
+   "blob": "f5ce6238fa6ace15f871363491d0d2df"
   },
   "today_earnings": {
    "title": "Large-company earnings",
@@ -966,27 +966,27 @@
    "title": "Weekly committee note",
    "description": "The model\u2019s weekly summary in short bullets: bottom line, the week in markets, preferences and avoids with the evidence behind them, a line per category, what is changing, style and region calls, changes since last week, and risks. Written by Claude from this week\u2019s data and backtest.",
    "updated": {
-    "at": "2026-10-18T23:59:52Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rewritten every week by a scheduled task",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/weekly_note.json",
-   "blob": "e4a1e8d73f4b6a77095f3f5b66a68bc2"
+   "blob": "793b7c19744f7b8fa4bdbee4236544c8"
   },
   "xasset_weekly": {
    "title": "Cross-asset weekly history",
    "description": "Weekly closes since 2005\u201307 for bond ETFs, real-asset, commodity and alternative funds (managed futures, BDCs, listed private equity, uranium miners), commodity futures, the dollar index, twelve currencies (US dollars per unit), bitcoin, ether and the VIX, from FMP; dividend-adjusted for funds. Long history for Compare & correlate, Relative trends and the currency pair explorer.",
    "updated": {
-    "at": "2026-10-18T23:44:10Z",
+    "at": "2026-10-24T14:32:29Z",
     "by": "Claude"
    },
    "schedule": "Rebuilt every Saturday by the weekly refresh (xasset_hist.py)",
    "staleAfterHours": 360,
    "kind": "file",
    "path": "data/files/xasset_weekly.json",
-   "blob": "b1045b44297ac3c0e8fa5da7e9ad1ae9"
+   "blob": "4ea2729a1ed8e4ba52894993d0c6953b"
   }
  }
 }
