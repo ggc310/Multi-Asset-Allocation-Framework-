@@ -62,6 +62,7 @@
 <button class="gm-sub" data-sec="evidence" data-page="history" id="tab-history">Equity live record</button>
 <button class="gm-sub" data-sec="evidence" data-page="backtest" id="tab-backtest">Equity backtest</button>
 <button class="gm-sub" data-sec="evidence" data-page="method" id="tab-method">Methodology</button>
+<button class="gm-sub" data-sec="evidence" data-page="health" id="tab-health">System status</button>
 </nav>
 
 <section class="gm-bar" aria-label="Controls">
@@ -356,6 +357,7 @@
 </div>
 </template>
 
+<section class="gm-page" id="health" role="tabpanel" aria-labelledby="tab-health" hidden></section>
 <section class="gm-page" id="live" role="tabpanel" hidden></section>
 <section class="gm-page" id="commentary" role="tabpanel" hidden>
 <template id="tpl-commentary">
@@ -386,7 +388,7 @@
 <script src="app2.js"></script>
 <script src="pulse.js"></script>
 <script src="x_core.js"></script>
-<script src="x_live.js"></script><script src="x_tracked.js"></script>
+<script src="x_live.js"></script><script src="x_tracked.js"></script><script src="x_health.js"></script>
 <script src="x_port.js"></script>
 <script src="x_assets.js"></script>
 <script src="x_gyield.js"></script>
